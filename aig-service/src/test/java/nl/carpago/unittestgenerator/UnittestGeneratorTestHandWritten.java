@@ -8,7 +8,7 @@ import java.util.Set;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
-import nl.carpago.testexpert.AbstractUnittestGenerator;
+import nl.carpago.testexpert.AbstractTstExpert;
 import nl.carpago.testexpert.Fixtures;
 import nl.carpago.testexpert.UnittestGenerator;
 
@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={Fixtures.class})
-public class UnittestGeneratorTestHandWritten extends AbstractUnittestGenerator { 
+public class UnittestGeneratorTestHandWritten extends AbstractTstExpert { 
 
 	// class under test
 	private UnittestGenerator unittestGenerator;

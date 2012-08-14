@@ -253,7 +253,7 @@ public class TstExpert {
 		this.checkAndAddImport(org.easymock.EasyMock.class);
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
-		this.checkAndAddImport(nl.carpago.testexpert.AbstractUnittestGenerator.class);
+		this.checkAndAddImport(nl.carpago.testexpert.AbstractTstExpert.class);
 		this.checkAndAddImport(this.contextClass);
 
 		logger.debug("leaving");
@@ -295,7 +295,7 @@ public class TstExpert {
 
 	private void generateHeader() {
 		logger.debug("enter");
-		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractUnittestGenerator { \n";
+		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTstExpert { \n";
 		logger.debug("leave");
 	}
 
