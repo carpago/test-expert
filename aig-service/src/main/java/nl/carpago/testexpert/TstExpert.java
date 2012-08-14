@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -91,7 +91,7 @@ import com.thoughtworks.paranamer.Paranamer;
  -  (check) nog testen.service methode zonder argumenten klapt nog.Vast vraag is of dat mag. Vraag is dat het in ieder geval uitgezocht moet worden.
  */
 
-public class UnittestGenerator {
+public class TstExpert {
 	// doing
 	// x achterhalen waarom, wat en hoe van het nummmer achter invokeinterface
 	// en invokevirtual voor mocking
@@ -123,7 +123,7 @@ public class UnittestGenerator {
 
 	
 	
-	private static Logger logger = Logger.getLogger(UnittestGenerator.class);
+	private static Logger logger = Logger.getLogger(TstExpert.class);
 
 	private Class<?> classUnderTest;
 	private Package pakkage;
@@ -173,7 +173,7 @@ public class UnittestGenerator {
 			List<Method> methods = getMethodsWithAnnotationTestMe(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
-				UnittestGenerator generator = new UnittestGenerator(classUnderTest, Fixtures.class);
+				TstExpert generator = new TstExpert(classUnderTest, Fixtures.class);
 
 				generator.generateTestClass();
 
@@ -234,7 +234,7 @@ public class UnittestGenerator {
 		return lines;
 	}
 
-	public UnittestGenerator(Class<?> classUnderTest, Class<?> context) {
+	public TstExpert(Class<?> classUnderTest, Class<?> context) {
 		logger.debug("entering constructor");
 		this.classUnderTest = classUnderTest;
 		this.contextClass = context;
@@ -253,7 +253,7 @@ public class UnittestGenerator {
 		this.checkAndAddImport(org.easymock.EasyMock.class);
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
-		this.checkAndAddImport(nl.carpago.unittestgenerator.AbstractUnittestGenerator.class);
+		this.checkAndAddImport(nl.carpago.testexpert.AbstractUnittestGenerator.class);
 		this.checkAndAddImport(this.contextClass);
 
 		logger.debug("leaving");

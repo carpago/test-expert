@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 import java.util.ArrayList;
 import java.util.Arrays;

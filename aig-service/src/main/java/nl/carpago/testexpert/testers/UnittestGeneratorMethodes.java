@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator.testers;
+package nl.carpago.testexpert.testers;
 
 import java.util.List;
 

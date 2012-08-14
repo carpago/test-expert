@@ -5,7 +5,7 @@ import java.io.Serializable;
 import junit.framework.TestCase;
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.dao.MeldingDAO;
-import nl.carpago.unittestgenerator.Fixtures;
+import nl.carpago.testexpert.Fixtures;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.easymock.EasyMock;

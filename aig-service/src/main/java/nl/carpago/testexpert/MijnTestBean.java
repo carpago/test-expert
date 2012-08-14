@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 @SuppressWarnings("serial")
 public class InvalidArgumentException extends RuntimeException {
