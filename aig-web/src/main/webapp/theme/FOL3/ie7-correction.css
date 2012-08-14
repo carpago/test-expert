@@ -1,0 +1,20 @@
+/* =============== IE-only styles for correction of browser IE 7 corrections */
+/* =============== Styles for display on SCREEN */
+@media screen {
+	/* ==================== Specific for Content ===================================================== */
+	/* forms */
+	#content fieldset.buttons span.right input { padding:2px 10px 1px 10px; }
+	#content .radiobuttons input { margin:1px 0 0 0; }
+	#content .radiobuttons label { margin:1px 10px 0 6px; }
+	#content input.checkbox { margin:0; }
+	
+	/* div class="row" */
+	#content .row { height: 1%; }
+	
+	/* table.form-table */
+	#content table.form-table td.deduct { background:transparent url(../../images/FOL3/background/minus.gif) 100% 24px no-repeat; } 
+	#content table.form-table td.add { background:transparent url(../../images/FOL3/background/plus.gif) 100% 22px no-repeat; }
+	
+	/* autosuggest */	
+	#content .autosuggest-panel { overflow-x:hidden;  }
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Belastingdienst (Belastingdienst) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="AIG_WEB_BehandelenMelding">
+		<xs:annotation>
+			<xs:documentation>AIG9020I - Interface MQ koppeling Web naar zOS taak: Behandelen Melding</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Client2Mq">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BSN" type="T_BSN"/>
+							<xs:element name="Belastingjaar" type="T_Jaar"/>
+							<xs:element name="DatumPlaatsGevonden" type="T_Datum"/>
+							<xs:element name="OorspronkelijkeMeldingnaam" type="T_Tekst_05"/>
+							<xs:element name="BerichtkenmerkDerden" type="T_Tekst_32" minOccurs="0"/>
+							<xs:element name="Waarde" type="T_Waarde" minOccurs="0"/>
+							<xs:element name="Medewerker" type="T_Tekst_07"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="T_BSN">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:totalDigits value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Datum">
+		<xs:annotation>
+			<xs:documentation>Geldige datum zonder timezone, opmaak 'YYYY-MM-DD'</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[2][0-9]{3}-[0-3][0-9]-[0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Jaar">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:totalDigits value="4"/>
+			<xs:minExclusive value="2000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_05">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="05"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_07">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="07"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_32">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Waarde">
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="13"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

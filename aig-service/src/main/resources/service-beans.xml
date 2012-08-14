@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+	">
+
+
+
+	<bean id="onderhoudenWaardeService" class="nl.belastingdienst.aig.waarde.OnderhoudenWaardeServiceImpl">
+		<property name="waardeDAO" ref="waardeDAO" />
+	</bean>
+
+	<bean id="onderhoudenOnderzoekService" class="nl.belastingdienst.aig.onderzoek.OnderhoudenOnderzoekServiceImpl">
+		<property name="onderzoekDAO" ref="onderzoekDAO" />
+		<property name="onderhoudenAanleidingService" ref="onderhoudenAanleidingService" />
+		<property name="onderhoudenWaardeService" ref="onderhoudenWaardeService" />
+		<property name="onderhoudenMeldingService" ref="onderhoudenMeldingService" />
+		<property name="onderhoudenBetrokkeneService" ref="onderhoudenBetrokkeneService" />
+	</bean>
+
+	<bean id="onderhoudenAanleidingService" class="nl.belastingdienst.aig.aanleiding.OnderhoudenAanleidingServiceImpl">
+		<property name="aanleidingDAO" ref="aanleidingDAO" />
+	</bean>
+	
+	<bean id="onderhoudenMeldingService" class="nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl">
+		<property name="meldingDao" ref="meldingDAO" />
+	</bean>
+
+	<bean id="onderhoudenBetrokkeneService" class="nl.belastingdienst.aig.betrokkene.OnderhoudenBetrokkeneServiceImpl">
+		<property name="betrokkeneDAO" ref="betrokkeneDAO" />
+	</bean>
+
+	<bean id="registreerMeldingService" class="nl.belastingdienst.aig.melding.RegistreerMeldingServiceJMSImpl">
+		<property name="registreerMeldingGateway" ref="registreerMeldingJmsGateway" />
+	</bean>
+
+	<bean id="handmatigBeoordelenMeldingService" class="nl.belastingdienst.aig.melding.HandmatigBeoordelenMeldingServiceCTGImpl">
+		<property name="handmatigBeoordelenMeldingDAO" ref="handmatigBeoordelenMeldingDAO" />
+	</bean>
+
+
+
+	<tx:jta-transaction-manager/>
+
+	<tx:advice id="txAdvice">
+	    <tx:attributes> 
+	        <tx:method name="find*" propagation="SUPPORTS" read-only="true" isolation="READ_COMMITTED"/>
+	        <tx:method name="geef*" propagation="SUPPORTS" read-only="true" isolation="READ_COMMITTED"/>
+	        <tx:method name="get*" propagation="SUPPORTS" read-only="true" isolation="READ_COMMITTED"/>
+	        <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/>
+	    </tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+	    <aop:advisor pointcut="execution(* nl.belastingdienst.aig.*.*ServiceImpl.*(..))" advice-ref="txAdvice" />
+	</aop:config>
+
+
+</beans>

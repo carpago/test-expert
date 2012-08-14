@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packageConfig version="2.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../src/main/resources/auto-deploy/2.9-versionfix/Config.xsd">
+
+	<productInfo>
+		<productName>aig</productName>
+		<productVersion>${project.version}</productVersion>
+	</productInfo>
+
+	<applications>
+		<applicationHostID>aig</applicationHostID>
+
+		<application name="aig">
+			<earFile>aig-ear-${project.version}.ear</earFile>
+			
+			<mapRoleToUser role="AIG.BEHANDELAAR">
+				<everyone>false</everyone>
+				<allAuthenticated>true</allAuthenticated>
+			</mapRoleToUser>
+			
+			<libraryRef>aig-libs</libraryRef>
+			<libraryRef productName="WWW" productVersion="2.*">WachtwoordWijzigComponent</libraryRef>
+			<precompileJSPs>true</precompileJSPs>
+			<startingWeight>10</startingWeight>
+		</application>
+	</applications>
+
+	<sharedLibraries>
+		<library name="aig-libs">
+			<fileName env="ont" street="str1">aig-sharedlibrary-ont-str1-${project.version}.jar</fileName>
+			<fileName env="ont" street="str2">aig-sharedlibrary-ont-str2-${project.version}.jar</fileName>
+			<fileName env="ont" street="str3">aig-sharedlibrary-ont-str3-${project.version}.jar</fileName>
+			<fileName env="tst" street="str1">aig-sharedlibrary-tst-str1-${project.version}.jar</fileName>
+			<fileName env="tst" street="str2">aig-sharedlibrary-tst-str2-${project.version}.jar</fileName>
+			<fileName env="tst" street="str3">aig-sharedlibrary-tst-str3-${project.version}.jar</fileName>
+			<fileName env="acc" street="str1">aig-sharedlibrary-acc-str1-${project.version}.jar</fileName>
+			<fileName env="acc" street="str2">aig-sharedlibrary-acc-str2-${project.version}.jar</fileName>
+			<fileName env="prd" street="productie">aig-sharedlibrary-prd-productie-${project.version}.jar</fileName>
+			<description>aig configuratie voor een specifieke omgeving</description>
+		</library>
+	</sharedLibraries>
+
+	<ctg>
+		<connectionFactory jndiName="eis/aig/factory" name="aig-ctgfactory">
+			<serverName env="ont">CTP300</serverName>
+			<serverName env="tst">CTPL00</serverName>
+			<serverName env="acc">CQ1AA10</serverName>
+			<serverName env="prd">CP1EE04</serverName>
+			<description>CTG Connection Factory voor AIG</description>
+			<tpnName env="ont">AI80</tpnName>
+			<tpnName env="tst">AI80</tpnName>
+			<tpnName env="acc">AI80</tpnName>
+			<tpnName env="prd">AI80</tpnName>
+		</connectionFactory>
+	</ctg>
+
+	<mq>
+		<connectionFactory jndiName="jms/aig/factory" name="aig-qcfactory">
+			<queueManager env="ont">QTO1</queueManager>
+			<queueManager env="tst">QTI1</queueManager>
+			<queueManager env="acc">QQA1</queueManager>
+			<queueManager env="prd">QPE1</queueManager>
+			<transportType>BINDINGS</transportType>
+			<messageRetention>true</messageRetention>
+			<XAEnabled>true</XAEnabled>
+			<description>MQ Connection Factory voor AIG</description>
+		</connectionFactory>
+
+		<queueDestination jndiName="jms/aig/at0300/output" name="aig-q-at0300-output">
+			<baseQueueName env="ont" street="str1">AIG.AO.CTP3.AIG0300C</baseQueueName>
+			<baseQueueName env="tst" street="str1">AIG.AO.CTPL.AIG0300C</baseQueueName>
+			<baseQueueName env="acc" street="str1">AIG.AO.CTP3.AIG0300C</baseQueueName>
+			<baseQueueName env="prd">AIG.AO.CTP3.AIG0300C</baseQueueName>
+			<targetClient>MQ</targetClient>
+			<description>Melding Registreren</description>
+			<messagePersistence>PERSISTENT</messagePersistence>
+			<messagePriority>QUEUE_DEFINED</messagePriority>
+			<messageExpiry>UNLIMITED</messageExpiry>
+			<CCSID>1141</CCSID>
+		</queueDestination>
+	</mq>
+
+	<dataSources>
+
+		<!--
+			Deze JNDI-naam moet overeenkomen met de waarde zoals die in de deployment-descriptor voor de gedefinieerde local resource
+			references is opgeleverd.
+		-->
+
+		<db2DataSource jndiName="jdbc/aig/datasource" name="aig-datasource">
+			<XA>true</XA>
+			<description>Datasource voor aig configuratie</description>
+			<databaseName env="ont">LOCDB0O</databaseName>
+			<databaseName env="tst">LOCDB0I</databaseName>
+			<databaseName env="acc">LOCDB0T</databaseName>
+			<databaseName env="prd">LOCDB0U</databaseName>
+
+			<!-- DriverType *moet* 4 zijn op de intranet mainframe service wanneer gebruik gemaakt wordt van dynamische SQL. -->
+			<driverType>4</driverType>
+
+			<!-- Hostname en poortnummer zijn nodig als driverType = 4. -->
+			<serverName env="ont">db0o.belastingdienst.nl</serverName>
+			<serverName env="tst">db0i.belastingdienst.nl</serverName>
+			<serverName env="acc">db0t.belastingdienst.nl</serverName>
+			<serverName env="prd">db0u.belastingdienst.nl</serverName>
+
+			<portNumber env="ont">446</portNumber>
+			<portNumber env="tst">446</portNumber>
+			<portNumber env="acc">446</portNumber>
+			<portNumber env="prd">446</portNumber>
+
+			<currentSchema env="ont" street="str1">AIGO01</currentSchema>
+			<currentSchema env="ont" street="str2">AIGO02</currentSchema>
+			<currentSchema env="ont" street="str3">AIGO03</currentSchema>
+			<currentSchema env="tst" street="str1">AIGI14</currentSchema>
+			<currentSchema env="tst" street="str2">AIGI15</currentSchema>
+			<currentSchema env="tst" street="str3">AIGI15</currentSchema>
+			<currentSchema env="acc" street="str1">AIGA01</currentSchema>
+			<currentSchema env="acc" street="str2">AIGA02</currentSchema>
+			<currentSchema env="acc" street="str3">AIGA03</currentSchema>
+			<currentSchema env="prd" street="productie">AIGE01</currentSchema>
+
+			<authDataUserName env="ont">$OAIG60</authDataUserName>
+			<authDataUserName env="tst">$IAIG60</authDataUserName>
+			<authDataUserName env="acc">$AAIG60</authDataUserName>
+			<authDataUserName env="prd">$EAIG60</authDataUserName>
+		</db2DataSource>
+
+	</dataSources>
+
+</packageConfig>

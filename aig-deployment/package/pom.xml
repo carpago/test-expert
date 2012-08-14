@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>nl.belastingdienst.aig</groupId>
+		<artifactId>aig-deployment</artifactId>
+		<version>1.0.24-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>package-${bcao.project.naam}</artifactId>
+	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
+	<description>${project.artifactId} project beschrijving.</description>
+
+	<properties>
+
+		<!-- RSA niet vervuilen met /target in project.-->
+		<!-- Deze in ../target buiten workspace houden.-->
+		<target.location>../../${target.default.location}</target.location>
+
+		<!--Kopieer de test-dependencies naar /testlib directory in het ear project. -->
+		<!--Met behulp van je RSA buildpath en Add JAR kun je de gewenste-->
+		<!--testlib's op je buildpath zetten voor je JUnit tests in RSA-->
+		<testlib.location>../../${testlib.default.location}</testlib.location>
+
+	</properties>
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${version.assembly.plugin}</version>
+				<executions>
+					<execution>
+						<id>make-package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-ear</artifactId>
+			<version>${project.version}</version>
+			<type>ear</type>
+		</dependency>
+
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-ont-str1</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-ont-str2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-ont-str3</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-tst-str1</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-tst-str2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-tst-str3</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-acc-str1</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-acc-str2</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>nl.belastingdienst.aig</groupId>
+			<artifactId>aig-sharedlibrary-prd-productie</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<profiles>
+
+		<profile>
+
+			<id>whs-upload</id>
+
+			<properties>
+				<whs-upload.version.ant>1.8.1</whs-upload.version.ant>
+				<whs-upload.version.commons-net>2.0</whs-upload.version.commons-net>
+			</properties>
+
+			<build>
+
+				<pluginManagement>
+
+					<plugins>
+						<plugin>
+							<artifactId>maven-antrun-plugin</artifactId>
+							<version>${version.antrun.plugin}</version>
+
+							<dependencies>
+								<dependency>
+									<groupId>org.apache.ant</groupId>
+									<artifactId>ant</artifactId>
+									<version>${whs-upload.version.ant}</version>
+								</dependency>
+								<dependency>
+									<groupId>org.apache.ant</groupId>
+									<artifactId>ant-commons-net</artifactId>
+									<version>${whs-upload.version.ant}</version>
+								</dependency>
+								<dependency>
+									<groupId>commons-net</groupId>
+									<artifactId>commons-net</artifactId>
+									<version>${whs-upload.version.commons-net}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+
+					</plugins>
+
+				</pluginManagement>
+
+				<plugins>
+
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${version.antrun.plugin}</version>
+
+						<executions>
+							<execution>
+								<phase>deploy</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+
+									<!--Voor gebruik van het profiel "-Pwhs-upload" wordt er bij het releasen een upload gedaan naar WHS.-->
+									<!--Gebruik de optie -Dwhs.ftp.username="username" en -Dwhs.ftp.password="password"-->
+									<!--of neem deze als propertie op in de	settings.xml.-->
+									<tasks if="whs.ftp.username">
+
+										<echo />
+										<echo />
+										<echo>Het bestand:</echo>
+										<echo>- ${project.build.finalName}.zip</echo>
+										<echo>uit directory:</echo>
+										<echo>- ${project.build.directory}</echo>
+										<echo>wordt geupload naar wasUpload area van WHS...</echo>
+										<echo />
+
+										<ftp server="apmvst1.belastingdienst.nl" remotedir="/prj/wasUpload" userid="${whs.ftp.username}" password="${whs.ftp.password}"
+											binary="yes">
+											<fileset dir="${project.build.directory}" includes="${project.build.finalName}.zip" />
+										</ftp>
+
+										<echo />
+										<echo>Upload geslaagd!</echo>
+										<echo />
+										<echo />
+
+									</tasks>
+
+								</configuration>
+							</execution>
+						</executions>
+
+					</plugin>
+
+				</plugins>
+
+			</build>
+
+		</profile>
+
+	</profiles>
+
+</project>

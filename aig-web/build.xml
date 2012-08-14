@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="aig-web" default="war" basedir=".">
+
+	<property name="builder" value="TeamCakes" />
+
+	<property name="war-file-name" value="${ant.project.name}.war" />
+	<property name="source-directory" value="src/main/java" />
+	<property name="classes-directory" value="src/main/webapp/WEB-INF/classes" />
+	<property name="web-directory" value="src/main/webapp" />
+	<property name="lib" value="../aig-ear/src/main/application/lib" />
+	<property name="conf" value="../aig-ear/src/main/application/META-INF" />
+	<property name="web-xml-file" value="${web-directory}/WEB-INF/web.xml" />
+	<property name="tomcat" value="../../../tomcat" />
+	<tstamp prefix="build-info">
+		<format property="current-date" pattern="d-MMMM-yyyy" locale="en" />
+		<format property="current-time" pattern="hh:mm:ss a z" locale="en" />
+	</tstamp>
+	<property name="build" value="build" />
+	<property name="dist" value="dist" />
+
+
+	<target name="init" depends="clean">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+
+		<mkdir dir="${dist}" />
+		<mkdir dir="${build}" />
+
+	</target>
+
+	<target name="clean">
+		<delete file="${build}/${war-file-name}" />
+		<delete dir="${dist}" />
+		<delete dir="${build}" />
+	</target>
+
+	<target name="ear" depends="war">
+		<ear destfile="${dist}/${ant.project.name}-${DSTAMP}.ear" appxml="${conf}/application.xml">
+			<fileset dir="${build}" includes="*.war" />
+		</ear>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${build} -->
+
+		<javac srcdir="${source-directory}" destdir="${build}">
+			<classpath>
+				<pathelement path="${classpath}" />
+				<fileset dir="${lib}">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${tomcat}">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement location="${classes-directory}" />
+			</classpath>
+
+		</javac>
+	</target>
+
+	
+	<target name="compile-2" depends="init" description="compile the source ">
+			<!-- Compile the java code from ${src} into ${build} -->
+
+			<javac srcdir="${source-directory}" destdir="${build}">
+				<classpath>
+					<pathelement path="${classpath}" />
+					<fileset dir="${lib}">
+						<include name="**/*.jar" />
+					</fileset>
+					<fileset dir="${tomcat}">
+						<include name="**/*.jar" />
+					</fileset>
+					<pathelement location="${classes-directory}" />
+				</classpath>
+
+			</javac>
+		</target>
+	
+	
+	<target name="war" depends="compile">
+		<war warfile="${build}/${war-file-name}" webxml="${web-xml-file}">
+			<classes dir="${build}" />
+			<lib dir="${lib}" />
+
+			<fileset dir="${web-directory}">
+				<!-- Need to exclude it since webxml is an attribute of the war tag above -->
+				<exclude name="WEB-INF/web.xml" />
+			</fileset>
+			<manifest>
+				<attribute name="Built-By" value="${builder}" />
+				<attribute name="Built-On" value="${build-info.current-date}" />
+				<attribute name="Built-At" value="${build-info.current-time}" />
+			</manifest>
+		</war>
+	</target>
+
+</project>

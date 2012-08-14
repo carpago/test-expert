@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>nl.belastingdienst.aig</groupId>
+		<artifactId>aig</artifactId>
+		<version>1.0.24-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>${parent.artifactId}-datainteractie</artifactId>
+	<name>${project.artifactId}</name>
+	<description>De datainteractielaag is verantwoordelijk voor het ophalen en persisteren van gegevens in databases, communicatie met andere applicaties en messaging systemen.</description>
+
+	<properties>
+
+		<!-- RSA niet vervuilen met /target in project.-->
+		<!-- Deze in ../target buiten workspace houden.-->
+		<target.location>../${target.default.location}</target.location>
+
+		<!--Kopieer de test-dependencies naar /testlib directory in het ear project. -->
+		<!--Met behulp van je RSA buildpath en Add JAR kun je de gewenste-->
+		<!--testlib's op je buildpath zetten voor je JUnit tests in RSA-->
+		<testlib.location>../${testlib.default.location}</testlib.location>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- module dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${parent.artifactId}-domein</artifactId>
+		</dependency>
+
+		<!-- framework dependencies -->
+		<dependency>
+			<groupId>com.ibm.ctg</groupId>
+			<artifactId>cicseci</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.ctg</groupId>
+			<artifactId>cicsframe</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+		</dependency>
+		
+		<!-- test dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${bcao.project.naam}-maven-test-library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>nl.belastingdienst</groupId>
+			<artifactId>belastingdienst-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+		</dependency>
+		<dependency>
+			 <groupId>org.easymock</groupId>
+			 <artifactId>easymock</artifactId>
+		</dependency>
+		
+
+		<!-- Runtime container dependencies -->
+		<dependency>
+			<groupId>nl.belastingdienst.webstraat.maven.dependency</groupId>
+			<artifactId>ibm-was-libraries-6_1-fp</artifactId>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.websphere</groupId>
+			<artifactId>marshall</artifactId>
+		</dependency>
+		<!--
+		<dependency>
+			<groupId>com.ibm.websphere</groupId>
+			<artifactId>com.ibm.jaxws.thinclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.websphere</groupId>
+			<artifactId>com.ibm.ws.emf</artifactId>
+		</dependency>
+		-->
+
+	</dependencies>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${version.source.plugin}</version>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${version.javadoc.plugin}</version>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${version.dependency.plugin}</version>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

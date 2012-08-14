@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>nl.belastingdienst.aig</groupId>
+		<artifactId>aig</artifactId>
+		<version>1.0.24-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>${parent.artifactId}-web</artifactId>
+	<packaging>war</packaging>
+	<name>${project.artifactId}</name>
+	<description>Laag die verantwoordelijk is voor de communicatie van een applicatie met een gebruiker en het aanspreken van de presentatielaag.</description>
+
+	<properties>
+
+		<!-- RSA niet vervuilen met /target in project.-->
+		<!-- Deze in ../target buiten workspace houden.-->
+		<target.location>../${target.default.location}</target.location>
+
+		<!--Kopieer de test-dependencies naar /testlib directory in het ear project. -->
+		<!--Met behulp van je RSA buildpath en Add JAR kun je de gewenste-->
+		<!--testlib's op je buildpath zetten voor je JUnit tests in RSA-->
+		<testlib.location>../${testlib.default.location}</testlib.location>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- module dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${parent.artifactId}-domein</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${parent.artifactId}-service</artifactId>
+		</dependency>
+
+		<!-- framework dependencies -->
+		<dependency>
+			<groupId>nl.belastingdienst.webstraat.wcb</groupId>
+			<artifactId>datatypes</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>nl.belastingdienst.hit.pit</groupId>
+			<artifactId>pitclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts-tiles</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc-struts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<!-- test dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${bcao.project.naam}-maven-test-library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+			 <groupId>org.easymock</groupId>
+			 <artifactId>easymock</artifactId>
+		</dependency>
+		
+		<!-- Runtime container dependencies -->
+		<dependency>
+			<groupId>nl.belastingdienst.webstraat.maven.dependency</groupId>
+			<artifactId>ibm-was-libraries-6_1-fp</artifactId>
+			<type>pom</type>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+		<pluginManagement>
+
+			<plugins>
+
+				<plugin>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${version.war.plugin}</version>
+					<configuration>
+						<version>${version.enterprise.level}</version>
+						<warSourceDirectory>${project.basedir}/src/main/webapp</warSourceDirectory>
+						<webXml>${project.basedir}/src/main/webapp/WEB-INF/web.xml</webXml>
+						<!-- zorgen voor skinny WAR's, gebeurt alleen bij packagen .war	 -->
+						<!-- In version 2.1-alpha-1, this was incorrectly named warSourceExcludes -->
+						<packagingExcludes>**/*.jar,**/WEB-INF/lib/**,**/Thumbs.db,**/web.xml</packagingExcludes>
+						<!-- ZIE BUG MWAR-235 dubbele web.xml in het war-project. -->
+						<!-- http://jira.codehaus.org/browse/MWAR-235 -->
+						<!-- packagingExcludes zit **/web.xml in, als BUG MWAR-235 is opgelost kan **/web.xml eruit. -->
+						<archive>
+							<index>true</index>
+							<manifest>
+								<classpathPrefix>lib/</classpathPrefix>
+								<addClasspath>true</addClasspath>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+								<addExtensions>false</addExtensions>
+							</manifest>
+							<manifestEntries>
+								<!--<Mode>development</Mode>-->
+								<!--<Implementation-Build>${buildNumber}</Implementation-Build>-->
+								<Url>${pom.url}</Url>
+								<Java-Compiler-Level>${version.java.compiler}</Java-Compiler-Level>
+								<Java-Source-Level>${version.java.source}</Java-Source-Level>
+								<Java-Target-Level>${version.java.target}</Java-Target-Level>
+								<Java-Vendor>${java.vendor}</Java-Vendor>
+								<Builder>${user.name}</Builder>
+								<Specification-Title>${pom.name}</Specification-Title>
+								<Specification-Version>${pom.version}</Specification-Version>
+								<Specification-Vendor>${pom.organization.name}</Specification-Vendor>
+								<Implementation-Title>${pom.name}</Implementation-Title>
+								<Implementation-Version>${pom.version}</Implementation-Version>
+								<Implementation-Vendor>${pom.organization.name}</Implementation-Vendor>
+								<Implementation-Vendor-Id>${pom.groupId}</Implementation-Vendor-Id>
+								<X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
+								<X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+							</manifestEntries>
+							<addMavenDescriptor>true</addMavenDescriptor>
+						</archive>
+
+						<webResources>
+							<!-- Filter de messages.properties om het versienummer er in te krijgen -->
+							<resource>
+								<directory>${project.basedir}/src/main/resources</directory>
+								<targetPath>/WEB-INF/classes</targetPath>
+								<filtering>true</filtering>
+								<includes>
+									<include>**/messages*.properties</include>
+								</includes>
+							</resource>
+
+							<resource>
+								<directory>${project.basedir}/src/main/webapp</directory>
+								<targetPath>/</targetPath>
+								<filtering>true</filtering>
+								<includes>
+									<include>versie-info.txt</include>
+								</includes>
+							</resource>
+
+						</webResources>
+
+					</configuration>
+				</plugin>
+
+				<!-- Verwijdert alle bestanden uit web/classes. -->
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>${version.clean.plugin}</version>
+
+					<configuration>
+						<filesets>
+							<fileset>
+								<directory>${project.basedir}/src/main/webapp/WEB-INF/classes</directory>
+								<includes>
+									<include>**/*.*</include>
+								</includes>
+							</fileset>
+						</filesets>
+					</configuration>
+				</plugin>
+
+			</plugins>
+
+		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${version.source.plugin}</version>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${version.javadoc.plugin}</version>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${version.dependency.plugin}</version>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

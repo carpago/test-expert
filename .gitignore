@@ -1,0 +1,14 @@
+*.class
+bin
+classes
+*.log
+.metadata
+*.keep
+target
+c:
+todo.txt
+*.checkedout
+*.hijacked
+*.tar.gz
+generated-java
+generated-test

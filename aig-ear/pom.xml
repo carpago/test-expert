@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>nl.belastingdienst.aig</groupId>
+		<artifactId>aig</artifactId>
+		<version>1.0.24-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>${parent.artifactId}-ear</artifactId>
+	<packaging>ear</packaging>
+	<name>${project.artifactId}</name>
+	<description>Bevat de uiteindelijk te deployen bestanden op de applicatieserver.</description>
+
+	<properties>
+
+		<!-- RSA niet vervuilen met /target in project.-->
+		<!-- Deze in ../target buiten workspace houden.-->
+		<target.location>../${target.default.location}</target.location>
+
+		<!--Kopieer de test-dependencies naar /testlib directory in het ear project. -->
+		<!--Met behulp van je RSA buildpath en Add JAR kun je de gewenste-->
+		<!--testlib's op je buildpath zetten voor je JUnit tests in RSA-->
+		<testlib.location>../${testlib.default.location}</testlib.location>
+
+		<!--Kopieer de dependencies naar /lib directory in het ear project. -->
+		<!--Met behulp van je RSA buildpath en Add JAR kun je de gewenste-->
+		<lib.location>${project.basedir}/src/main/application/lib</lib.location>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- module dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${parent.artifactId}-web</artifactId>
+			<type>war</type>
+		</dependency>
+		<!--
+			We willen geen lib's in WEB-INF/lib van war projecten. Skinny WAR's dus. Hiervoor moeten die lib's in de EAR/lib komen. Omdat
+			voor elkaar te krijgen moet de ear pom alle benodigde (runtime) dependencies uit alle projecten hebben. Bij war projecten werkt
+			dit helaas (nog) niet. Vandaar alsnog de dependencies van het web project opgenomen als POM dependency, dan krijgt de ear wel
+			alle transitive dependencies van het web project.
+		-->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${parent.artifactId}-web</artifactId>
+			<type>pom</type>
+		</dependency>
+
+		<!-- framework dependencies -->
+
+		<!-- test dependencies -->
+
+		<!-- Runtime container dependencies -->
+
+	</dependencies>
+
+	<build>
+
+		<pluginManagement>
+
+			<plugins>
+				<plugin>
+					<artifactId>maven-ear-plugin</artifactId>
+					<version>${version.ear.plugin}</version>
+					<configuration>
+						<version>${version.enterprise.level}</version>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<generateApplicationXml>true</generateApplicationXml>
+						<earSourceDirectory>src/main/application</earSourceDirectory>
+						<!-- Zet alle benodigde jar files van niet-j2ee-modules in /lib -->
+						<defaultLibBundleDir>lib/</defaultLibBundleDir>
+						<!-- Onderstaande bestanden moeten mee in de EAR -->
+						<earSourceIncludes>**/*.xml,**/*.xmi,**/*.properties,**/*.policy</earSourceIncludes>
+						<!-- Onderstaande bestanden moeten =niet= mee in de EAR -->
+						<earSourceExcludes>.settings/*,**/application.xml</earSourceExcludes>
+
+						<archive>
+							<index>true</index>
+							<addMavenDescriptor>true</addMavenDescriptor>
+						</archive>
+
+						<security>
+							<security-role id="SecurityRole_1308153831825">
+								<role-name>AIG.BEHANDELAAR</role-name>
+							</security-role>
+						</security> 
+
+						<modules>
+							<webModule>
+								<groupId>${project.groupId}</groupId>
+								<artifactId>${parent.artifactId}-web</artifactId>
+								<contextRoot>/${bcao.project.naam}</contextRoot>
+							</webModule>
+							<jarModule>
+								<groupId>${project.groupId}</groupId>
+								<artifactId>${parent.artifactId}-domein</artifactId>
+							</jarModule>
+							<jarModule>
+								<groupId>${project.groupId}</groupId>
+								<artifactId>${parent.artifactId}-datainteractie</artifactId>
+							</jarModule>
+							<jarModule>
+								<groupId>${project.groupId}</groupId>
+								<artifactId>${parent.artifactId}-service</artifactId>
+							</jarModule>
+						</modules>
+					</configuration>
+				</plugin>
+
+				<!-- Verwijdert alle dependencies uit ear/lib en ear/testlib. -->
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>${version.clean.plugin}</version>
+
+					<configuration>
+						<filesets>
+							<fileset>
+								<!-- runtime dependencies voor j2ee-modules. -->
+								<directory>${lib.location}</directory>
+								<includes>
+									<include>**/*.*</include>
+								</includes>
+							</fileset>
+							<fileset>
+								<!-- test dependencies. -->
+								<directory>${testlib.location}</directory>
+								<includes>
+									<include>**/*.*</include>
+								</includes>
+							</fileset>
+						</filesets>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${version.dependency.plugin}</version>
+
+					<configuration>
+						<!-- Niet je console laten overspoelen met meldingen dat er iets gekopieerd is. -->
+						<silent>true</silent>
+
+						<overWriteReleases>false</overWriteReleases>
+						<overWriteSnapshots>true</overWriteSnapshots>
+						<overWriteIfNewer>true</overWriteIfNewer>
+
+					</configuration>
+					<executions>
+
+						<!-- Copieer alle dependencies naar ear/lib. -->
+						<!-- Zie commentaar bij de <configuratie> van de ear plugin in deze pom. -->
+						<execution>
+							<id>copy-compile-dependencies</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>copy-dependencies</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${lib.location}</outputDirectory>
+								<includeScope>runtime</includeScope>
+								<excludeGroupIds>${project.groupId}</excludeGroupIds>
+							</configuration>
+						</execution>
+
+						<execution>
+							<id>copy-test-dependencies</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>copy-dependencies</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${testlib.location}</outputDirectory>
+								<excludeScope>compile</excludeScope>
+								<overWriteReleases>false</overWriteReleases>
+								<overWriteSnapshots>true</overWriteSnapshots>
+								<overWriteIfNewer>true</overWriteIfNewer>
+							</configuration>
+						</execution>
+
+					</executions>
+
+				</plugin>
+
+			</plugins>
+
+		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>${version.dependency.plugin}</version>
+			</plugin>
+
+		</plugins>
+
+
+	</build>
+
+</project>

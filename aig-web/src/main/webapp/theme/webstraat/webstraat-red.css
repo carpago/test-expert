@@ -1,0 +1,57 @@
+#content .tab ul {
+	border-bottom: 1px solid #c5392a;
+}
+
+#content .tab ul li {
+	background: #c5392a; 
+	border:1px solid #c5392a;
+	border-bottom: none;
+}
+
+#content .tab ul li.current {
+	border:1px solid #c5392a;
+	border-bottom: none;
+	background:#733434 none repeat scroll 0 0;
+	color:#FFFFFF;
+}
+#content .tab ul li.current a {
+	background:#733434 none repeat scroll 0 0;
+	color:#FFFFFF; 
+}
+#content .tab ul li.current a:hover { 
+	background:#733434 none repeat scroll 0 0;
+	color:#FFFFFF; 
+}
+
+#content .tab ul li strong {
+	background:#733434 none repeat scroll 0 0;
+	color:#FFFFFF;
+}
+
+#content .droptabdiv table { 
+	background:#c5392a; 
+	border: 1px solid #c5392a;
+}
+
+#content .droptabdiv td { 
+	background:#c5392a;
+}
+
+
+
+/* class applied to TOP tab item while the tab is open */
+#content-tab a.subtabfocus, 
+#content-tab li.active a.subtabfocus {
+	background-color:#c5392a; 
+}
+
+/* class applied to tab item which has a subtab currently open */
+#content .droptabdiv a.subtabfocus {
+	background-color:#c5392a;
+}
+
+
+#content #tabular th { background-color:#f2b89c; }
+
+#content #tabular tr.wit:hover { background-color:#F8DCCE; }
+#content #tabular1 tr.wit:hover { background-color:#F8DCCE; }

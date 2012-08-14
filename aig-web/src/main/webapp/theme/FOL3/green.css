@@ -1,0 +1,133 @@
+/* =============== Styles for display on SCREEN */
+@media screen {
+	/* ++++++++++++++++++++ GLOBAL LAYOUT +++++++++++++++++++++ */
+	body, html { background:#fff url(../../images/FOL3/background/bg-body-green.gif) 0px 0px repeat-y; }
+		#navigation { background:#1e5046 url(../../images/FOL3/background/bg-body-green.gif) 0px 0px repeat-y; }
+	/* ++++++++++++++++++++ End GLOBAL LAYOUT ++++++++++++++++++++ */
+
+	
+	/* ++++++++++++++++++++ ELEMENTS ++++++++++++++++++++ */
+	/* ==================== General */
+	div.hr { background:#fff url(../../images/FOL3/background/hr-green.gif) 0 0 no-repeat;  }
+	/* ==================== End General */
+
+	/* ===================== Specific for Navigation */
+	#navigation h3 { color:#fff; }
+	#navigation ul li { color:#688a83; } 
+		#navigation ul li span { color:#688a83; } 
+			#navigation ul li span.done, #navigation ul li a.done { background:transparent url(../../images/FOL3/icons/done-green.gif) 2px 5px no-repeat;  }
+		#navigation ul li a { color:#fff; }
+			#navigation ul li a:hover { color:#ffd20b; }
+		
+		#navigation ul li strong { color:#1e5046; background:#ffd20b;  }
+		
+		#navigation #numberAndLogo { color:#ced9d6; }
+			
+		#navigation ul li a.close { background:transparent url(../../images/FOL3/hyperlink/close-green.gif) 0 0px no-repeat; }
+	/* ===================== End specific for Navigation */	
+	
+	/* ==================== Specific for Content ===================================================== */
+	/* headers */
+	#content h3 { color:#1e5046; }
+		#content h3.attention { background:transparent url(../../images/FOL3/icons/attention-green.gif) 0 1px no-repeat; }
+	
+	#content h4 { color:#1e5046;  }
+		#content h4.attention { background:transparent url(../../images/FOL3/icons/attention-green.gif) 0 1px no-repeat; }
+		#content h4.form-header { background:#a2b7b3; color:#1e5046; border-left:16px solid #e8edec; }
+			#content .attention-block h4.form-header { border-left:16px solid #fff; }
+			
+	#content h5 { color:#1e5046; }
+		#content h5.attention { background:transparent url(../../images/FOL3/icons/attention-green.gif) 0 1px no-repeat; }
+	
+	/* p */	
+	#content p { color:#1e5046; }
+	
+	/* strong */
+	#content strong { color:#1e5046; } 
+	
+	/* hyperlinks */
+	#content a { color:#1e5046; }
+		#content a:hover { color:#733434;  }
+		#content a.next { background:transparent url(../../images/FOL3/hyperlink/next-green.gif) 0 0 no-repeat;}
+	
+	/* (un)ordered lists */
+	#content ul li { background:transparent url(../../images/FOL3/bullet/li-green.gif) 0 8px no-repeat; color:#1e5046; }
+	#content ol li { color:#1e5046; }
+	
+	/*datalists */
+	#content .datalist dl { background:transparent url(../../images/FOL3/background/bg-datalist-green.gif) 0 0 repeat-y; }
+		#content dt { color:#1e5046; }
+		#content dd { color:#1e5046; }
+		
+	/* table */
+	#content table th, #content table td  { color:#1e5046; }
+		#content table span, #content table label, #content table strong { color:#1e5046; }		
+		
+	/* form */
+		/* form fields */
+		#content .row-content label {  color:#1e5046;  }
+		#content select { color:#1e5046; border:1px solid #688a83; background:#fff; }
+			#content .row-content select { color:#1e5046; }
+		#content input.text { background:#fff; color:#1e5046; border:1px solid #688a83; }
+			#content .row-content input.text { color:#1e5046; }
+			#content input.text.read-only { border:1px solid #688a83; background:#ced9d6; }
+		
+			/* euro form field */
+			#content span.euro { border:1px solid #688a83;  } 
+				#content span.euro.read-only {  border:1px solid #ced9d6; background:#ced9d6 url(../../images/FOL3/icons/euro-read-only-green.gif) 3px center no-repeat;  }
+					#content span.euro.read-only input.text { background:#ced9d6; }
+			
+			/* special form field */ /* also see ie7 style sheet */	
+			#content span.nl { border:1px solid #688a83; background:#fff url(../../images/FOL3/icons/nl-green.gif) 3px center no-repeat;  }
+			
+		/* .buttons */
+		#content fieldset.buttons { background:#688a83; }
+			#content fieldset.buttons span.left a.previous { color:#fff; background:transparent url(../../images/FOL3/hyperlink/previous-green.gif) 0 2px no-repeat;}
+				/* also see ie7 style sheet */	
+				#content fieldset.buttons input { background:#ffd20b; color:#1e5046;  }
+				#content fieldset.buttons span a { background:#ffd20b; color:#1e5046; } 
+	
+	/* Start specific blocks =============================================================================================*/
+	/* content-header */
+	#content .content-header { background:#ffd20b; color:#1e5046; }	
+		#content .content-header span, #content .content-header strong { color:#1e5046;  }
+	
+	/* attention block */
+	#content .attention-block { background:#fff; }
+		
+	/* table.form.table */
+		/* table.form.table column width definitions */
+		#content table .width130, #content table .width325 { border-left:20px solid #e8edec; }	
+			#content .attention-block table .width130, #content .attention-block table .width325  { border-left:20px solid #fff; }	
+			
+	/* div class="row" */
+	#content .row span.format { color:#1e5046; }
+	#content .row span.divider { color:#1e5046; }
+	
+	/* .add-panel */
+	#content .add-panel a { background:url(../../images/FOL3/hyperlink/plus-active-green.gif) 0 center no-repeat; }
+		/* See also ie-corrections */
+		#content a.remove-panel {  background:url(../../images/FOL3/hyperlink/minus-green.gif) 0 0 no-repeat; }
+		
+	/* autosuggest */	
+	#content .autosuggest-panel { background:#fff; border: 1px solid #999; }
+		#content .autosuggest-panel a:hover, #content .autosuggest-panel a.autosuggest-item-highlighted { color:#fff; background:#0A246A; }
+		
+		#content .autosuggest-values { background:#fff; border:1px solid #333;}
+			#content .autosuggest-values ul li { background:#fff; color:#1e5046; }		
+			
+	/* Help */
+	#content a.help-link { background:url(../../images/FOL3/hyperlink/help-green.gif) 0 0 no-repeat; }
+		#content a.help-link:hover, #content a.help-link.focus { background:url(../../images/FOL3/hyperlink/help-focus-green.gif) 0 0 no-repeat; }
+	#helpPanel { background:#ffffaf; }
+		#helpPanel h5 { color:#fff; background:#688a83; }
+		#helpPanel p { color:#1e5046; }
+			#helpPanel strong, #helpPanel a { color:#1e5046; } 
+			#helpPanel ul li { background:transparent url(../../images/FOL3/bullet/li-green.gif) 0 8px no-repeat; color:#1e5046; }
+			#helpPanel ol li { color:#1e5046; }
+	#content a#closeHelp { background:#1e5046 url(../../images/FOL3/hyperlink/close-help-green.gif) 0 0 no-repeat; }
+		#content a#closeHelp:hover, #content a#closeHelp.focus { background:#1e5046 url(../../images/FOL3/hyperlink/close-help-focus-green.gif) 0 0 no-repeat; }
+	/* END specific blocks ============================================================================================= */
+	/* ==================== End Specific for Content*/
+	/* ++++++++++++++++++++ End ELEMENTS ++++++++++++++++++++ */
+} 

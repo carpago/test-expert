@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	**************************************************************************************
+	Schema voor de validatie van configuratiefiles zoals die door klanten
+	aangeleverd dienen te worden voor automatische deployment.
+
+	Versie:            2.9
+	Datum van uitgave: -
+	**************************************************************************************
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="packageConfig">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="productInfo" minOccurs="1" maxOccurs="1" type="productInfoType"/>
+				<xs:element name="applications" minOccurs="0" maxOccurs="1" type="applicationsType"/>
+				<xs:element name="sharedLibraries" minOccurs="0" type="sharedLibrariesType"/>
+				<xs:element name="ctg" minOccurs="0" type="ctgType"/>
+				<xs:element name="mq" minOccurs="0" type="mqType"/>
+				<xs:element name="dataSources" minOccurs="0" type="dataSourcesType"/>
+				<xs:element name="sqljCustomization" minOccurs="0" type="sqljCustomizationType"/>
+				<xs:element name="urls" minOccurs="0" type="urlsType"/>
+				<xs:element name="nameSpaceBindings" minOccurs="0" type="nameSpaceBindingsType"/>
+			</xs:sequence>
+			<xs:attribute name="version" type="configXmlVersionType" use="required"/>
+			<xs:attribute name="minTargetVersion" type="minTargetVersionType" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+
+
+	<!-- ************************************ -->
+	<!--           <productInfo>              -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="productInfoType">
+		<xs:sequence>
+			<xs:element name="productName" type="productNameType"/>
+			<xs:element name="productVersion" type="productVersionType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--           <applications>             -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="applicationsType">
+		<xs:sequence>
+			<xs:element name="applicationHostID" type="applicationHostIDType"/>
+			<xs:element name="domainName" type="domainNameType" minOccurs="0"/>
+			<xs:element name="application" minOccurs="1" maxOccurs="unbounded" type="applicationType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="applicationHostIDType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z0-9\-]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="domainNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9_.]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="applicationType">
+		<xs:sequence>
+			<xs:element name="earFile" type="earFileNameType"/>
+			<xs:element name="mapRoleToUser" type="mapRoleToUserType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="mapRunAsRoleToUser" type="mapRunAsRoleToUserType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="libraryRef" type="libraryRefType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="externalListenerPortReferences" type="externalListenerPortReferencesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="deployEJBs" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="precompileJSPs" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="startingWeight" type="xs:positiveInteger" minOccurs="0"/>
+			<xs:element name="classLoaderMode" type="classLoaderModeType" minOccurs="0"/>
+			<xs:element name="warClassLoaderPolicy" type="warClassLoaderPolicyType" minOccurs="0"/>
+			<xs:element name="modules" type="modulesType" minOccurs="0"/>
+			<xs:element name="exposeEJBJndiNames" type="exposeEJBJndiNamesType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="externalStringNameSpaceBindingReferences" type="externalStringNameSpaceBindingReferencesType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="applicationNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:simpleType name="earFileNameType">
+		<!-- xs:restriction base="xs:string">
+			wittm06: pattern gewijzigd omdat anders de property ${project.version} in config.xml als invalid wordt gezien		
+			<xs:enumeration value="cnv-ear-${project.version}.ear"/>
+			<xs:pattern value="[A-Za-z_0-9.\-]{1,256}.ear"/>
+		</xs:restriction-->
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z_0-9.\-$\{\}]{1,256}.ear"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="mapRoleToUserType">
+		<xs:sequence>
+			<xs:element name="everyone" type="xs:boolean"/>
+			<xs:element name="allAuthenticated" type="xs:boolean"/>
+			<xs:element name="mappedUser" type="optionalEnvironmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="mappedGroup" type="optionalEnvironmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="role" use="required" type="functionalNameWithSpacesType"/>
+	</xs:complexType>
+
+	<xs:complexType name="libraryRefType">
+		<xs:simpleContent>
+			<xs:extension base="functionalNameType">
+				<xs:attribute name="productName" type="productNameType" use="optional"/>
+				<xs:attribute name="productVersion" type="productVersionRefType" use="optional"/>
+				<xs:attribute ref="env" use="optional"/>
+				<xs:attribute ref="street" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="externalListenerPortReferencesType">
+		<xs:sequence>
+			<xs:element name="listenerPortReference" type="listenerPortReferenceType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="productName" type="productNameType" use="required"/>
+		<xs:attribute name="productVersion" type="productVersionRefType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="listenerPortReferenceType">
+		<xs:simpleContent>
+			<xs:extension base="functionalNameType">
+				<xs:attribute name="module" type="functionalNameType" use="required"/>
+				<xs:attribute name="ejb" type="functionalNameTypeOrEmpty" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="externalStringNameSpaceBindingReferencesType">
+		<xs:sequence>
+			<xs:element name="stringNameSpaceBindingReference" type="stringNameSpaceBindingReferenceType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="productName" type="productNameType" use="required"/>
+		<xs:attribute name="productVersion" type="productVersionRefType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="stringNameSpaceBindingReferenceType">
+		<xs:simpleContent>
+			<xs:extension base="jndiNameType">
+				<xs:attribute name="module" type="functionalNameType" use="required"/>
+				<xs:attribute name="ejb" type="functionalNameTypeOrEmpty" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="modulesType">
+		<xs:sequence>
+			<xs:element name="module" type="moduleType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="moduleType">
+		<xs:sequence>
+			<xs:element name="startingWeight" type="xs:positiveInteger" minOccurs="0"/>
+			<xs:element name="classLoaderMode" type="classLoaderModeType" minOccurs="0"/>
+			<xs:element name="externalEJBReferences" type="externalEJBReferencesType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="uri" type="xs:string" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="exposeEJBJndiNamesType">
+		<xs:sequence>
+			<xs:element name="jndiName" type="jndiNameType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="externalEJBReferencesType">
+		<xs:sequence>
+			<xs:element name="ejbReference" type="ejbReferenceType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="productName" type="productNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="ejbReferenceType">
+		<xs:simpleContent>
+			<xs:extension base="jndiNameType">
+				<xs:attribute name="ejb" type="functionalNameTypeOrEmpty" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="classLoaderModeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PARENT_FIRST"/>
+			<xs:enumeration value="PARENT_LAST"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="warClassLoaderPolicyType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="APPLICATION"/>
+			<xs:enumeration value="MODULE"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="applicationNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9 ._\-]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="mapRunAsRoleToUserType">
+		<xs:sequence>
+			<xs:element name="username" type="environmentSpecificString" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="role" type="functionalNameType" use="required"/>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--           <sharedLibraries>          -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="sharedLibrariesType">
+		<xs:choice>
+			<xs:element name="library" type="libraryType" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="libraryDir" type="libraryDirType" minOccurs="1" maxOccurs="1"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="libraryType">
+		<xs:sequence>
+			<xs:element name="fileName" maxOccurs="unbounded" type="libraryFileNameType"/>
+			<xs:element name="description" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="libraryDirType">
+		<xs:sequence>
+			<xs:element name="fileName" maxOccurs="unbounded" type="libraryFileNameType"/>
+			<xs:element name="description" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="libraryFileNameType">
+		<xs:simpleContent>
+			<!-- xs:restriction base="optionalEnvironmentSpecificString">
+				wittm06: pattern gewijzigd omdat anders de property ${project.version} in config.xml als invalid wordt gezien		
+				<xs:pattern value="[A-Za-z0-9_.\-]{1,80}.(zip|jar)"/>
+			</xs:restriction-->
+			<xs:restriction base="optionalEnvironmentSpecificString">
+				<xs:pattern value="[A-Za-z0-9_.\-$\{\}]{1,80}.(zip|jar)"/>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--          <sqljCustomization>         -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="sqljCustomizationType">
+		<xs:sequence>
+			<xs:element name="target" maxOccurs="unbounded" type="customizationTargetType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="customizationTargetType">
+		<xs:sequence>
+			<xs:element name="qualifier" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="collection" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="owner" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="isolationLevel" type="isolationLevelType"/>
+			<xs:element name="customization" type="customizationType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="filename" type="sqljCustomizationTargetFileNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:simpleType name="isolationLevelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CS"/>
+			<xs:enumeration value="UR"/>
+			<!-- Isolation levels RR en RS worden niet ondersteund door DB2 Logisch! -->
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="customizationType">
+		<xs:sequence>
+			<xs:element name="rootPackageName" type="rootPackageNameType"/>
+			<xs:element name="serPath" type="xs:string"/>
+			<xs:element name="serFile" type="xs:string" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="rootPackageNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[\w]{1,8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="sqljCustomizationTargetFileNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z_0-9.\-]{1,80}.jar"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<!-- ************************************ -->
+	<!--             <ctg>                    -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="ctgType">
+		<xs:sequence>
+			<xs:element name="connectionFactory" maxOccurs="unbounded" type="ctgConnectionFactoryType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ctgConnectionFactoryType">
+		<xs:sequence>
+			<xs:element name="serverName" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="tpnName" type="environmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="connectionPool" type="connectionPoolType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="name" use="required" type="functionalNameType"/>
+		<xs:attribute name="jndiName" use="required" type="jndiNameType"/>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--              <mq>                    -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="mqType">
+		<xs:sequence>
+			<xs:element name="connectionFactory" type="mqQueueConnectionFactoryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="queueDestination" type="mqQueueDestinationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="listenerPort" type="mqListenerPortType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="topicConnectionFactory" type="mqTopicConnectionFactoryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="topicDestination" type="mqTopicDestinationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="mqQueueConnectionFactoryType">
+		<xs:sequence>
+			<xs:element name="queueManager" type="environmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="transportType" type="transportTypeType"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="host" type="optionalEnvironmentSpecificString" maxOccurs="unbounded"/>
+				<xs:element name="port" type="optionalEnvironmentSpecificInteger" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:element name="messageRetention" type="xs:boolean"/>
+			<xs:element name="XAEnabled" type="xs:boolean"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="authDataUserName" type="environmentSpecificAuthDataUserName" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="connectionPool" type="connectionPoolType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="customProperties" type="customPropertiesType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="mqTopicConnectionFactoryType">
+		<xs:sequence>
+			<xs:element name="queueManager" type="optionalEnvironmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="transportType" type="transportTypeType"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="host" type="optionalEnvironmentSpecificString" maxOccurs="unbounded"/>
+				<xs:element name="port" type="optionalEnvironmentSpecificInteger" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:element name="XAEnabled" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="authDataUserName" type="environmentSpecificAuthDataUserName" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="connectionPool" type="connectionPoolType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="customProperties" type="customPropertiesType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="mqListenerPortSettingsType">
+		<xs:sequence>
+			<xs:element name="maximumSessions" type="maximumSessionsType"/>
+			<xs:element name="maximumRetries" type="maximumRetriesType"/>
+			<xs:element name="maximumMessages" type="maximumMessagesType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="maximumSessionsType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="10"/>
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="maximumRetriesType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="9"/>
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="maximumMessagesType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="5"/>
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="transportTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BINDINGS"/>
+			<xs:enumeration value="DIRECT"/>
+			<xs:enumeration value="CLIENT"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="mqQueueDestinationType">
+		<xs:sequence>
+			<xs:element name="baseQueueName" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="targetClient" type="targetClientType"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="messagePersistence" type="messagePersistenceType" minOccurs="0" />
+			<xs:sequence minOccurs="0">
+				<xs:element name="messagePriority" type="messagePriorityType"/>
+				<xs:element name="specifiedPriority" minOccurs="0" type="xs:nonNegativeInteger"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="messageExpiry" type="messageExpiryType"/>
+				<xs:element name="specifiedExpiry" minOccurs="0" type="xs:long"/>
+			</xs:sequence>
+			<xs:element name="CCSID" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="floatingPointEncoding" type="floatingPointEncodingType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="mqTopicDestinationType">
+		<xs:sequence>
+			<xs:element name="baseTopicName" type="optionalEnvironmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="targetClient" type="targetClientType"/>
+			<xs:element name="multicast" type="multicastType"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="messagePersistence" type="messagePersistenceType" minOccurs="0" />
+			<xs:sequence minOccurs="0">
+				<xs:element name="messagePriority" type="messagePriorityType"/>
+				<xs:element name="specifiedPriority" minOccurs="0" type="xs:positiveInteger"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="messageExpiry" type="messageExpiryType"/>
+				<xs:element name="specifiedExpiry" minOccurs="0" type="xs:long"/>
+			</xs:sequence>
+			<xs:element name="CCSID" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="floatingPointEncoding" type="floatingPointEncodingType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:simpleType name="floatingPointEncodingType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IEEENormal"/>
+			<xs:enumeration value="IEEEReversed"/>
+			<xs:enumeration value="S390"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="messagePersistenceType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="APPLICATION_DEFINED"/>
+			<xs:enumeration value="NONPERSISTENT"/>
+			<xs:enumeration value="PERSISTENT"/>
+			<xs:enumeration value="QUEUE_DEFINED"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="messagePriorityType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="APPLICATION_DEFINED"/>
+			<xs:enumeration value="SPECIFIED"/>
+			<xs:enumeration value="QUEUE_DEFINED"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="messageExpiryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="APPLICATION_DEFINED"/>
+			<xs:enumeration value="SPECIFIED"/>
+			<xs:enumeration value="UNLIMITED"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="targetClientType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="JMS"/>
+			<xs:enumeration value="MQ"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="multicastType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AS_CF"/>
+			<xs:enumeration value="DISABLED"/>
+			<xs:enumeration value="NOT_RELIABLE"/>
+			<xs:enumeration value="RELIABLE"/>
+			<xs:enumeration value="ENABLED"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="mqListenerPortType">
+		<xs:sequence>
+			<xs:element name="connectionFactoryJndiName" type="jndiNameType" />
+			<xs:element name="queueDestinationJndiName" type="jndiNameType" />
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="listenerPortSettings" type="mqListenerPortSettingsType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--           <dataSources>              -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="dataSourcesType">
+		<xs:sequence>
+			<xs:element name="db2DataSource" type="db2DataSourceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="oracleDataSource" type="oracleDataSourceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="sybaseDataSource" type="sybaseDataSourceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="db2DataSourceType">
+		<xs:sequence>
+			<xs:element name="XA" type="xs:boolean"/>
+			<xs:element name="description" type="xs:string"/>
+
+			<!-- Custom properties voor DB2 data sources -->
+			<xs:element name="databaseName" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="driverType" type="db2DriverTypeType"/>
+			<xs:sequence minOccurs="0" maxOccurs="1">
+				<xs:element name="serverName" type="environmentSpecificString" maxOccurs="unbounded"/>
+				<xs:element name="portNumber" type="environmentSpecificInteger" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:element name="planName" type="environmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="currentSchema" type="environmentSpecificString" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="authDataUserName" type="environmentSpecificAuthDataUserName" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="resultSetHoldability" type="resultSetHoldabilityType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="connectionPool" type="connectionPoolType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="customProperties" type="customPropertiesType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+   
+   
+	<!-- ************************************ -->
+	<!--      <flexible custom properties>    -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="customPropertiesType">
+		<xs:sequence>
+			<xs:element name="customProperty" type="customPropertyType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="customPropertyType">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="value" type="xs:string" use="required"/>
+		<xs:attribute name="type" type="attributeType"/>
+	</xs:complexType>
+
+	<xs:simpleType name="attributeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="java.lang.String"/>
+			<xs:enumeration value="java.lang.Boolean"/>
+			<xs:enumeration value="java.lang.Integer"/>
+			<xs:enumeration value="java.lang.Float"/>
+			<xs:enumeration value="java.lang.Short"/>
+			<xs:enumeration value="java.lang.Byte"/>
+			<xs:enumeration value="java.lang.Long"/>
+			<xs:enumeration value="java.lang.Double"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="resultSetHoldabilityType">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="db2DriverTypeType">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="oracleDataSourceType">
+		<xs:sequence>
+			<xs:element name="XA" type="xs:boolean"/>
+			<xs:element name="type" type="oracleDataStoreHelperType"/>
+			<xs:element name="description" type="xs:string"/>
+
+			<!-- Custom properties voor Oracle data sources -->
+			<xs:element name="url" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="authDataUserName" type="environmentSpecificAuthDataUserName" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+	<xs:simpleType name="oracleDataStoreHelperType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Oracle9i"/>
+			<xs:enumeration value="Oracle10g"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="sybaseDataSourceType">
+		<xs:sequence>
+			<xs:element name="XA" type="xs:boolean"/>
+			<xs:element name="description" type="xs:string"/>
+
+			<!-- Custom properties voor Oracle data sources -->
+			<xs:element name="databaseName" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="serverName" type="environmentSpecificString" maxOccurs="unbounded"/>
+			<xs:element name="portNumber" type="environmentSpecificInteger" maxOccurs="unbounded"/>
+			<xs:element name="authDataUserName" type="environmentSpecificAuthDataUserName" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+	<!-- ************************************ -->
+	<!--            <urls>                    -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="urlsType">
+		<xs:sequence>
+			<xs:element name="url" minOccurs="1" maxOccurs="unbounded" type="urlType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="urlType">
+		<xs:sequence>
+			<xs:element name="specification" type="environmentSpecificString" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="description" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--        <namespaceBindings>           -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="nameSpaceBindingsType">
+		<xs:sequence>
+			<xs:element name="stringNameSpaceBindings" minOccurs="1" maxOccurs="unbounded" type="stringNameSpaceBindingsType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="stringNameSpaceBindingsType">
+		<xs:sequence>
+			<xs:element name="stringNameSpaceBinding" minOccurs="1" maxOccurs="unbounded" type="stringNameSpaceBindingType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="stringNameSpaceBindingType">
+		<xs:sequence>
+			<xs:element name="stringValue" type="optionalEnvironmentSpecificString" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="name" type="functionalNameType" use="required"/>
+		<xs:attribute name="jndiName" type="jndiNameType" use="required"/>
+	</xs:complexType>
+
+
+	<!-- ************************************ -->
+	<!--     Connection pool properties       -->
+	<!-- ************************************ -->
+
+	<xs:complexType name="connectionPoolType">
+		<xs:sequence>
+			<xs:element name="connectionTimeOut" type="connectionTimeOutType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="maxConnections" type="maxConnectionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="minConnections" type="minConnectionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="reapTime" type="reapTimeType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="unusedTimeOut" type="unusedTimeOutType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="agedTimeOut" type="agedTimeOutType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="purgePolicy" type="purgePolicyType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="connectionTimeOutType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="240"/>
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="maxConnectionsType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="200"/>
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="minConnectionsType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="10"/>
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="reapTimeType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="200"/>
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="unusedTimeOutType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="3600"/>
+			<xs:minInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="agedTimeOutType">
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="10"/>
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="purgePolicyType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EntirePool"/>
+			<xs:enumeration value="FailingConnectionOnly"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<!-- ************************************ -->
+	<!--          Basistypen                  -->
+	<!-- ************************************ -->
+
+	<xs:simpleType name="configXmlVersionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="2.9"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="minTargetVersionType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]+\.[0-9]+\.[0-9]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="productNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9_\-]{3,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="productVersionType">
+		<!-- xs:restriction base="xs:string">
+			wittm06: pattern gewijzigd omdat anders de property ${project.version} in config.xml als invalid wordt gezien		
+			<xs:pattern value="[A-Za-z0-9_.\-]{1,256}"/>
+		</xs:restriction-->
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9_.\-$\{\}]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="productVersionRefType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9_.\-]{0,256}\*?"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="functionalNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9._\-]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="functionalNameTypeOrEmpty">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9._\-]{0,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="functionalNameWithSpacesType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9._ \-]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="jndiNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9._/\-]{1,256}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="userNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z0-9_$]{1,8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:attribute name="env" type="environmentType"/>
+
+	<xs:attribute name="street" type="streetType"/>
+
+	<xs:simpleType name="environmentType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ont"/>
+			<xs:enumeration value="tst"/>
+			<xs:enumeration value="acc"/>
+			<xs:enumeration value="prd"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="streetType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="str1"/>
+			<xs:enumeration value="str2"/>
+			<xs:enumeration value="str3"/>
+			<xs:enumeration value="str4"/>
+			<xs:enumeration value="str5"/>
+			<xs:enumeration value="str6"/>
+			<xs:enumeration value="str7"/>
+			<xs:enumeration value="str8"/>
+			<xs:enumeration value="str9"/>
+			<xs:enumeration value="str10"/>
+			<xs:enumeration value="str11"/>
+			<xs:enumeration value="str12"/>
+			<xs:enumeration value="str13"/>
+			<xs:enumeration value="str14"/>
+			<xs:enumeration value="str15"/>
+			<xs:enumeration value="str16"/>
+			<xs:enumeration value="str17"/>
+			<xs:enumeration value="str18"/>
+			<xs:enumeration value="str19"/>
+			<xs:enumeration value="str20"/>
+			<xs:enumeration value="str21"/>
+			<xs:enumeration value="str22"/>
+			<xs:enumeration value="str23"/>
+			<xs:enumeration value="str24"/>
+			<xs:enumeration value="str25"/>
+			<xs:enumeration value="str26"/>
+			<xs:enumeration value="str27"/>
+			<xs:enumeration value="str28"/>
+			<xs:enumeration value="str29"/>
+			<xs:enumeration value="str30"/>
+			<xs:enumeration value="opleidingen"/>
+			<xs:enumeration value="productie"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="environmentSpecificAuthDataUserName">
+		<xs:simpleContent>
+			<xs:extension base="userNameType">
+				<xs:attribute ref="env" use="required"/>
+				<xs:attribute ref="street" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="environmentSpecificString">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute ref="env" use="required"/>
+				<xs:attribute ref="street" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="optionalEnvironmentSpecificString">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute ref="env" use="optional"/>
+				<xs:attribute ref="street" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="environmentSpecificInteger">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute ref="env" use="required"/>
+				<xs:attribute ref="street" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="optionalEnvironmentSpecificInteger">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute ref="env" use="optional"/>
+				<xs:attribute ref="street" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+</xs:schema>

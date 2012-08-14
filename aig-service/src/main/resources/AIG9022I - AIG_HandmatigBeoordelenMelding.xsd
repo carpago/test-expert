@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Belastingdienst (Belastingdienst) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:aig="http://www.belastingdienst.nl/aig/uc3" targetNamespace="http://www.belastingdienst.nl/aig/uc3" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="AIG_HandmatigBeoordelenMelding">
+		<xs:annotation>
+			<xs:documentation>AIG9022I - Interface Web koppeling zOS taak: Handmatig beoordelen Melding</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice>
+					<xs:element name="Web2zOS" type="aig:T_Client2Server"/>
+					<xs:element name="zOS2Web" type="aig:T_Server2Client"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="T_Client2Server">
+		<xs:sequence>
+			<xs:element name="BSN" type="aig:T_BSN"/>
+			<xs:element name="Belastingjaar" type="aig:T_Jaar"/>
+			<xs:element name="BerichtkenmerkAIG" type="aig:T_Tekst_32"/>
+			<xs:element name="OorspronkelijkeMeldingnaam" type="aig:T_Tekst_05"/>
+			<xs:element name="ActieGebruiker" type="aig:T_Actie"/>
+			<xs:element name="StatusMelding" type="aig:T_Tekst_05" minOccurs="0"/>
+			<xs:element name="RedenNietVerwerkbaar" type="aig:T_Tekst_100" minOccurs="0"/>
+			<xs:element name="DatumIngangAIW1" type="aig:T_Datum" minOccurs="0"/>
+			<xs:element name="DatumtijdGeregistreerdAIW1" type="aig:T_TimeStamp" minOccurs="0"/>
+			<xs:element name="DatumIngangAIW2" type="aig:T_Datum" minOccurs="0"/>
+			<xs:element name="DatumtijdGeregistreerdAIW2" type="aig:T_TimeStamp" minOccurs="0"/>
+			<xs:element name="DatumIngangAIO" type="aig:T_Datum" minOccurs="0"/>
+			<xs:element name="RedenEinde" type="aig:T_Tekst_100" minOccurs="0"/>
+			<xs:element name="Medewerker" type="aig:T_Tekst_07" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="T_Server2Client">
+		<xs:sequence>
+			<xs:element name="Techn">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Returncode" type="aig:T_Returncode"/>
+						<xs:element name="Returntekst" type="aig:T_Tekst_255" minOccurs="0"/> 
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Resultaattekst" type="aig:T_Resutaattekst" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="T_Actie">
+		<xs:annotation>
+			<xs:documentation>
+			1 - Stoppen,
+			2 - Wacht,
+			3 - Voegen,
+			4 - Starten en
+			5 - Aanleidinge beeindigen.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="2"/>
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_BSN">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:totalDigits value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Datum">
+		<xs:annotation>
+			<xs:documentation>Geldige datum zonder timezone, opmaak 'YYYY-MM-DD'</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[2][0-9]{3}[\-][0-3][0-9][\-][0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_TimeStamp">
+		<xs:annotation>
+			<xs:documentation>Geldige timestamp zonder timezone, opmaak 'YYYY-MM-DD-hh.mm.ss.mmmmmm'</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[2][0-9]{3}-[0-3][0-9][\-][0-9]{2}[\-][2][0-9][.][0-6][0-9][.][0-6][0-9][.][0-9]{6}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Jaar">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:totalDigits value="4"/>
+			<xs:minExclusive value="2000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Returncode">
+		<xs:annotation>
+			<xs:documentation>
+			-1 - Technische fout,
+			 1 - Technische goed en
+			 2 - Functionele fout.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="2"/>
+			<xs:enumeration value="-1"/>
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Returntekst">
+		<xs:annotation>
+			<xs:documentation>Omschrijving van de technische fout (Returncode = -1)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Resutaattekst">
+		<xs:annotation>
+			<xs:documentation>Omschrijving van de functiuonele fout (Returncode = 2)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_05">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="05"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_07">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="07"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_32">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_100">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="T_Tekst_255">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

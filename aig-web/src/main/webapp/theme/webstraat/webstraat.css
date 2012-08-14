@@ -1,0 +1,42 @@
+
+/* tabbladen */
+#content .tab { width:100%; }
+
+#content .tab ul { 	border-bottom: 1px solid #000066; 	float: left;	width: 100%;	margin:0;	padding:0;	list-style: none;	font-size: 1.1em; }
+#content .tab ul li {	float: left;	background: #000066;	border:1px solid #000066;	border-bottom:none;	margin: 0;	margin-left:6px;	display:inline;	padding: 0 0 0 7px; }
+#content .tab ul a { 	float: left;	display: block;	padding: 4px 7px 3px 0;	text-decoration: none;	line-height: 1em;	color:#ffffff;	font-weight: bold;	font-size:0.9em; }
+#content .tab ul a:hover { 	color:#ff0;	text-decoration:underline; }
+#content .tab ul li.current { border:1px solid #000066;	border-bottom:none;	background:#DE2A8D none repeat scroll 0 0;	color:#FFFFFF; }
+#content .tab ul li.current a {	background:#DE2A8D none repeat scroll 0 0;	color:#FFFFFF;	padding-bottom: 4px; }
+#content .tab ul li.current a:hover { 	background:#DE2A8D none repeat scroll 0 0;	color:#FFFFFF;	text-decoration: none;	padding-bottom: 4px; }
+
+#content .tab ul li strong { background:#DE2A8D none repeat scroll 0 0;	color:#FFFFFF;	padding-bottom: 4px; }
+#content .tab ul li.col-master { border:none; padding-right:8px; }
+
+/* LEVEL 1,2,3... DROPDOWN tabS */
+/* dropdown tab container div */
+#content .droptabdiv { 	background:red; position:absolute;	top: 0;	z-index:100; visibility:hidden; }
+
+/* dropdown tab structure */
+#content .droptabdiv table { 	background:#000066;	color:green; border: 1px solid #000066;	padding-top: 6px; }
+#content .droptabdiv td { 	background:#000066;	color:green;	padding-top: 5px; }
+#content .droptabdiv a {	display:inline;	text-decoration: none;	color:#ffffff;	padding:0px;	padding-left:6px;	font-weight: bold;}
+
+/* class applied to tab items to indicate there is a subtab */
+#content .droptabdiv a.subtab {	color:yellow; }
+
+/* class applied to tab item on hover */
+#content .droptabdiv a:hover { 	color:#ff0;	text-decoration:underline; }
+
+/* class applied to TOP tab item while the tab is open */
+#content-tab a.subtabfocus, 
+#content-tab li.active a.subtabfocus { 	background-color:#000066;	color:#ffffff; }
+
+/* class applied to tab item which has a subtab currently open */
+#content .droptabdiv a.subtabfocus { background-color:#000066; }
+
+#content #tabular th { background-color:#ee94c6; font-weight: bold; padding-left: 2px; }
+#content #tabular1 th { font-weight: bold; padding-left: 2px; }
+
+#content #tabular tr.wit:hover { background-color:#D5D5EA; }
+#content #tabular1 tr.wit:hover { background-color:#D5D5EA; }

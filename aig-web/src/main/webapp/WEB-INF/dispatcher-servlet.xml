@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="**/list.html">waardeListController</prop>
+				<prop key="**/show.html">waardeShowController</prop>
+				<prop key="**/melding/registreer.html">registreerMeldingController</prop>
+				<prop key="**/melding/list.html">meldingListController</prop>
+				<prop key="**/melding/show.html">meldingShowController</prop>
+				<prop key="**/melding/actie.html">meldingActieController</prop>
+				<prop key="**/melding/actie/save.html">meldingActieSaveController</prop>
+				<prop key="**/aanleiding/list.html">aanleidingListController</prop>
+				<prop key="**/aanleiding/show.html">aanleidingShowController</prop>
+				<prop key="**/aanleiding/beeindig.html">aanleidingBeeindigController</prop>
+				<prop key="**/onderzoek/list.html">onderzoekListController</prop>
+				<prop key="**/onderzoek/show.html">onderzoekShowController</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="waardeListController" class="nl.belastingdienst.aig.waarde.WaardeListController">
+		<property name="commandName" value="waarde" />
+		<property name="commandClass" value="nl.belastingdienst.aig.waarde.Waarde" />
+		<property name="onderhoudenWaardeService" ref="onderhoudenWaardeService" />
+		<property name="formView" value="list" />
+		<property name="successView" value="list" />
+		<property name="validator" ref="waardeValidator" />
+	</bean>
+
+	<bean id="waardeShowController" class="nl.belastingdienst.aig.waarde.WaardeShowController">
+		<property name="commandName" value="waarde" />
+		<property name="commandClass" value="nl.belastingdienst.aig.waarde.Waarde" />
+		<property name="onderhoudenWaardeService" ref="onderhoudenWaardeService" />
+		<property name="onderhoudenOnderzoekService" ref="onderhoudenOnderzoekService" />
+	</bean>
+
+	<bean id="aanleidingShowController" class="nl.belastingdienst.aig.aanleiding.AanleidingShowController">
+		<property name="commandName" value="aanleiding" />
+		<property name="commandClass" value="nl.belastingdienst.aig.aanleiding.Aanleiding" />
+		<property name="onderhoudenAanleidingService" ref="onderhoudenAanleidingService" />
+	</bean>
+
+	<bean id="aanleidingBeeindigController"
+		class="nl.belastingdienst.aig.aanleiding.AanleidingBeeindigController">
+		<property name="commandName" value="aanleiding" />
+		<property name="commandClass" value="nl.belastingdienst.aig.aanleiding.Aanleiding" />
+		<property name="handmatigBeoordelenMeldingService" ref="handmatigBeoordelenMeldingService" />
+		<property name="validator" ref="aanleidingBeeindigValidator" />
+	</bean>
+
+
+	<bean id="registreerMeldingController"
+		class="nl.belastingdienst.aig.melding.RegistreerMeldingController">
+		<property name="commandName" value="melding" />
+		<property name="commandClass" value="nl.belastingdienst.aig.melding.Melding" />
+<!--		<property name="onderhoudenMeldingService" ref="onderhoudenMeldingService" />-->
+		<property name="validator" ref="meldingRegistreerValidator" />
+		<property name="formView" value="melding/registreer" />
+		<property name="successView" value="melding/registreer" /> <!-- conform ontwerp: ambtenaar moet aansluitend meerdere meldingen kunnen 
+			opvoeren. -->
+	</bean>
+
+	<bean id="meldingListController" class="nl.belastingdienst.aig.melding.MeldingListController">
+		<property name="commandName" value="melding" />
+		<property name="commandClass" value="nl.belastingdienst.aig.melding.Melding" />
+		<property name="onderhoudenMeldingService" ref="onderhoudenMeldingService" />
+		<property name="formView" value="melding/list" />
+		<property name="successView" value="melding/list" />
+		<property name="validator" ref="meldingListValidator" />
+	</bean>
+
+	<bean id="meldingActieController" class="nl.belastingdienst.aig.melding.MeldingActieController">
+	</bean>
+
+	<bean id="meldingActieSaveController"
+		class="nl.belastingdienst.aig.melding.MeldingActieSaveController">
+		<property name="handmatigBeoordelenMeldingService" ref="handmatigBeoordelenMeldingService" />
+		
+
+	</bean>
+
+
+	<bean id="meldingShowController" class="nl.belastingdienst.aig.melding.MeldingShowController">
+		<property name="commandName" value="melding" />
+		<property name="commandClass"
+			value="nl.belastingdienst.aig.melding.MeldingCommand" />
+		<property name="onderhoudenMeldingService" ref="onderhoudenMeldingService" />
+		<property name="onderhoudenOnderzoekService" ref="onderhoudenOnderzoekService" />
+		<property name="onderhoudenAanleidingService" ref="onderhoudenAanleidingService" />
+	</bean>
+
+
+	<bean id="onderzoekListController"
+		class="nl.belastingdienst.aig.onderzoek.OnderzoekListController">
+		<property name="commandName" value="onderzoek" />
+		<property name="commandClass" value="nl.belastingdienst.aig.onderzoek.Onderzoek" />
+		<property name="onderhoudenOnderzoekService" ref="onderhoudenOnderzoekService" />
+		<property name="validator" ref="onderzoekListValidator" />
+	</bean>
+	
+	<bean id="onderzoekShowController"
+		class="nl.belastingdienst.aig.onderzoek.OnderzoekShowController">
+		<property name="commandName" value="onderzoek" />
+		<property name="commandClass" value="nl.belastingdienst.aig.onderzoek.Onderzoek" />
+		<property name="onderhoudenOnderzoekService" ref="onderhoudenOnderzoekService" />
+	</bean>
+
+
+	<bean id="waardeValidator" class="nl.belastingdienst.aig.waarde.WaardeValidator" />
+
+	<bean id="meldingRegistreerValidator" class="nl.belastingdienst.aig.melding.MeldingRegistreerValidator" />
+	
+	<bean id="meldingListValidator" class="nl.belastingdienst.aig.melding.MeldingListValidator" />
+	<bean id="aanleidingListValidator" class="nl.belastingdienst.aig.aanleiding.AanleidingListValidator" />
+	<bean id="aanleidingBeeindigValidator" class="nl.belastingdienst.aig.aanleiding.AanleidingBeeindigValidator" />
+	<bean id="onderzoekListValidator" class="nl.belastingdienst.aig.onderzoek.OnderzoekListValidator" />
+	
+
+	<bean id="aanleidingListController"
+		class="nl.belastingdienst.aig.aanleiding.AanleidingListController">
+		<property name="onderhoudenAanleidingService" ref="onderhoudenAanleidingService" />
+
+		<property name="commandName" value="aanleiding" />
+		<property name="commandClass" value="nl.belastingdienst.aig.aanleiding.Aanleiding" />
+		<property name="formView" value="aanleiding/list" />
+		<property name="successView" value="aanleiding/list" />
+		<property name="validator" ref="aanleidingListValidator" />
+
+
+	</bean>
+
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles.TilesConfigurer">
+		<property name="factoryClass"
+			value="org.apache.struts.tiles.xmlDefinition.I18nFactorySet" />
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/tiles-defs.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.tiles.TilesJstlView" />
+	</bean>
+</beans>
