@@ -2,6 +2,7 @@ package nl.carpago.testexpert;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import nl.belastingdienst.aig.aanleiding.Aanleiding;
@@ -23,6 +24,8 @@ public class Fixtures {
 	public Melding melding() {
 		Melding melding = new Melding();
 		melding.setBerichtkenmerkAig(this.berichtkenmerkAig());
+		melding.setDatumPlaatsGevonden(new Date(112,7,15));
+		melding.setWaarde(3);
 		melding.setBetrokkene(this.betrokkene());
 		
 		return melding;

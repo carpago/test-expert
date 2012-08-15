@@ -165,10 +165,11 @@ public class TstExpert {
 		// rloman: hier nog ff uitzoeken of dit sneller en / of mooier kan. heb
 		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
 		Class<?> classUnderTest = null;
-		//for (String classFile : lijstMetAlleJavaFilesUitProject) {
+		for (String classFile : lijstMetAlleJavaFilesUitProject) {
 			//logger.debug("processing class " + classFile);
 
-			classUnderTest = nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;// // Class.forName(classFile); // 
+			//classUnderTest = nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
+			classUnderTest = Class.forName(classFile); // 
 					
 			List<Method> methods = getMethodsWithAnnotationTestMe(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
@@ -179,7 +180,7 @@ public class TstExpert {
 
 				generator.writeFile();
 			}
-		//}
+		}
 		logger.debug("leaving main");
 	}
 
@@ -503,7 +504,7 @@ public class TstExpert {
 								}
 
 								InvokeDTO invokeDTO = new InvokeDTO(regelHoger);
-								if(this.collabs.contains(invokeDTO.getCollab()) || invokeDTO.getCollab().indexOf("(") > -1 ) {
+								if(this.collabs.contains(invokeDTO.getCollab()) || this.isCallerForCollab(invokeDTO.getCollab())) {
 									//continue processing this collab below ...
 								}
 								else {
@@ -681,6 +682,18 @@ public class TstExpert {
 	}
 
 	
+	private boolean isCallerForCollab(String aCollabKandidate) {
+		
+		for(String element : this.collabs) {
+			if(aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) {  // kandidate is a get or set for the real collab.
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+
 	private void generateReplays() {
 		addCodeLn();
 		for(String collab : this.collabs) {
