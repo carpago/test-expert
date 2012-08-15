@@ -91,7 +91,7 @@ import com.thoughtworks.paranamer.Paranamer;
  -  (check) nog testen.service methode zonder argumenten klapt nog.Vast vraag is of dat mag. Vraag is dat het in ieder geval uitgezocht moet worden.
  */
 
-public class TstExpert {
+public class TestExpert {
 	// doing
 	// x achterhalen waarom, wat en hoe van het nummmer achter invokeinterface
 	// en invokevirtual voor mocking
@@ -123,7 +123,7 @@ public class TstExpert {
 
 	
 	
-	private static Logger logger = Logger.getLogger(TstExpert.class);
+	private static Logger logger = Logger.getLogger(TestExpert.class);
 
 	private Class<?> classUnderTest;
 	private Package pakkage;
@@ -174,7 +174,7 @@ public class TstExpert {
 			List<Method> methods = getMethodsWithAnnotationTestMe(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
-				TstExpert generator = new TstExpert(classUnderTest, Fixtures.class);
+				TestExpert generator = new TestExpert(classUnderTest, Fixtures.class);
 
 				generator.generateTestClass();
 
@@ -235,7 +235,7 @@ public class TstExpert {
 		return lines;
 	}
 
-	public TstExpert(Class<?> classUnderTest, Class<?> context) {
+	public TestExpert(Class<?> classUnderTest, Class<?> context) {
 		logger.debug("entering constructor");
 		this.classUnderTest = classUnderTest;
 		this.contextClass = context;
@@ -254,7 +254,7 @@ public class TstExpert {
 		this.checkAndAddImport(org.easymock.EasyMock.class);
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
-		this.checkAndAddImport(nl.carpago.testexpert.AbstractTstExpert.class);
+		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
 		this.checkAndAddImport(this.contextClass);
 
 		logger.debug("leaving");
@@ -296,7 +296,7 @@ public class TstExpert {
 
 	private void generateHeader() {
 		logger.debug("enter");
-		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTstExpert { \n";
+		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTestExpert { \n";
 		logger.debug("leave");
 	}
 
