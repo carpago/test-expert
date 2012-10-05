@@ -50,6 +50,7 @@ public class Fixtures {
 		return new ArrayList();
 	}
 	
+	
 	@Bean
 	public int twee() {
 		return 2;

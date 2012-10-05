@@ -3,23 +3,30 @@ package nl.belastingdienst.aig.melding;
 import java.util.List;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
+import nl.carpago.unittestgenerator.annotation.CreateUnittest;
 
 public interface MeldingDAO {
 
-	List<Melding> findAllWhere(Betrokkene betrokkene,
-			String berichtkenmerkDerden);
+	/**
+	 * @param betrokkene
+	 * @param berichtKenmerk
+	 * @return Lijst met Meldingen voor Betrokkene met gegeven berichtKenmerk
+	 */
+	List<Melding> findAllWhere(Betrokkene betrokkene, String berichtKenmerk);
 
-	List<Melding> findAllWhereStatusHandmatigeAfhandeling();
-
-	void setMelding(String string);
-
-	List<Melding> getLijst();
-
+	@CreateUnittest(in = { "betrokkene", "berichtkenmerkAig", "voornaam" }, out = "melding")
 	Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig,
 			String voornaam);
 
+	List<Melding> findAllWhereStatusHandmatigeAfhandeling();
+
+	void setMelding(String in);
+
+	List<Melding> getLijst();
+
 	Melding geefMelding();
 
-	int telOp(int aap, int bees);
+	@CreateUnittest(in = { "een", "twee" }, out = "drie")
+	int telOp(int een, int twee);
 
 }

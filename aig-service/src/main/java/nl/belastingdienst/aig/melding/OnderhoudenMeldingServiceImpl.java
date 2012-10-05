@@ -104,7 +104,7 @@ public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService 
 	public Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig) {
 
 		String voornaam = "Raymond";
-		Melding resultMelding =this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam);
+		Melding resultMelding =this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam);
 		
 		return resultMelding;
 	}

@@ -354,7 +354,7 @@ public class TestExpert {
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 
 		// creer String path to .class file
-		String fileName = "src/main/java/" + this.classUnderTest.getName().replaceAll("\\.", "/");
+		String fileName = "bin/" + this.classUnderTest.getName().replaceAll("\\.", "/");
 
 		// via jad
 		//ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
