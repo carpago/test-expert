@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import com.thoughtworks.xstream.XStream;
 
+
 public  class AbstractTestExpert extends TestCase {
 
 	public Object cloneMe(Object obj) {
