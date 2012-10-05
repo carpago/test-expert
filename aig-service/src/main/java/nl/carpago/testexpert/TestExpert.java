@@ -204,6 +204,7 @@ public class TestExpert {
 		}
 		PrintStream po = new PrintStream(file);
 		po.print(this.codeGen());
+		po.close();
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
@@ -214,7 +215,8 @@ public class TestExpert {
 
 		List<String> lines = new LinkedList<String>();
 
-		ProcessBuilder builder = new ProcessBuilder("find", "./src/main/java", "-name", "*.java");
+		//for Linux: ProcessBuilder builder = new ProcessBuilder("find", "./src/main/java", "-name", "*.java");
+		ProcessBuilder builder = new ProcessBuilder("/bin/find", "./src/main/java", "-name", "*.java");
 		Process process = builder.start();
 
 		InputStream stream = process.getInputStream();
@@ -352,10 +354,13 @@ public class TestExpert {
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 
 		// creer String path to .class file
-		String fileName = "bin/" + this.classUnderTest.getName().replaceAll("\\.", "/");
+		String fileName = "src/main/java/" + this.classUnderTest.getName().replaceAll("\\.", "/");
 
 		// via jad
-		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
+		//ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
+		
+		//via cat
+		ProcessBuilder builder = new ProcessBuilder("cat", fileName);
 
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 		Process process = builder.start();

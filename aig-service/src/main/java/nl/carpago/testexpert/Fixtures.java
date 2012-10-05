@@ -7,8 +7,8 @@ import java.util.List;
 
 import nl.belastingdienst.aig.aanleiding.Aanleiding;
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
-import nl.belastingdienst.aig.dao.MeldingDAO;
 import nl.belastingdienst.aig.melding.Melding;
+import nl.belastingdienst.aig.melding.MeldingDAO;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingService;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
 

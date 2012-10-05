@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
-import nl.belastingdienst.aig.dao.MeldingDAO;
 import nl.carpago.unittestgenerator.annotation.CreateUnittest;
 import nl.carpago.unittestgenerator.annotation.Expect;
 
@@ -106,18 +105,6 @@ public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService 
 
 		String voornaam = "Raymond";
 		Melding resultMelding =this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam);
-		boolean result = this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam).equals(new Melding());
-		String s = this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam).getAsJson();
-		this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig,voornaam).getAsJson().charAt(0);
-		
-		// dit werkt dus niet in de test (maakt verkeerde EasyMock.... en moet dus gefixed worden
-		/*if(this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam).getAsJson().equals("")) {
-			System.out.println("gaat lekker zo.");
-		}
-		System.out.println(this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam).getAsJson());
-		*/
-		//resultMelding.setBerichtkenmerkDerden("afwijkendeberichtkenmerkderdendoorservicegezet");
-		// resultMelding.getBetrokkene().setBelastingJaar((short) 1968);
 		
 		return resultMelding;
 	}

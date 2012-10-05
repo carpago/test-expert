@@ -16,10 +16,9 @@ package nl.belastingdienst.aig.waarde;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
-import nl.belastingdienst.aig.dao.WaardeDAO;
+
+import org.apache.log4j.Logger;
 
 /**
  * Implementatie van business service voor het onderhouden van Waarde.

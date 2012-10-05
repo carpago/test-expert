@@ -11,7 +11,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/aig-ear/src/main/application/testlib/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="/aig-ear/src/main/application/testlib/easymock-3.0.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/aig-datainteractie"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aig-domein"/>
 	<classpathentry kind="lib" path="/aig-ear/src/main/application/lib/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="/aig-ear/src/main/application/testlib/paranamer-2.3.jar"/>
