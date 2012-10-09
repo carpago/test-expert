@@ -34,7 +34,7 @@ public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService 
 
 	private MeldingDAO meldingDao;
 	
-	private List list = new ArrayList();
+	private List <String> list = new ArrayList<String>();
 
 	public OnderhoudenMeldingServiceImpl(String in) {
 
@@ -104,12 +104,12 @@ public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService 
 	public Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig) {
 
 		String voornaam = "Raymond";
-		Melding resultMelding =this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam);
+		Melding resultMelding = this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam);
 		
 		return resultMelding;
 	}
 	
-	//@CreateUnittest(out="melding")
+	@CreateUnittest(out="melding")
 	public Melding geefMelding() {
 		
 		list.add("aap");

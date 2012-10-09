@@ -24,6 +24,7 @@ public interface MeldingDAO {
 
 	List<Melding> getLijst();
 
+	@CreateUnittest(out="melding")
 	Melding geefMelding();
 
 	@CreateUnittest(in = { "een", "twee" }, out = "drie")
