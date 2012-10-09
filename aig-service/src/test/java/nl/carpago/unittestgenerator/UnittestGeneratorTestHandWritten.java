@@ -10,7 +10,7 @@ import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
 import nl.carpago.testexpert.AbstractTestExpert;
 import nl.carpago.testexpert.Fixtures;
-import nl.carpago.testexpert.UnittestGenerator;
+import nl.carpago.testexpert.TestExpert;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class UnittestGeneratorTestHandWritten extends AbstractTestExpert { 
 
 	// class under test
-	private UnittestGenerator unittestGenerator;
+	private TestExpert unittestGenerator;
 
 	// collaborating classes
 	private Logger logger;
@@ -47,7 +47,7 @@ public class UnittestGeneratorTestHandWritten extends AbstractTestExpert {
 
 	@Before
 	public void setUp() {
-		this.unittestGenerator = new UnittestGenerator(OnderhoudenMeldingServiceImpl.class, Fixtures.class);
+		this.unittestGenerator = new TestExpert(OnderhoudenMeldingServiceImpl.class, Fixtures.class);
 	}
 
 	@Test

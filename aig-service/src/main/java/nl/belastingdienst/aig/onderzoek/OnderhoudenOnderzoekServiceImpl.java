@@ -6,7 +6,6 @@ import nl.belastingdienst.aig.aanleiding.Aanleiding;
 import nl.belastingdienst.aig.aanleiding.OnderhoudenAanleidingService;
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.betrokkene.OnderhoudenBetrokkeneService;
-import nl.belastingdienst.aig.dao.OnderzoekDAO;
 import nl.belastingdienst.aig.melding.Melding;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingService;
 import nl.belastingdienst.aig.waarde.OnderhoudenWaardeService;

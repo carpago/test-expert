@@ -3,10 +3,7 @@ package nl.belastingdienst.aig.aanleiding;
 import java.util.List;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
-import nl.belastingdienst.aig.dao.AanleidingDAO;
-import nl.belastingdienst.aig.dao.BehandelenAanleidingDAO;
 import nl.belastingdienst.aig.onderzoek.Onderzoek;
-import nl.carpago.unittestgenerator.annotation.CreateUnittest;
 
 public class OnderhoudenAanleidingServiceImpl implements OnderhoudenAanleidingService {
 
@@ -24,7 +21,7 @@ public class OnderhoudenAanleidingServiceImpl implements OnderhoudenAanleidingSe
 	 * @param berichtkenmerkAig
 	 * @return Aanleiding voor sleutel
 	 */
-	@CreateUnittest(in="berichtkenmerkAig", out="aanleiding")
+	// // @CreateUnittest(in="berichtkenmerkAig", out="aanleiding")
 	public Aanleiding geefAanleidingByKey(String berichtkenmerkAig) {
 		
 		Aanleiding aanleiding = getAanleidingDAO().findByKey(berichtkenmerkAig);

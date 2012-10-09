@@ -39,89 +39,8 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
-/*
- To do:
- - apart project maken van de UnittestGenerator.
- - logging gebruikt nu de log4j.properties van aig-deployment. Dit dan ook aanpakken.
- - refactoren
- - verder testen met een niet te extenden class. Hiervoor PowerMock gebruiken.
- - een constructie als if(getmeldingdao gaat nog fout. hievoor parser inzetten).
- 	- en ook System.out.println(...) m.a.w. ik MOET hiervoor structuur kunnen aanbrengen dus parsen.
- 
- - (done), gewoon standaard trainwreck werkt met assignment, niet in if, ander issue hievoor gemaakt. 
-   verder testen met een regel die uit een train-wreck bestaat.
-
- - nog zorgen dat alle projecten in 1 keer kunnen worden gevuld met unittesten. Wellicht vragen aan classloader waar de sources staan ???
- - zorgen dat er geen magical strings als src/main/java en src/test/generated-java zijn dan wel dit 
- vanaf buiten kunnen laten vullen. Wellicht valt dit samen met bovenstaande. (alle projecten in eens!).
- -  
- - let op: final classes kunniet niet (standaard) worden gemockt. Moet dus PowerMock inzetten.
-
- - TestSuite maken ???
- - maven plugin
- - doorlopen van alle sources?
- - applciatie context doorgeven, hoe??? via Java metadata gedaan. Nu nog evt. xml app context ?
- -  */
-
-/*
- * 
- * done'
- * - (check) logging
- * - (done) volgens Dirk Groot moet EasyMock.verify(...) wel als je echt goed wilt testen als stub is het niet nodig.
- * (antwoord: nee lijkt geen goed idee. Is geen werk voor Fixture bouwer. lijkt autowiring van collabs en te testen class een idee ??? Weet niet zo.
- * (check: dit was een bug) testMethodeZonderReturnMetParam lijkt nu in ONderhoudenMeldingServiceImpl te werken terwijl hij verkeerde argument naar list doorgeeft...
-
- * (check) clonen kan alleen met serialiseerbare opjecten ?
- * (check) ReflectionBuilder.equals(.) van Commons gaat fout. Opgelost door XStream te gebruiken. Is dit opensource?
- * 	(check) lijkt goed (genoeg) zo. als dao niet geannoteerd is moet er toch een goed resultaat uit komen. Dan maar met parametername of zo...
- * ((check) nog zorgen voor unieke namen in unittest geefMelding(-) en geefMelding(overloaded) levert nu nog zelfde naam op
- lijkt iets als testGeefMeldingForBetrokkeneAndVoornaam() te moeten worden.
- * (nog testen) literals opgeven in CreateUnittest annotatie moet kunnen.
- * - (check: gedaan via EasyMock.createMock(...) implementors van interfaces maken.
- *  (check) constructor printen met meerdere argumenten
- - (check) als argumenten van dao en service niet gelijk zijn dan moet ik wat anders verzinnen. Anders kan de EasyMock.expect zo blijven.
- *  (check) literals (numeriek, String, boolean en char) afvangen zodat er geen var van wordt gemaakt in de call naar de collab.
- - (check) import statements.
- * (check) netter maken door code in een list of in een string in een instance variabele te bewaren
- -  (lijkt toch niet zinnig) alles in de service in de test plaatsen met een niet te maken var zoals voornaam in Meldingservice?
- - - annotations voor verwachte waarden. Eigenlijk zodat je in de code een bereik van geldige waarden kunt aangeven.  Nu via EasyMock.createMock ... maar werkt dit ?
- - - (check) AanleidingDao ipv aanleidingDao faalt
- - (check) Annotatie Creer veranderen naar @CreateUnittest
- -  (check) moet 'melding' bij EasyMock of zo nog clonen voor de correcte deep equality vergelijking.
- -  (check) nog testen.service methode zonder argumenten klapt nog.Vast vraag is of dat mag. Vraag is dat het in ieder geval uitgezocht moet worden.
- */
 
 public class TestExpert {
-	// doing
-	// x achterhalen waarom, wat en hoe van het nummmer achter invokeinterface
-	// en invokevirtual voor mocking
-	/*
-	 * x hieronder dus oplossen dat hij de hashMap.put ... to STring in:
-	 * EasyMockExpect voor hashmap en EasyMockexpect voor STring::toStringmaakt
-	 * /*
-	 * 
-	 * 
-	 * public void welParameterGeenReturn(String in) { list.add("teststring");
-	 * // 0 0:aload_0 // 1 1:getfield #56 <Field java.util.List
-	 * nl.carpago.unittestgenerator
-	 * .testers.UnittestGeneratorMethodesMetCollabs.list> // 2 4:ldc1 #58
-	 * <String "teststring"> // 3 6:invokeinterface #60 <Method boolean
-	 * java.util.List.add(java.lang.Object)> // 4 11:pop
-	 * hashMap.put("teststring2", new Object()).toString(); // 5 12:aload_0 // 6
-	 * 13:getfield #40 <Field java.util.HashMap
-	 * nl.carpago.unittestgenerator.testers
-	 * .UnittestGeneratorMethodesMetCollabs.hashMap> // 7 16:ldc1 #42 <String
-	 * "teststring2"> // 8 18:new #3 <Class java.lang.Object> // 9 21:dup // 10
-	 * 22:invokespecial #16 <Method void Object()> // 11 25:invokevirtual #44
-	 * <Method java.lang.Object java.util.HashMap.put(java.lang.Object,
-	 * java.lang.Object)> // 12 28:invokevirtual #50 <Method java.lang.String
-	 * java.lang.Object.toString()> rloman@blackpanther-mint
-	 * ~/data/EclipseProjects
-	 * /aig/view_aig_2011.1/aig-service/bin/nl/carpago/unittestgenerator/testers
-	 * $
-	 */
-
-	
 	
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
@@ -204,6 +123,7 @@ public class TestExpert {
 		}
 		PrintStream po = new PrintStream(file);
 		po.print(this.codeGen());
+		po.close();
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
@@ -214,7 +134,8 @@ public class TestExpert {
 
 		List<String> lines = new LinkedList<String>();
 
-		ProcessBuilder builder = new ProcessBuilder("find", "./src/main/java", "-name", "*.java");
+		//for Linux: ProcessBuilder builder = new ProcessBuilder("find", "./src/main/java", "-name", "*.java");
+		ProcessBuilder builder = new ProcessBuilder("/bin/find", "./src/main/java", "-name", "*.java");
 		Process process = builder.start();
 
 		InputStream stream = process.getInputStream();
@@ -356,7 +277,7 @@ public class TestExpert {
 
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
-
+		
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 		Process process = builder.start();
 

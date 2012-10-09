@@ -1,7 +1,7 @@
 /*
  *
  *  ---------------------------------------------------------------------------------------------------------
- *              Ident: Belastingdienst - B/CAO 
+s *              Ident: Belastingdienst - B/CAO 
  *            Creator: manef00
  *          Copyright: (c) 2011 Belastingdienst / Centrum voor Applicatieontwikkeling en Onderhoud,
  *                         All Rights Reserved.
@@ -22,8 +22,6 @@ package nl.belastingdienst.aig.betrokkene;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import nl.belastingdienst.aig.dao.BetrokkeneDAO;
 
 /**
  * Business service implementatie voor het onderhouden van Betrokkenen.

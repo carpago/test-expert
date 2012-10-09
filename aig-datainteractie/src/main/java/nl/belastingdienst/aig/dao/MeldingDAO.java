@@ -40,7 +40,7 @@ public interface MeldingDAO {
 	 */
 	List<Melding> findAllWhere(Betrokkene betrokkene, String berichtKenmerk);
 	
-	@CreateUnittest(in={"betrokkene","berichtkenmerkAig","voornaam"}, out="melding")
+	// @CreateUnittest(in={"betrokkene","berichtkenmerkAig","voornaam"}, out="melding")
 	Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig, String voornaam);
 	
 	List<Melding> findAllWhereStatusHandmatigeAfhandeling();
@@ -51,6 +51,6 @@ public interface MeldingDAO {
 
 	Melding geefMelding();
 	
-	@CreateUnittest(in={"een","twee"}, out="drie")
+	// @CreateUnittest(in={"een","twee"}, out="drie")
 	int telOp(int een, int twee);
 }
