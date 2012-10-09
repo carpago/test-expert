@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -805,7 +806,26 @@ public class TestExpert {
 			if (!(this.isPrimitive(field.getType().toString()))) {
 				this.checkAndAddImport(field.getType());
 			}
-			addCodeLn("\tprivate " + field.getType().getSimpleName() + " " + WordUtils.uncapitalize(field.getName()) + ";");
+			addCode("\tprivate " + field.getType().getSimpleName()+" ");// + " " + field.getGenericType().getClass().getSimpleName()+" "+WordUtils.uncapitalize(field.getName()) + ";");
+			if(field.getGenericType() instanceof ParameterizedType) {
+				ParameterizedType pType = (ParameterizedType) field.getGenericType();
+				addCode("<");
+				for(Type t : pType.getActualTypeArguments()) {
+					if(t instanceof Class) {
+						Class <?> genericArgument = (Class) t;
+						addCode(genericArgument.getSimpleName());
+						this.checkAndAddImport(genericArgument);
+					}
+					else {
+						// ja wat eigenlijk ? :-))
+					}
+					
+					
+				}
+				addCode("> ");
+				
+			}
+			addCodeLn(WordUtils.uncapitalize(field.getName())+";");
 			this.collabs.add(WordUtils.uncapitalize(field.getName()));
 
 		}

@@ -35,6 +35,8 @@ public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService 
 	private MeldingDAO meldingDao;
 	
 	private List <String> list = new ArrayList<String>();
+	
+	private List <MeldingDAO> list2 = new ArrayList<MeldingDAO>();
 
 	public OnderhoudenMeldingServiceImpl(String in) {
 
