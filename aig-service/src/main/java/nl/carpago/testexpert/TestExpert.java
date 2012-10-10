@@ -104,7 +104,6 @@ public class TestExpert {
 		logger.debug("leaving main");
 	}
 
-	// rloman: refactoren. en zo ...
 	public void writeFile() throws FileNotFoundException {
 		logger.debug("entering writeFile");
 		String fileName = "src/test/generated-test/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
@@ -119,8 +118,8 @@ public class TestExpert {
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Unable to create outputfile. System halted.");
+			System.exit(1);
 		}
 		PrintStream po = new PrintStream(file);
 		po.print(this.codeGen());
@@ -318,7 +317,6 @@ public class TestExpert {
 			linesLocal = lines.get(i);
 			Matcher m = p.matcher(linesLocal);
 			logger.debug(">" + linesLocal + "<");
-			int count = 0;
 			if (m.find()) {
 				inner: for (int j = i; j < lines.size(); j++) {
 					linesLocal = lines.get(j);
@@ -586,10 +584,6 @@ public class TestExpert {
 									addCodeLn(");");
 
 								}
-								String replayClass = invokeDTO.getCollab();// new
-																			// Scanner(construction).useDelimiter("\\.").next().trim();
-								// addCodeLn("\t\tEasyMock.replay(" + replayClass + ");");
-								//addCodeLn();
 								continue inner;
 
 							}
@@ -694,7 +688,7 @@ public class TestExpert {
 		// should be integer
 
 		try {
-			long l = Long.parseLong(literalOrVariablename);
+			Long.parseLong(literalOrVariablename);
 		} catch (NumberFormatException nfe) {
 			logger.info("String " + literalOrVariablename + " is considered as a literal!");
 			return false;
@@ -809,21 +803,7 @@ public class TestExpert {
 			addCode("\tprivate " + field.getType().getSimpleName()+" ");// + " " + field.getGenericType().getClass().getSimpleName()+" "+WordUtils.uncapitalize(field.getName()) + ";");
 			if(field.getGenericType() instanceof ParameterizedType) {
 				ParameterizedType pType = (ParameterizedType) field.getGenericType();
-				addCode("<");
-				for(Type t : pType.getActualTypeArguments()) {
-					if(t instanceof Class) {
-						Class <?> genericArgument = (Class) t;
-						addCode(genericArgument.getSimpleName());
-						this.checkAndAddImport(genericArgument);
-					}
-					else {
-						// ja wat eigenlijk ? :-))
-					}
-					
-					
-				}
-				addCode("> ");
-				
+				this.generateGeneric(pType);
 			}
 			addCodeLn(WordUtils.uncapitalize(field.getName())+";");
 			this.collabs.add(WordUtils.uncapitalize(field.getName()));
@@ -833,6 +813,21 @@ public class TestExpert {
 
 		logger.debug("leave");
 	}
+	
+	private void generateGeneric(ParameterizedType pType) {
+		addCode("<");
+		for(Type t : pType.getActualTypeArguments()) {
+			if(t instanceof Class) {
+				Class <?> genericArgument = (Class<?>) t;
+				addCode(genericArgument.getSimpleName());
+				this.checkAndAddImport(genericArgument);
+			}
+			else {
+				// ja wat eigenlijk ? :-))
+			}
+		}
+		addCode("> ");
+	}
 
 	private void generateGettersForCollaborators() {
 		logger.debug("enter");
@@ -840,7 +835,11 @@ public class TestExpert {
 
 		for (Field field : fields) {
 			addCodeLn();
-			addCodeLn("\tpublic " + field.getType().getSimpleName() + " get" + WordUtils.capitalize(field.getName()) + "(){");
+			addCode("\tpublic " + field.getType().getSimpleName()+" ");
+			if(field.getGenericType() instanceof ParameterizedType) {
+				this.generateGeneric((ParameterizedType) field.getGenericType());
+			}
+			addCodeLn("get" + WordUtils.capitalize(field.getName()) + "(){");
 			addCodeLn("\t\treturn this." + WordUtils.uncapitalize(field.getName()) + ";");
 			addCodeLn("\t}");
 		}
@@ -851,6 +850,7 @@ public class TestExpert {
 	private void generateSetup() {
 		logger.debug("enter");
 		addCodeLn("\t@Before");
+		addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		// hoeft niet meer met JUNit 4 ? System.out.println("\t@Override");
 		addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
@@ -1044,7 +1044,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public static List<Method> getMethodsWithAnnotationTestMe(Class clazz) {
+	public static List<Method> getMethodsWithAnnotationTestMe(Class<?> clazz) {
 		logger.debug("enter");
 		List<Method> result = new ArrayList<Method>();
 		for (Method methode : clazz.getDeclaredMethods()) {
@@ -1096,7 +1096,6 @@ public class TestExpert {
 		Paranamer paranamer = new AdaptiveParanamer();
 		String[] result = null;
 		String parameter = null;
-		String[] parameterNames = null;
 		List<String> tempListToCreateArray = new ArrayList<String>();
 
 		try {
