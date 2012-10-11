@@ -121,6 +121,14 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 		return result;
 	}
 	
+	public PersoonDAO getPersoonDao() {
+		return persoonDao;
+	}
+
+	public void setPersoonDao(PersoonDAO persoonDao) {
+		this.persoonDao = persoonDao;
+	}
+
 	@CreateUnittest(out="melding")
 	public Melding geefMelding() {
 		

@@ -8,6 +8,8 @@
 	<classpathentry including="**/*.java" kind="src" path="src/test/java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aig-domein"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="3rdparty/testlib/jmockit.jar"/>
+	<classpathentry kind="lib" path="3rdparty/testlib/junit-addons-1.4.jar"/>
 	<classpathentry kind="lib" path="3rdparty/lib/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="3rdparty/lib/antlr-2.7.2.jar"/>
 	<classpathentry kind="lib" path="3rdparty/lib/aopalliance-1.0.jar"/>
