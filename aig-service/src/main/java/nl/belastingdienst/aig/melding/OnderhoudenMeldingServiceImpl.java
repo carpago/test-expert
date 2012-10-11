@@ -30,9 +30,11 @@ import nl.carpago.unittestgenerator.annotation.Expect;
  * 
  * @author manef00
  */
-public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService {
+public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService {
 
 	private MeldingDAO meldingDao;
+	
+	private PersoonDAO persoonDao;
 	
 	private List <String> list = new ArrayList<String>();
 	
@@ -110,6 +112,13 @@ public class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService 
 		String test = this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam).getBerichtkenmerkAig();
 		
 		return resultMelding;
+	}
+	
+	@CreateUnittest(in="number", out="string")
+	public String getNumber(int aNumber) {
+		String result = this.persoonDao.getSofi(aNumber);
+		
+		return result;
 	}
 	
 	@CreateUnittest(out="melding")

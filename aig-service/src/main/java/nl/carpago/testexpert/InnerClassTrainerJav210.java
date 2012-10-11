@@ -22,7 +22,7 @@ class Car {
 	}
 	
 	public void carStartsEngine() {
-		this.engine.aantalBougies ++;
+		this.engine.aantalBougies = this.engine.aantalBougies +1;
 	}
 }
 

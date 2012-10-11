@@ -48,15 +48,17 @@ public  class AbstractTestExpert extends TestCase {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		f.setAccessible(true);
-		try {
-			f.set(victim, what);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(f != null) {
+			f.setAccessible(true);
+			try {
+				f.set(victim, what);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	

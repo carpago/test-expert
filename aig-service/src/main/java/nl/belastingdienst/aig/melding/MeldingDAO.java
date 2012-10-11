@@ -4,6 +4,7 @@ import java.util.List;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.carpago.unittestgenerator.annotation.CreateUnittest;
+import nl.carpago.unittestgenerator.annotation.Expect;
 
 public interface MeldingDAO {
 
@@ -14,7 +15,7 @@ public interface MeldingDAO {
 	 */
 	List<Melding> findAllWhere(Betrokkene betrokkene, String berichtKenmerk);
 
-	@CreateUnittest(in = { "betrokkene", "berichtkenmerkAig", "voornaam" }, out = "melding")
+	@Expect(in = { "betrokkene", "berichtkenmerkAig", "voornaam" }, out = "melding")
 	Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig,
 			String voornaam);
 

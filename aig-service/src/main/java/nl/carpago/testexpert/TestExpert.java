@@ -40,9 +40,8 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
-
 public class TestExpert {
-	
+
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
 	private Class<?> classUnderTest;
@@ -56,8 +55,8 @@ public class TestExpert {
 	private String body = "";
 
 	private HashMap<String, Class<?>> fixtures = new HashMap<String, Class<?>>();
-	
-	private Set <String> collabs = new HashSet<String>();
+
+	private Set<String> collabs = new HashSet<String>();
 
 	private ApplicationContext ctx;
 	private Class<?> contextClass;
@@ -86,11 +85,12 @@ public class TestExpert {
 		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
 		Class<?> classUnderTest = null;
 		for (String classFile : lijstMetAlleJavaFilesUitProject) {
-			//logger.debug("processing class " + classFile);
+			// logger.debug("processing class " + classFile);
 
-			//classUnderTest = nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
-			classUnderTest = Class.forName(classFile); // 
-					
+			// classUnderTest =
+			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
+			classUnderTest = Class.forName(classFile); //
+
 			List<Method> methods = getMethodsWithAnnotationTestMe(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
@@ -134,7 +134,8 @@ public class TestExpert {
 
 		List<String> lines = new LinkedList<String>();
 
-		//for Linux: ProcessBuilder builder = new ProcessBuilder("find", "./src/main/java", "-name", "*.java");
+		// for Linux: ProcessBuilder builder = new ProcessBuilder("find",
+		// "./src/main/java", "-name", "*.java");
 		ProcessBuilder builder = new ProcessBuilder("/bin/find", "./src/main/java", "-name", "*.java");
 		Process process = builder.start();
 
@@ -192,8 +193,7 @@ public class TestExpert {
 
 		addCodeLn();
 		addCodeLn("\t// class under test");
-		addCodeLn("\tprivate " + this.classUnderTest.getSimpleName() + " "
-				+ WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ";");
+		addCodeLn("\tprivate " + this.classUnderTest.getSimpleName() + " " + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ";");
 
 		generateCollaboratingClasses();
 		generateSetup();
@@ -263,8 +263,7 @@ public class TestExpert {
 	private void generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 		logger.debug("enter");
 
-		String[] inputParametersViaAnnotations = methodeArgument.getAnnotation(
-				nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
+		String[] inputParametersViaAnnotations = methodeArgument.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
 
 		Set<String> localVars = new HashSet<String>();
@@ -277,7 +276,7 @@ public class TestExpert {
 
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
-		
+
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 		Process process = builder.start();
 
@@ -306,13 +305,13 @@ public class TestExpert {
 			}
 		}
 		regexp += "\\)";
-		
+
 		Pattern p = Pattern.compile(regexp);
 		// get a matcher object
-		//int delta = 1;
+		// int delta = 1;
 		String linesLocal = null;
-		Set <String> mocked = new HashSet<String>();
-		List <Integer> gemockteRegelsUitSource = new ArrayList<Integer>();
+		Set<String> mocked = new HashSet<String>();
+		List<Integer> gemockteRegelsUitSource = new ArrayList<Integer>();
 		outer: for (int i = 0; i < lines.size(); i = i + 1) {
 			linesLocal = lines.get(i);
 			Matcher m = p.matcher(linesLocal);
@@ -395,7 +394,7 @@ public class TestExpert {
 							if (collab.equals(this.classUnderTest.getName())) {
 								continue inner;
 							}
-							
+
 							// method = Class.forName(collab).getmet
 						} catch (SecurityException e) {
 							logger.error(e);
@@ -408,38 +407,35 @@ public class TestExpert {
 						logger.debug("methods return type:" + method.getReturnType());
 						logger.debug("methods generic return type:" + method.getGenericReturnType());
 						// tjakkaa: hier heb ik dus het generieke type.
-						
+
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
-							
+
 							if (regelHoger.indexOf(invokee) > -1) {
-								
-								//if (regelHoger.indexOf(invokee) > -1) {
-								
-								if(gemockteRegelsUitSource.contains(k)) {
+
+								// if (regelHoger.indexOf(invokee) > -1) {
+
+								if (gemockteRegelsUitSource.contains(k)) {
 									continue inner; // already done ...
-								}
-								else {
+								} else {
 									gemockteRegelsUitSource.add(k);
 								}
 
 								InvokeDTO invokeDTO = new InvokeDTO(regelHoger);
-								if(this.collabs.contains(invokeDTO.getCollab()) || this.isCallerForCollab(invokeDTO.getCollab())) {
-									//continue processing this collab below ...
-								}
-								else {
+								if (this.collabs.contains(invokeDTO.getCollab()) || this.isCallerForCollab(invokeDTO.getCollab())) {
+									// continue processing this collab below ...
+								} else {
 									continue inner;
 								}
-								
+
 								String construction = invokeDTO.getCollabMethodParams();
-								if(mocked.contains(construction)) {
-									//continue inner;
+								if (mocked.contains(construction)) {
+									// continue inner;
 								}
 								mocked.add(construction);
-								
+
 								// maak nu een lijst van beiden.
-								List<String> testMethodeZijnParams = new ArrayList<String>(Arrays.asList(this
-										.getParameterNamesForMethod(methodeArgument)));
+								List<String> testMethodeZijnParams = new ArrayList<String>(Arrays.asList(this.getParameterNamesForMethod(methodeArgument)));
 								List<String> collabZijnParams = invokeDTO.getParams();
 
 								String[] in = this.getInAnnotationsForMethod(method);
@@ -451,8 +447,7 @@ public class TestExpert {
 
 								for (int n = 0; n < collabZijnParams.size(); n++) {
 									String element = collabZijnParams.get(n);
-									if (!testMethodeZijnParams.contains(element) && !(isLiteral(element))
-											&& !(localVars.contains(element))) {
+									if (!testMethodeZijnParams.contains(element) && !(isLiteral(element)) && !(localVars.contains(element))) {
 										localVars.add(element);
 
 										// hier de code uit service halen.
@@ -516,8 +511,7 @@ public class TestExpert {
 												}
 
 											} catch (IndexOutOfBoundsException iobe) {
-												logger.error("INdexOutOfBoundException for method:" + method.getName() + ", index:"
-														+ n);
+												logger.error("INdexOutOfBoundException for method:" + method.getName() + ", index:" + n);
 											}
 
 										}
@@ -540,7 +534,7 @@ public class TestExpert {
 										}
 									}
 								}
-								//addCodeLn();
+								// addCodeLn();
 								String returnFromMethod = null;
 								this.checkAndAddImport(org.easymock.EasyMock.class);
 								if (method.getReturnType().toString().equals("void")) {
@@ -568,8 +562,7 @@ public class TestExpert {
 
 											} catch (RuntimeException rte) { // rloman
 																				// :-((
-												cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe("
-														+ returnFromMethod + ")";
+												cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
 
 											}
 										} else {
@@ -597,33 +590,41 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	
 	private boolean isCallerForCollab(String aCollabKandidate) {
-		
-		for(String element : this.collabs) {
-			if(aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) {  // kandidate is a get or set for the real collab.
+
+		for (String element : this.collabs) {
+			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) { // kandidate
+																						// is
+																						// a
+																						// get
+																						// or
+																						// set
+																						// for
+																						// the
+																						// real
+																						// collab.
 				return true;
 			}
 		}
-		
+
 		return false;
-		
+
 	}
 
 	private void generateReplays() {
 		addCodeLn();
-		for(String collab : this.collabs) {
-			addCodeLn("\t\tEasyMock.replay("+collab+");");
+		for (String collab : this.collabs) {
+			addCodeLn("\t\tEasyMock.replay(" + collab + ");");
 		}
 	}
-	
+
 	private void generateVerifies() {
 		addCodeLn();
-		for(String collab : this.collabs) {
-			addCodeLn("\t\tEasyMock.verify("+collab+");");
+		for (String collab : this.collabs) {
+			addCodeLn("\t\tEasyMock.verify(" + collab + ");");
 		}
 	}
-	
+
 	public String[] getInAnnotationsForMethod(Method method) {
 
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
@@ -641,7 +642,7 @@ public class TestExpert {
 		return in;
 	}
 
-	//@CreateUnittest(in={"methode"},out="methodeOutAnnotations")
+	// @CreateUnittest(in={"methode"},out="methodeOutAnnotations")
 	public String getOutAnnotationForMethod(Method method) {
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String out = null;
@@ -658,7 +659,6 @@ public class TestExpert {
 		return out;
 	}
 
-	
 	public boolean isLiteral(String literalOrVariablename) {
 		logger.debug("enter");
 
@@ -670,8 +670,7 @@ public class TestExpert {
 		// en deze moet als instance var om overbodige GC te voorkomen
 		// zou ook kunnen met eventuele char waarden ??? En anders uitbreiden
 		// met alle andere toetenbordkeys die illegaal zijn.
-		String[] illegalForVariable = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=",
-				" " };
+		String[] illegalForVariable = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " " };
 
 		for (String element : illegalForVariable) {
 			if (literalOrVariablename.indexOf(element) > -1) {
@@ -800,12 +799,17 @@ public class TestExpert {
 			if (!(this.isPrimitive(field.getType().toString()))) {
 				this.checkAndAddImport(field.getType());
 			}
-			addCode("\tprivate " + field.getType().getSimpleName()+" ");// + " " + field.getGenericType().getClass().getSimpleName()+" "+WordUtils.uncapitalize(field.getName()) + ";");
-			if(field.getGenericType() instanceof ParameterizedType) {
+			addCode("\tprivate " + field.getType().getSimpleName() + " ");// +
+																			// " "
+																			// +
+																			// field.getGenericType().getClass().getSimpleName()+" "+WordUtils.uncapitalize(field.getName())
+																			// +
+																			// ";");
+			if (field.getGenericType() instanceof ParameterizedType) {
 				ParameterizedType pType = (ParameterizedType) field.getGenericType();
 				this.generateGeneric(pType);
 			}
-			addCodeLn(WordUtils.uncapitalize(field.getName())+";");
+			addCodeLn(WordUtils.uncapitalize(field.getName()) + ";");
 			this.collabs.add(WordUtils.uncapitalize(field.getName()));
 
 		}
@@ -813,16 +817,15 @@ public class TestExpert {
 
 		logger.debug("leave");
 	}
-	
+
 	private void generateGeneric(ParameterizedType pType) {
 		addCode("<");
-		for(Type t : pType.getActualTypeArguments()) {
-			if(t instanceof Class) {
-				Class <?> genericArgument = (Class<?>) t;
+		for (Type t : pType.getActualTypeArguments()) {
+			if (t instanceof Class) {
+				Class<?> genericArgument = (Class<?>) t;
 				addCode(genericArgument.getSimpleName());
 				this.checkAndAddImport(genericArgument);
-			}
-			else {
+			} else {
 				// ja wat eigenlijk ? :-))
 			}
 		}
@@ -835,8 +838,8 @@ public class TestExpert {
 
 		for (Field field : fields) {
 			addCodeLn();
-			addCode("\tpublic " + field.getType().getSimpleName()+" ");
-			if(field.getGenericType() instanceof ParameterizedType) {
+			addCode("\tpublic " + field.getType().getSimpleName() + " ");
+			if (field.getGenericType() instanceof ParameterizedType) {
 				this.generateGeneric((ParameterizedType) field.getGenericType());
 			}
 			addCodeLn("get" + WordUtils.capitalize(field.getName()) + "(){");
@@ -862,23 +865,21 @@ public class TestExpert {
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
 			addCodeLn();
 			if (!(this.isPrimitive(field.getType().getName()))) {
-				addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock("
-						+ field.getType().getSimpleName() + ".class);");
+				addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 
 				// probeer de setter te vinden. Indien dit niet kan dan niet ...
 				// dan lijkt het niet nodig.
 				try {
 					String fieldNameFirstLetterCap = WordUtils.capitalize(field.getName());
 					Method setter = this.classUnderTest.getMethod("set" + fieldNameFirstLetterCap, field.getType());
-					addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName()
-							+ "(" + "this." + WordUtils.uncapitalize(field.getName()) + ");");
+					addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName() + "(" + "this." + WordUtils.uncapitalize(field.getName()) + ");");
 
 				} catch (SecurityException e) {
 					e.printStackTrace();
 				} catch (NoSuchMethodException e) { // rloman: refactoren. Houd
 													// niet van exceptions
-					addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName())
-							+ ", \"" + field.getName() + "\", this." + WordUtils.uncapitalize(field.getName()) + ");");
+					addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
+							+ WordUtils.uncapitalize(field.getName()) + ");");
 					// only in this case ... this exception is valid
 				}
 			}
@@ -905,8 +906,10 @@ public class TestExpert {
 				testMethodName += "For" + parameterTypes[0].getSimpleName() + WordUtils.capitalize(parameterNames[0]);
 			}
 
-			for (int i = 1; i <= parameterNames.length - 1; i++) {
-				testMethodName += "And" + parameterTypes[i].getSimpleName() + WordUtils.capitalize(parameterNames[i]);
+			if (parameterNames != null) {
+				for (int i = 1; i <= parameterNames.length - 1; i++) {
+					testMethodName += "And" + parameterTypes[i].getSimpleName() + WordUtils.capitalize(parameterNames[i]);
+				}
 			}
 
 			addCodeLn();
@@ -926,11 +929,11 @@ public class TestExpert {
 			}
 
 			generateReplays();
-			
+
 			generateCallToTestMethod(methode);
-			
+
 			generateVerifies();
-			
+
 			if (!"void".equals(methode.getReturnType().toString())) {
 				generateAssertStatements(methode);
 			}
@@ -979,11 +982,9 @@ public class TestExpert {
 		String actual = this.RESULTFROMMETHOD;
 		addCode("\n\t\t");
 		if (this.isPrimitive(method.getReturnType().toString())) {
-			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == "
-					+ actual + ");");
+			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == " + actual + ");");
 		} else {
-			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual
-					+ "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
+			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
 		}
 
 		logger.debug("leave");
@@ -992,8 +993,7 @@ public class TestExpert {
 	private void generateFixturesForMethod(Method methode) {
 		logger.debug("enter");
 
-		CreateUnittest annotation = (CreateUnittest) methode
-				.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class);
+		CreateUnittest annotation = (CreateUnittest) methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class);
 		String[] inputFixtures = annotation.in();
 		String outputFixture = annotation.out();
 
@@ -1065,8 +1065,7 @@ public class TestExpert {
 
 		parameterNames = this.getParameterNamesForMethod(methode);
 
-		String[] inputParametersViaAnnotatie = methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class)
-				.in();
+		String[] inputParametersViaAnnotatie = methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
@@ -1078,8 +1077,7 @@ public class TestExpert {
 		for (int i = 0; i < parameterNames.length; i++) {
 			// if ? than create via constructor. if * than try first via
 			// appcontext else via constructor through name of the variable.
-			if (QUESTION_MARK.equals(inputParametersViaAnnotatie[i])
-					|| (ASTERISK.equals(inputParametersViaAnnotatie[i]) && !this.fixtures.containsKey(parameterNames[i]))) {
+			if (QUESTION_MARK.equals(inputParametersViaAnnotatie[i]) || (ASTERISK.equals(inputParametersViaAnnotatie[i]) && !this.fixtures.containsKey(parameterNames[i]))) {
 				addCode("\t\t" + parameterTypes[i].getSimpleName() + " " + parameterNames[i] + " = ");
 				addCode(generateConstructorForClass(parameterTypes[i]));
 				addCodeLn(";");
@@ -1105,7 +1103,7 @@ public class TestExpert {
 			Class<?>[] parameterClasses = method.getParameterTypes();
 			int counter = 0;
 			for (Class<?> parameterClass : parameterClasses) {
-				parameter = WordUtils.uncapitalize(parameterClass.getSimpleName())+ ++counter;
+				parameter = WordUtils.uncapitalize(parameterClass.getSimpleName()) + ++counter;
 				tempListToCreateArray.add(parameter);
 			}
 			result = tempListToCreateArray.toArray(new String[tempListToCreateArray.size()]);
@@ -1163,20 +1161,18 @@ public class TestExpert {
 		if (this.isPrimitive(classToImport.getName())) {
 			return;
 		}
-		if(classToImport.isArray()) {
-			
+		if (classToImport.isArray()) {
+
 			return; // voor later...
 			// rloman: zoiets als dit doen ...
 			/*
-			Object array = Array.newInstance(classToImport, 1);
-			List lijst = Arrays.asList(array);
-			Object object = lijst.get(0);
-			System.out.println("object is:"+object.getClass());
-			classToImport = object.getClass();
-			*/
+			 * Object array = Array.newInstance(classToImport, 1); List lijst =
+			 * Arrays.asList(array); Object object = lijst.get(0);
+			 * System.out.println("object is:"+object.getClass()); classToImport
+			 * = object.getClass();
+			 */
 		}
-		if ("java.lang".equals(classToImport.getPackage().getName())
-				|| this.pakkage.getName().equals(classToImport.getPackage().getName())) {
+		if ("java.lang".equals(classToImport.getPackage().getName()) || this.pakkage.getName().equals(classToImport.getPackage().getName())) {
 			return;
 		} else {
 			this.imports.add(classToImport.getName());

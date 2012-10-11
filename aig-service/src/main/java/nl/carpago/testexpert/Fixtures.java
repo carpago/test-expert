@@ -21,6 +21,16 @@ import org.springframework.context.annotation.Configuration;
 public class Fixtures {
 	
 	@Bean
+	public int number() {
+		return 3;
+	}
+	
+	@Bean
+	public String string() {
+		return "3";
+	}
+	
+	@Bean
 	public Melding melding() {
 		Melding melding = new Melding();
 		melding.setBerichtkenmerkAig(this.berichtkenmerkAig());

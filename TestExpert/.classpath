@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/aig-service"/>
-	<classpathentry kind="lib" path="/home/rloman/git/test-expert/jars/cpsuite-1.2.5.jar"/>
-	<classpathentry kind="lib" path="/home/rloman/git/test-expert/aig-ear/src/main/application/testlib/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/rloman/git/test-expert/aig-service/3rdparty/lib/cpsuite-1.2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/rloman/git/test-expert/aig-service/3rdparty/testlib/junit-4.8.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
