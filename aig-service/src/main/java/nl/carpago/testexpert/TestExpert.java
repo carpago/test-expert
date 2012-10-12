@@ -46,7 +46,7 @@ public class TestExpert {
 		EASYMOCK, MOCKIT
 	}
 
-	private MockFramework currentFramework = MockFramework.MOCKIT;
+	private MockFramework currentFramework = MockFramework.EASYMOCK;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
