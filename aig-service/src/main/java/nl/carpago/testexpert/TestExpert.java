@@ -40,13 +40,12 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
-
-
-
 public class TestExpert {
-	
-	private enum MockFramework {EASYMOCK, MOCKIT}
-	
+
+	private enum MockFramework {
+		EASYMOCK, MOCKIT
+	}
+
 	private MockFramework currentFramework = MockFramework.MOCKIT;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
@@ -180,7 +179,10 @@ public class TestExpert {
 		logger.debug("setting ApplicationContext");
 		this.ctx = new AnnotationConfigApplicationContext(this.contextClass);
 
-		this.checkAndAddImport(org.easymock.EasyMock.class);
+		if (MockFramework.EASYMOCK.equals(currentFramework)) {
+			this.checkAndAddImport(org.easymock.EasyMock.class);
+		}
+
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
 		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
@@ -543,7 +545,6 @@ public class TestExpert {
 								}
 								// addCodeLn();
 								String returnFromMethod = null;
-								this.checkAndAddImport(org.easymock.EasyMock.class);
 								if (method.getReturnType().toString().equals("void")) {
 									addCodeLn("\t\t" + construction + ";");
 								} else {
@@ -558,58 +559,62 @@ public class TestExpert {
 										// method.getGenericReturnType().getClass().getCanonicalName();
 										returnFromMethod = generateConstructorForClass(method.getReturnType());
 									}
-									if(MockFramework.MOCKIT.equals(currentFramework)) {
+									if (MockFramework.MOCKIT.equals(currentFramework)) {
 										this.checkAndAddImport(mockit.Expectations.class);
 										addCodeLn("\t\tnew Expectations() {");
-											addCodeLn("\t\t\t{");
-												addCodeLn("\t\t\t\t"+construction+";");
-												addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
-													addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
-													this.checkAndAddImport(method.getReturnType().getClass());
-													addCode("\t\t\t\t\t"+method.getReturnType().getSimpleName());
-													addCode(" validate(");
-													addCode(this.getParameterTypesAndNameAsString(method));
-													addCodeLn("){");
-												
-												
-														//return the value.
-														addCodeLn("\t\t\t\t\t\treturn "+returnFromMethod+";");
-												
-													addCodeLn("\t\t\t\t\t}");
-												addCodeLn("\t\t\t\t};");
-											addCodeLn("\t\t\t}");
-										addCodeLn("\t\t};");
-									}
-									else {
-										if(MockFramework.EASYMOCK.equals(currentFramework)) {
+										addCodeLn("\t\t\t{");
+										addCodeLn("\t\t\t\t" + construction + ";");
+										addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
+										addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
+										this.checkAndAddImport(method.getReturnType().getClass());
+										addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
+										addCode(" validate(");
+										addCode(this.getParameterTypesAndNameAsString(method));
+										addCodeLn("){");
+
+									} else {
+										if (MockFramework.EASYMOCK.equals(currentFramework)) {
 											addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 										}
 									}
+									if (MockFramework.EASYMOCK.equals(currentFramework)) {
 
-									if (returnFromMethod != null) {
-										String cloneString = EMPTY_STRING;
-										if (!this.isLiteral(returnFromMethod)) {
-											try {
-												this.getPrimitiveType(method.getReturnType().toString());
-												cloneString += returnFromMethod;
+										if (returnFromMethod != null) {
+											String cloneString = EMPTY_STRING;
+											if (!this.isLiteral(returnFromMethod)) {
+												try {
+													this.getPrimitiveType(method.getReturnType().toString());
+													cloneString += returnFromMethod;
 
-											} catch (RuntimeException rte) { // rloman
-																				// :-((
-												cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
+												} catch (RuntimeException rte) { // rloman
+																					// :-((
+													cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
 
+												}
+											} else {
+												cloneString = returnFromMethod;
 											}
-										} else {
-											cloneString = returnFromMethod;
-										}
 
-										addCode(cloneString);
+											addCode(cloneString);
+
+										} else {
+											addCode(generateConstructorForClass(method.getReturnType()));
+										}
+										addCodeLn(");");
 
 									} else {
-										addCode(generateConstructorForClass(method.getReturnType()));
-									}
-									addCodeLn(");");
+										if (MockFramework.MOCKIT.equals(currentFramework)) {
+											// return the value.
+											addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
 
+											addCodeLn("\t\t\t\t\t}");
+											addCodeLn("\t\t\t\t};");
+											addCodeLn("\t\t\t}");
+											addCodeLn("\t\t};");
+										}
+									}
 								}
+
 								continue inner;
 
 							}
@@ -832,7 +837,7 @@ public class TestExpert {
 			if (!(this.isPrimitive(field.getType().toString()))) {
 				this.checkAndAddImport(field.getType());
 			}
-			if(MockFramework.MOCKIT.equals(this.currentFramework)) {
+			if (MockFramework.MOCKIT.equals(this.currentFramework)) {
 				this.checkAndAddImport(mockit.Mocked.class);
 				addCodeLn("\t@Mocked");
 			}
@@ -890,7 +895,7 @@ public class TestExpert {
 	private void generateSetup() {
 		logger.debug("enter");
 		addCodeLn("\t@Before");
-		if(MockFramework.EASYMOCK.equals(currentFramework)) {
+		if (MockFramework.EASYMOCK.equals(currentFramework)) {
 			addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
 		// hoeft niet meer met JUNit 4 ? System.out.println("\t@Override");
@@ -904,10 +909,10 @@ public class TestExpert {
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
 			addCodeLn();
 			if (!(this.isPrimitive(field.getType().getName()))) {
-				if(MockFramework.EASYMOCK.equals(currentFramework)){
+				if (MockFramework.EASYMOCK.equals(currentFramework)) {
 					addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 				}
-				
+
 				// probeer de setter te vinden. Indien dit niet kan dan niet ...
 				// dan lijkt het niet nodig.
 				try {
@@ -969,11 +974,15 @@ public class TestExpert {
 				logger.error(e);
 			}
 
-			generateReplays();
+			if (MockFramework.EASYMOCK.equals(currentFramework)) {
+				generateReplays();
+			}
 
 			generateCallToTestMethod(methode);
 
-			generateVerifies();
+			if (MockFramework.EASYMOCK.equals(currentFramework)) {
+				generateVerifies();
+			}
 
 			if (!"void".equals(methode.getReturnType().toString())) {
 				generateAssertStatements(methode);
@@ -1154,40 +1163,40 @@ public class TestExpert {
 
 		return result;
 	}
-	
-	public String[] getParameterTypesForMethod(Method m){
-		
-		if(m.getParameterTypes().length == 0) {
+
+	public String[] getParameterTypesForMethod(Method m) {
+
+		if (m.getParameterTypes().length == 0) {
 			return new String[0];
 		}
-		
+
 		List<String> result = new ArrayList<String>();
-		
-		for(Class<?> clazz : m.getParameterTypes()) {
-			result.add(clazz.getCanonicalName());
+
+		for (Class<?> clazz : m.getParameterTypes()) {
+			result.add(clazz.getSimpleName());
 		}
-		
-		return  result.toArray(new String[result.size()]);
+
+		return result.toArray(new String[result.size()]);
 	}
-	
+
 	public String getParameterTypesAndNameAsString(Method method) {
-		
+
 		String result = "";
-		
+
 		String[] parameterTypes = this.getParameterTypesForMethod(method);
 		String[] parameterNames = this.getParameterNamesForMethod(method);
-		
+
 		String first = EMPTY_STRING;
 		String tail = EMPTY_STRING;
 		if (!(parameterNames.length < 1)) {
-			first = parameterTypes[0]+" " +parameterNames[0];
+			first = parameterTypes[0] + " " + parameterNames[0];
 		}
 		for (int i = 1; i <= parameterNames.length - 1; i++) {
-			tail += ", " + parameterTypes[i]+" "+parameterNames[i];
+			tail += ", " + parameterTypes[i] + " " + parameterNames[i];
 		}
 
 		result = first + tail;
-		
+
 		return result;
 	}
 
@@ -1252,7 +1261,10 @@ public class TestExpert {
 		if ("java.lang".equals(classToImport.getPackage().getName()) || this.pakkage.getName().equals(classToImport.getPackage().getName())) {
 			return;
 		} else {
-			this.imports.add(classToImport.getName());
+			if(!this.imports.contains(classToImport.getName())) {
+				this.imports.add(classToImport.getName());
+			}
+			
 		}
 		logger.debug("leave");
 	}
