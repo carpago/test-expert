@@ -33,12 +33,12 @@ import nl.carpago.unittestgenerator.annotation.Expect;
 public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService {
 
 	private MeldingDAO meldingDao;
-	
+
 	private PersoonDAO persoonDao;
-	
-	private List <String> list = new ArrayList<String>();
-	
-	private List <MeldingDAO> list2 = new ArrayList<MeldingDAO>();
+
+	private List<String> list = new ArrayList<String>();
+
+	private List<MeldingDAO> list2 = new ArrayList<MeldingDAO>();
 
 	public OnderhoudenMeldingServiceImpl(String in) {
 
@@ -104,23 +104,27 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 		return this.getMeldingDao().getLijst();
 	}
 
-	@CreateUnittest(in={"andereBetrokkene","anderBerichtkenmerkAig"}, out="melding")
+	@CreateUnittest(in = { "andereBetrokkene", "anderBerichtkenmerkAig" }, out = "melding")
 	public Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig) {
 
 		String voornaam = "Raymond";
 		Melding resultMelding = this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam);
 		String test = this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam).getBerichtkenmerkAig();
-		
+
+		if (this.getMeldingDao() != null && this.meldingDao.geefMelding(betrokkene, "riemar", voornaam).getBerichtkenmerkAig().equals("mijn") && true) {
+			System.out.println("equal");
+		}
+
 		return resultMelding;
 	}
-	
-	@CreateUnittest(in="number", out="string")
+
+	@CreateUnittest(in = "number", out = "string")
 	public String getNumber(int aNumber) {
 		String result = this.persoonDao.getSofi(aNumber);
-		
+
 		return result;
 	}
-	
+
 	public PersoonDAO getPersoonDao() {
 		return persoonDao;
 	}
@@ -129,70 +133,68 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 		this.persoonDao = persoonDao;
 	}
 
-	@CreateUnittest(out="melding")
+	@CreateUnittest(out = "melding")
 	public Melding geefMelding() {
-		
+
 		list.add("aap");
-		
+
 		Betrokkene betrokkene = new Betrokkene(127797592, (short) 2012);
 		betrokkene.setBurgerservicenummer(127797592);
 		betrokkene.setBelastingJaar((short) 2012);
-		
+
 		Melding melding = new Melding();
 		melding.setBerichtkenmerkAig("aig02");
 		melding.setBetrokkene(betrokkene);
-		
+
 		return this.getMeldingDao().geefMelding();
-		
+
 	}
-	
-	//@CreateUnittest
+
+	// @CreateUnittest
 	public void zonderReturn() {
-		
+
 	}
-	//@CreateUnittest(in="berichtkenmerkAig")
+
+	// @CreateUnittest(in="berichtkenmerkAig")
 	public void zonderReturnMetParams(String eenString) {
-		
+
 		boolean resultjetemp = list.add("aap");
-		
+
 	}
-	
-	//@CreateUnittest(out="melding")
+
+	// @CreateUnittest(out="melding")
 	public Melding geefTestMelding() {
 		Betrokkene betrokkene = new Betrokkene(127797592, (short) 2012);
 		String berichtkenmerkAig = "teststring";
 		String voornaam = "Raymond";
-		
+
 		Melding resultMelding = this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam);
-		
+
 		return resultMelding;
-		
+
 	}
 
-	@Expect(out="meldingDao")
+	@Expect(out = "meldingDao")
 	public MeldingDAO getMeldingDao() {
 		return this.meldingDao;
 	}
 
-	@Expect(in="meldingDao")
+	@Expect(in = "meldingDao")
 	public void setMeldingDao(MeldingDAO meldingDao) {
 		this.meldingDao = meldingDao;
 	}
 
-	
 	// x verder met het maken van literals ipv vars voor EasyMock ...
-	//@CreateUnittest(in={"1", "2"}, out="3")
+	// @CreateUnittest(in={"1", "2"}, out="3")
 	// straks ook testen zonder parameters
-	//@CreateUnittest(in={"een", "twee"}, out="drie")
+	// @CreateUnittest(in={"een", "twee"}, out="drie")
 	public int telOp(int aap, int bees) {
-		
+
 		int resultFromDao = this.getMeldingDao().telOp(aap, bees);
-		
-	
+
 		int result = aap + bees;
-		
-		
-		return  result;
+
+		return result;
 	}
-	
+
 }
