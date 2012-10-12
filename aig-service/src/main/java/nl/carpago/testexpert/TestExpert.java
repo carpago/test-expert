@@ -46,7 +46,7 @@ public class TestExpert {
 		EASYMOCK, MOCKIT
 	}
 
-	private MockFramework currentFramework = MockFramework.MOCKIT;
+	private MockFramework currentFramework = MockFramework.EASYMOCK;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
@@ -543,7 +543,7 @@ public class TestExpert {
 										}
 									}
 								}
-								// addCodeLn();
+								
 								String returnFromMethod = null;
 								if (method.getReturnType().toString().equals("void")) {
 									addCodeLn("\t\t" + construction + ";");

@@ -78,6 +78,9 @@ public class InvokeDTO {
 				// vanuit '.' 1 of twee haakjes terug.
 				// moet maar gewoon met een kleine parser. Eerst andere issues ...
 		collab = construction.substring(0, indexOfFirstDot);
+		while(collab.indexOf(" ") > -1) {
+			collab = collab.substring(collab.indexOf(" ")+1);
+		}
 		System.out.println("collab:"+collab);
 		
 		construction = construction.substring(indexOfFirstDot+1,construction.length());
