@@ -561,23 +561,23 @@ public class TestExpert {
 									if(MockFramework.MOCKIT.equals(currentFramework)) {
 										this.checkAndAddImport(mockit.Expectations.class);
 										addCodeLn("\t\tnew Expectations() {");
-										addCodeLn("\t\t\t{");
-											addCodeLn("\t\t\t\t"+construction+";");
-											addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
-												addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
-												addCodeLn("\t\t\t\t\thier komt de methodsignature {");
-												addCode(method.getReturnType().getCanonicalName());
-												addCode(" validate(");
-												addCode(this.getParameterTypesAndNameAsString(method));
-												addCode("){");
+											addCodeLn("\t\t\t{");
+												addCodeLn("\t\t\t\t"+construction+";");
+												addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
+													addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
+													this.checkAndAddImport(method.getReturnType().getClass());
+													addCode("\t\t\t\t\t"+method.getReturnType().getSimpleName());
+													addCode(" validate(");
+													addCode(this.getParameterTypesAndNameAsString(method));
+													addCodeLn("){");
 												
 												
-												//return the value.
+														//return the value.
+														addCodeLn("\t\t\t\t\t\treturn "+returnFromMethod+";");
 												
-												addCodeLn("\t\t\t\t\thier eindigt de method }");
-											
-											addCodeLn("\t\t\t\t};");
-										addCodeLn("\t\t\t}");
+													addCodeLn("\t\t\t\t\t}");
+												addCodeLn("\t\t\t\t};");
+											addCodeLn("\t\t\t}");
 										addCodeLn("\t\t};");
 									}
 									else {
@@ -1167,7 +1167,7 @@ public class TestExpert {
 			result.add(clazz.getCanonicalName());
 		}
 		
-		return (String[]) result.toArray();
+		return  result.toArray(new String[result.size()]);
 	}
 	
 	public String getParameterTypesAndNameAsString(Method method) {
