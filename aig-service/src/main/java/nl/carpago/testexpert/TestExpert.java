@@ -1138,6 +1138,9 @@ public class TestExpert {
 	}
 
 	public String[] getParameterNamesForMethod(Method method) {
+		if(method == null || method.getParameterTypes().length == 0) {
+			return new String[]{};
+		}
 		logger.debug("methode:" + method);
 
 		// ??Paranamer paranamer = new BytecodeReadingParanamer();
@@ -1164,15 +1167,15 @@ public class TestExpert {
 		return result;
 	}
 
-	public String[] getParameterTypesForMethod(Method m) {
+	public String[] getParameterTypesForMethod(Method method) {
 
-		if (m.getParameterTypes().length == 0) {
-			return new String[0];
+		if(method == null || method.getParameterTypes().length == 0) {
+			return new String[]{};
 		}
 
 		List<String> result = new ArrayList<String>();
 
-		for (Class<?> clazz : m.getParameterTypes()) {
+		for (Class<?> clazz : method.getParameterTypes()) {
 			result.add(clazz.getSimpleName());
 		}
 
