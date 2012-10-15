@@ -353,10 +353,19 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String arguments = this.testExpert.getParameterTypesAndNameAsString(method);
 		
 		Assert.assertEquals("int one, String two, Person three", arguments);
-		
-		
-		
 	}
 	
+	@Test
+	public void testIsPrimitive(String type) {
+		Assert.assertTrue(this.testExpert.isPrimitive("byte"));
+		Assert.assertTrue(this.testExpert.isPrimitive("short"));
+		Assert.assertTrue(this.testExpert.isPrimitive("int"));
+		Assert.assertTrue(this.testExpert.isPrimitive("long"));
+		Assert.assertTrue(this.testExpert.isPrimitive("float"));
+		Assert.assertTrue(this.testExpert.isPrimitive("double"));
+		Assert.assertTrue(this.testExpert.isPrimitive("char"));
+		Assert.assertTrue(this.testExpert.isPrimitive("boolean"));
+		Assert.assertTrue(this.testExpert.isPrimitive("void"));
+	}
 	
 }

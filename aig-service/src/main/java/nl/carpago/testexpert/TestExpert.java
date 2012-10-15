@@ -46,7 +46,7 @@ public class TestExpert {
 		EASYMOCK, MOCKIT
 	}
 
-	private MockFramework currentFramework = MockFramework.EASYMOCK;
+	private MockFramework currentFramework = MockFramework.MOCKIT;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
@@ -162,7 +162,7 @@ public class TestExpert {
 
 		return lines;
 	}
-
+	
 	public TestExpert(Class<?> classUnderTest, Class<?> context) {
 		logger.debug("entering constructor");
 		this.classUnderTest = classUnderTest;
@@ -1229,7 +1229,7 @@ public class TestExpert {
 		throw new InvalidArgumentException("Invalid Argument");
 	}
 
-	private boolean isPrimitive(String type) {
+	public boolean isPrimitive(String type) {
 		logger.debug("enter");
 		try {
 			this.getPrimitiveType(type);
