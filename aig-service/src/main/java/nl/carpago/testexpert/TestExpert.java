@@ -625,16 +625,7 @@ public class TestExpert {
 	private boolean isCallerForCollab(String aCollabKandidate) {
 
 		for (String element : this.collabs) {
-			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) { // kandidate
-																						// is
-																						// a
-																						// get
-																						// or
-																						// set
-																						// for
-																						// the
-																						// real
-																						// collab.
+			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) { 
 				return true;
 			}
 		}
