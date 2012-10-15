@@ -80,7 +80,7 @@ public class TestExpert {
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 
 		try {
-			lijstMetAlleJavaFilesUitProject = findAllJavaFiles();
+			lijstMetAlleJavaFilesUitProject = findAllJavaFiles("./src/main/java");
 		} catch (IOException e) {
 			logger.fatal(e.getMessage());
 		}
@@ -135,14 +135,14 @@ public class TestExpert {
 		logger.debug("leaving writeFile");
 	}
 
-	public static List<String> findAllJavaFiles() throws IOException {
+	public static List<String> findAllJavaFiles(String folder) throws IOException {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
 
 		// for Linux: ProcessBuilder builder = new ProcessBuilder("find",
 		// "./src/main/java", "-name", "*.java");
-		ProcessBuilder builder = new ProcessBuilder("/bin/find", "./src/main/java", "-name", "*.java");
+		ProcessBuilder builder = new ProcessBuilder("/bin/find", folder, "-name", "*.java");
 		Process process = builder.start();
 
 		InputStream stream = process.getInputStream();
@@ -152,7 +152,7 @@ public class TestExpert {
 		String line = null;
 		while ((line = bufferReader.readLine()) != null) {
 			logger.debug("processing line " + line);
-			line = line.replaceAll("./src/main/java/", "");
+			line = line.replaceAll(folder+"/", "");
 			line = line.replaceAll("/", ".");
 			line = line.replaceAll(".java", "");
 			lines.add(line);
@@ -167,12 +167,6 @@ public class TestExpert {
 		logger.debug("entering constructor");
 		this.classUnderTest = classUnderTest;
 		this.contextClass = context;
-		this.init();
-		logger.debug("leaving constructor");
-	}
-
-	public void init() {
-		logger.debug("entering");
 
 		this.addPackage();
 
@@ -1361,4 +1355,25 @@ public class TestExpert {
 
 		return result;
 	}
+
+	public Class<?> getClassUnderTest() {
+		return classUnderTest;
+	}
+
+	public Class<?> getContextClass() {
+		return contextClass;
+	}
+
+	public Package getPakkage() {
+		return pakkage;
+	}
+
+	public ApplicationContext getCtx() {
+		return ctx;
+	}
+	
+	
+	
+	
+	
 }

@@ -1,5 +1,6 @@
 package nl.carpago.unittestgenerator;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,7 +10,6 @@ import java.util.Set;
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
 import nl.carpago.testexpert.AbstractTestExpert;
-import nl.carpago.testexpert.Fixtures;
 import nl.carpago.testexpert.TestExpert;
 import nl.carpago.unittestgenerator.annotation.CreateUnittest;
 
@@ -23,44 +23,43 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={Fixtures.class})
-public class TestExpertTestHandWritten extends AbstractTestExpert { 
-	
-	
+@ContextConfiguration(classes = { Fixtures.class })
+public class TestExpertTestHandWritten extends AbstractTestExpert {
+
 	class TestClassInner {
-		
+
 		@CreateUnittest
 		public void test1() {
-			
+
 		}
-		
+
 		@CreateUnittest
 		public void test2() {
-			
+
 		}
-		
+
 		@CreateUnittest
 		public void test3() {
-			
+
 		}
-		
+
 		@CreateUnittest
 		public String testForParameterNames(String one, String two, String three) {
-			return ""+one+two+three;
+			return "" + one + two + three;
 		}
-		
+
 		public String testForParameterTypes(int one, String two, Person three) {
-			
+
 			return "string";
 		}
-		
+
 		public String testForParameterTypesAndName(int one, String two, Person three) {
 			return "string";
 		}
 	}
-	
-	class Person {
-		
+
+	class AClassUnderTest {
+
 	}
 
 	// class under test
@@ -90,112 +89,125 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	}
 
 	@Test
-	public void testIsLiteral(){ 
+	public void testConstructor() {
+		TestExpert testExpertLocal = new TestExpert(AClassUnderTest.class, Fixtures.class);
+
+		Assert.assertEquals(AClassUnderTest.class, testExpertLocal.getClassUnderTest());
+		Assert.assertEquals(Fixtures.class, testExpertLocal.getContextClass());
+		Assert.assertEquals(TestExpertTestHandWritten.AClassUnderTest.class.getPackage(), testExpertLocal.getPakkage());
 		
+		ApplicationContext context = testExpertLocal.getCtx();
+		Assert.assertNotNull(context);
+		
+		Person personFromContext = (Person) context.getBean("person");
+		Assert.assertNotNull(personFromContext);
+		
+		Assert.assertEquals("John Doe", personFromContext.getName());
+		
+	}
+
+	@Test
+	public void testIsLiteral() {
+
 		assertTrue(this.testExpert.isLiteral("melding()"));
-		
+
 		assertFalse(this.testExpert.isLiteral("melding"));
-		
+
 		assertTrue(this.testExpert.isLiteral("123"));
-		
+
 		assertFalse(this.testExpert.isLiteral("a123"));
-		
+
 		assertTrue(this.testExpert.isLiteral("--"));
-		
+
 		assertFalse(this.testExpert.isLiteral("counter"));
-		
+
 		assertTrue(this.testExpert.isLiteral(null));
-		
+
 		assertTrue(this.testExpert.isLiteral(""));
 
 	}
-	
+
 	@Test
 	public void testGetInAnnotationsForMethod() {
-		 Method method = null;
+		Method method = null;
 		try {
 			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
-		} catch(SecurityException e) {
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		String[] expectedIn = {"andereBetrokkene","anderBerichtkenmerkAig"};
-		
+
+		String[] expectedIn = { "andereBetrokkene", "anderBerichtkenmerkAig" };
+
 		String[] actualIn = this.testExpert.getInAnnotationsForMethod(method);
-		
-		
-		
+
 		assertEquals(Arrays.asList(actualIn), Arrays.asList(expectedIn));
-		
+
 	}
-	
+
 	@Test
 	public void testGetOutAnnotationForMethod() {
-		 Method method = null;
-			try {
-				method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
-			} catch(SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			String expectedOut = "melding";
-			
-			String actualOut = this.testExpert.getOutAnnotationForMethod(method);
-			
-			assertEquals(expectedOut, actualOut);
+		Method method = null;
+		try {
+			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String expectedOut = "melding";
+
+		String actualOut = this.testExpert.getOutAnnotationForMethod(method);
+
+		assertEquals(expectedOut, actualOut);
 	}
-	
+
 	@Test
 	public void testGenerateConstructorForClass() {
 		Class c = OnderhoudenMeldingServiceImpl.class;
-		
-		
+
 		String expected = "new OnderhoudenMeldingServiceImpl()";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = Persoon.class;
-		
-	    expected = "new Persoon(17, new String())";
-	    
-	    assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
+		expected = "new Persoon(17, new String())";
+
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+
 	}
-	
-	
+
 	@Test
 	public void testGetMethodsWithAnnotationCreateUnittest() {
 		List<Method> methods = TestExpert.getMethodsWithAnnotationTestMe(TestClassInner.class);
-		
+
 		assertTrue(methods.size() == 4);
 	}
-	
-	
+
 	@Test
 	public void testGenerateSomethingForInterface() {
-		
+
 		Class<?> c = List.class;
-		
+
 		String expected = "EasyMock.createMock(List.class)";
-		
+
 		assertEquals(expected, this.testExpert.generateSomethingForInterface(c));
-		
+
 		c = Set.class;
-		
-		expected  = "EasyMock.createMock(Set.class)";
-		
+
+		expected = "EasyMock.createMock(Set.class)";
+
 		assertEquals(expected, this.testExpert.generateSomethingForInterface(c));
-		
+
 	}
-	
+
 	@Test
 	public void testGetParameterNamesForMethodWithInterface() {
 		Method m = null;
@@ -208,15 +220,13 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		String[] expectedParameterNames = {"int1", "int2"};
-		
+
+		String[] expectedParameterNames = { "int1", "int2" };
+
 		String[] actualParameterNames = this.testExpert.getParameterNamesForMethod(m);
-		
+
 		assertEquals(Arrays.asList(expectedParameterNames), Arrays.asList(actualParameterNames));
-		
-		
-		
+
 	}
 
 	@Test
@@ -231,17 +241,17 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		String[] expectedParameterNames = {"first", "second"};
-		
+
+		String[] expectedParameterNames = { "first", "second" };
+
 		String[] actualParameterNames = this.testExpert.getParameterNamesForMethod(m);
-		
+
 		assertEquals(Arrays.asList(expectedParameterNames), Arrays.asList(actualParameterNames));
 	}
-	
+
 	@Test
 	public void testGetParameterNamesForMethodWithInterfaceWithStringAsParameters() {
-		
+
 		Method m = null;
 		try {
 			m = MijnLijst.class.getMethod("add", String.class, String.class);
@@ -252,17 +262,15 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		String[] expectedParameterNames = {"string1", "string2"};
-		
+
+		String[] expectedParameterNames = { "string1", "string2" };
+
 		String[] actualParameterNames = this.testExpert.getParameterNamesForMethod(m);
-		
+
 		assertEquals(Arrays.asList(expectedParameterNames), Arrays.asList(actualParameterNames));
-		
-		
-		
+
 	}
-	
+
 	@Test
 	public void testGetPrimitiveType() {
 		// Class<?> getPrimitiveType(String baseType) {
@@ -275,33 +283,32 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		assertEquals(char.class, this.testExpert.getPrimitiveType("char"));
 		assertEquals(boolean.class, this.testExpert.getPrimitiveType("boolean"));
 		assertEquals(void.class, this.testExpert.getPrimitiveType("void"));
-		
+
 		try {
 			this.testExpert.getPrimitiveType("invalid argument");
 			fail("should never come here since the argument is not a valid Java type ...");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// normal condition
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testGetParameterNamesForMethod() {
 		Method method = null;
-		Assert.assertEquals(new String[]{},this.testExpert.getParameterNamesForMethod(method));
+		Assert.assertEquals(new String[] {}, this.testExpert.getParameterNamesForMethod(method));
 		try {
-			method = TestClassInner.class.getMethod("testForParameterNames", new Class<?>[]{String.class, String.class, String.class});
+			method = TestClassInner.class.getMethod("testForParameterNames", new Class<?>[] { String.class, String.class, String.class });
 		} catch (SecurityException e) {
 			fail();
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
-		
+
 		Assert.assertTrue(method != null);
-		
-		String [] parameterNames = this.testExpert.getParameterNamesForMethod(method);
-		
+
+		String[] parameterNames = this.testExpert.getParameterNamesForMethod(method);
+
 		Assert.assertTrue(parameterNames != null);
 		Assert.assertEquals(3, parameterNames.length);
 		Assert.assertEquals("one", parameterNames[0]);
@@ -312,10 +319,10 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	@Test
 	public void testGetParameterTypesForMethod() {
 		Method method = null;
-		Assert.assertEquals(new String[]{},this.testExpert.getParameterTypesForMethod(method));
+		Assert.assertEquals(new String[] {}, this.testExpert.getParameterTypesForMethod(method));
 		try {
-			method = TestClassInner.class.getMethod("testForParameterTypes", new Class<?>[]{int.class, String.class, Person.class});
-			
+			method = TestClassInner.class.getMethod("testForParameterTypes", new Class<?>[] { int.class, String.class, Person.class });
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -323,24 +330,24 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		}
-		
+
 		Assert.assertNotNull(method);
-		
+
 		String[] parameterTypes = this.testExpert.getParameterTypesForMethod(method);
-		
+
 		Assert.assertTrue(parameterTypes != null);
 		Assert.assertEquals(3, parameterTypes.length);
 		Assert.assertEquals("int", parameterTypes[0]);
 		Assert.assertEquals("String", parameterTypes[1]);
 		Assert.assertEquals("Person", parameterTypes[2]);
-		
+
 	}
-	
+
 	@Test
 	public void testGetParameterTypeAndNameForMethod() {
 		Method method = null;
 		try {
-			method = TestClassInner.class.getMethod("testForParameterTypesAndName", new Class<?>[]{int.class, String.class, Person.class});
+			method = TestClassInner.class.getMethod("testForParameterTypesAndName", new Class<?>[] { int.class, String.class, Person.class });
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -349,12 +356,12 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 		Assert.assertNotNull(method);
-		
+
 		String arguments = this.testExpert.getParameterTypesAndNameAsString(method);
-		
+
 		Assert.assertEquals("int one, String two, Person three", arguments);
 	}
-	
+
 	@Test
 	public void testIsPrimitive(String type) {
 		Assert.assertTrue(this.testExpert.isPrimitive("byte"));
@@ -367,5 +374,16 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		Assert.assertTrue(this.testExpert.isPrimitive("boolean"));
 		Assert.assertTrue(this.testExpert.isPrimitive("void"));
 	}
-	
+
+	@Test
+	public void testFindAllJavaFilesForFolder() {
+		try {
+			List<String> files = TestExpert.findAllJavaFiles("./src/test/java");
+			Assert.assertEquals(6, files.size());
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
 }
