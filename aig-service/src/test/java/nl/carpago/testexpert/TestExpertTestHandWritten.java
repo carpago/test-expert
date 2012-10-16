@@ -5,12 +5,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
-import nl.carpago.testexpert.AbstractTestExpert;
-import nl.carpago.testexpert.TestExpert;
 import nl.carpago.unittestgenerator.annotation.CreateUnittest;
 
 import org.apache.log4j.Logger;
@@ -56,6 +55,17 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		public String testForParameterTypesAndName(int one, String two, Person three) {
 			return "string";
 		}
+
+		@CreateUnittest(in = "person", out = "anotherPerson")
+		public Person testForGenerateFixturesForMethod(Person in) {
+
+			return new Person("Jane Doe", 45);
+		}
+
+		@CreateUnittest(in = "3")
+		public void testIn(int i) {
+
+		}
 	}
 
 	class AClassUnderTest {
@@ -95,18 +105,17 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		Assert.assertEquals(AClassUnderTest.class, testExpertLocal.getClassUnderTest());
 		Assert.assertEquals(FixturesForTest.class, testExpertLocal.getContextClass());
 		Assert.assertEquals(TestExpertTestHandWritten.AClassUnderTest.class.getPackage(), testExpertLocal.getPakkage());
-		
+
 		ApplicationContext context = testExpertLocal.getCtx();
 		Assert.assertNotNull(context);
-		
+
 		Person personFromContext = (Person) context.getBean("person");
 		Assert.assertNotNull(personFromContext);
-		
+
 		Assert.assertEquals("John Doe", personFromContext.getName());
-		
+
 		// should test initalizeTestClass but we do it outside this block.
-		
-		
+
 	}
 
 	@Test
@@ -191,7 +200,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	public void testGetMethodsWithAnnotationCreateUnittest() {
 		List<Method> methods = TestExpert.getMethodsWithAnnotationCreateUnitTest(TestClassInner.class);
 
-		assertTrue(methods.size() == 4);
+		assertTrue(methods.size() == 6);
 	}
 
 	@Test
@@ -388,7 +397,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			fail();
 		}
 	}
-	
+
 	@Test
 	public void testGenerateHeader() {
 		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
@@ -397,7 +406,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String expected = "public class AClassUnderTestTest extends AbstractTestExpert {\n";
 		assertEquals(expected, header);
 	}
-	
+
 	@Test
 	public void testGenerateFooter() {
 		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
@@ -406,35 +415,38 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String expected = "}";
 		Assert.assertEquals(expected, footer);
 	}
-	
+
 	@Test
 	public void testGenerateAnnotationsForSpringTest() {
 		/*
 		 * 
 		 * logger.debug("enter");
-
-		this.checkAndAddImport(org.junit.runner.RunWith.class);
-		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
-		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
-		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-		// ???? fixtures ??? wordt toch geinsert door klant ????
-		// this.addImport(classToImport)
-
-		this.annotionsBeforeTestClass.add("@RunWith(SpringJUnit4ClassRunner.class)");
-		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={Fixtures.class})");
-
+		 * 
+		 * this.checkAndAddImport(org.junit.runner.RunWith.class);
+		 * this.checkAndAddImport
+		 * (org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+		 * .class); this.checkAndAddImport(org.springframework.test.context.
+		 * ContextConfiguration.class);
+		 * this.checkAndAddImport(org.springframework
+		 * .beans.factory.annotation.Autowired.class); // ???? fixtures ???
+		 * wordt toch geinsert door klant ???? // this.addImport(classToImport)
+		 * 
+		 * this.annotionsBeforeTestClass.add(
+		 * "@RunWith(SpringJUnit4ClassRunner.class)");
+		 * this.annotionsBeforeTestClass
+		 * .add("@ContextConfiguration(classes={Fixtures.class})");
 		 */
-		
+
 		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
-		
+
 		t.generateAnnotationsForSpringTest();
 		List<String> annotations = t.getAnnotionsBeforeTestClass();
-		
+
 		Assert.assertEquals(2, annotations.size());
 		Assert.assertTrue(annotations.contains("@RunWith(SpringJUnit4ClassRunner.class)"));
 		Assert.assertTrue(annotations.contains("@ContextConfiguration(classes={FixturesForTest.class})"));
 	}
-	
+
 	@Test
 	/**
 	 * this.checkAndAddImport(org.junit.Before.class);
@@ -448,27 +460,26 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	 */
 	public void testInitalizeTestFramework() {
 		// the work should already be done by the constructor
-		
+
 		// same package
 		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
-		
-		
+
 		Set<String> imports = t.getImports();
 		Assert.assertEquals(6, imports.size());
-		
+
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
-		//Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
-		//Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
+		// Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
+		// Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
 		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
-		
+
 		// other package
 		t = new TestExpert(String.class, FixturesForTest.class);
 		imports = t.getImports();
-		Assert.assertEquals(8,  imports.size());
+		Assert.assertEquals(8, imports.size());
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
 		Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
@@ -477,6 +488,79 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
 		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+
+	}
+
+	@Test
+	public void testGenerateFixturesForMethod() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+
+		try {
+			List<Class<?>> fixtures = t.generateFixturesForMethod(TestClassInner.class.getMethod("testForGenerateFixturesForMethod", new Class<?>[] { Person.class }));
+			Assert.assertEquals(2, fixtures.size());
+			Assert.assertTrue(fixtures.contains(Person.class));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+
+		Map<String, Class<?>> fixturesFromTestExpert = t.getFixtures();
+
+		Assert.assertTrue(fixturesFromTestExpert.containsKey("person"));
+		Assert.assertTrue(fixturesFromTestExpert.containsKey("anotherPerson"));
+	}
+
+	@Test
+	public void testGenerateFixturesForMethodWithLiteral() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+
+		try {
+			List<Class<?>> fixtures = t.generateFixturesForMethod(TestClassInner.class.getMethod("testIn", new Class<?>[] { int.class }));
+			Assert.assertEquals(0, fixtures.size());
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+
+		Map<String, Class<?>> fixturesFromTestExpert = t.getFixtures();
+
+		Assert.assertFalse(fixturesFromTestExpert.containsKey("3"));
+	}
+	
+	@Test
+	public void testCodegenFixtures() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+
+		try {
+			List<Class<?>> fixtures = t.generateFixturesForMethod(TestClassInner.class.getMethod("testForGenerateFixturesForMethod", new Class<?>[] { Person.class }));
+			Assert.assertEquals(2, fixtures.size());
+			Assert.assertTrue(fixtures.contains(Person.class));
+			
+			String actual = t.codeGenFixtures();
+			
+			String expected="";
+			expected += "\t @Autowired ";
+			expected += //
+			x hier verder. kijken of met indexOf kan zien of de goede code wordt gemaakt.
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+
+		Map<String, Class<?>> fixturesFromTestExpert = t.getFixtures();
+
+		Assert.assertTrue(fixturesFromTestExpert.containsKey("person"));
+		Assert.assertTrue(fixturesFromTestExpert.containsKey("anotherPerson"));
 		
 	}
 	

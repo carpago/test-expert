@@ -1035,8 +1035,10 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private void generateFixturesForMethod(Method methode) {
+	protected List<Class<?>> generateFixturesForMethod(Method methode) {
 		logger.debug("enter");
+		
+		List<Class<?>> result = new ArrayList<Class<?>>();
 
 		CreateUnittest annotation = (CreateUnittest) methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class);
 		String[] inputFixtures = annotation.in();
@@ -1048,26 +1050,31 @@ public class TestExpert {
 		}
 
 		for (String fixture : fixturesAll) {
-			if (this.isLiteral(fixture) || QUESTION_MARK.equals(fixture) || ASTERISK.equals(fixture)) {
-				continue;
+			System.out.println(fixture);
+			if (!(this.isLiteral(fixture) || QUESTION_MARK.equals(fixture) || ASTERISK.equals(fixture))) {
+				Class<?> fixtureClass = addFixture(fixture);
+				result.add(fixtureClass);
 			}
-			addFixture(fixture);
 		}
 
 		logger.debug("leave");
+		
+		return result;
 	}
 
-	private void addFixture(String fixture) {
+	private Class<?> addFixture(String fixture) {
 		logger.debug("enter");
 
 		Object o = ctx.getBean(fixture);
 		this.checkAndAddImport(o.getClass());
 		this.fixtures.put(fixture, o.getClass());
-
+		
 		logger.debug("leave");
+		
+		return o.getClass();
 	}
 
-	private String codeGenFixtures() {
+	protected String codeGenFixtures() {
 		logger.debug("enter");
 
 		String result = EMPTY_STRING;
@@ -1387,6 +1394,10 @@ public class TestExpert {
 
 	protected List<String> getAnnotionsBeforeTestClass() {
 		return annotionsBeforeTestClass;
+	}
+
+	protected HashMap<String, Class<?>> getFixtures() {
+		return fixtures;
 	}
 	
 	

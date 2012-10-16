@@ -17,4 +17,11 @@ import org.springframework.context.annotation.Configuration;
 
 			return person;
 		}
+		
+		@Bean
+		public Person anotherPerson() {
+			Person person = new Person("Jane Doe", 45);
+			
+			return person;
+		}
 	}
