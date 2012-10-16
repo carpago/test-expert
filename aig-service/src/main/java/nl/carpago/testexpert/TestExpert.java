@@ -80,6 +80,7 @@ public class TestExpert {
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 
 		try {
+			//TODO /src/main/java should be configured through a property file
 			lijstMetAlleJavaFilesUitProject = findAllJavaFiles("./src/main/java");
 		} catch (IOException e) {
 			logger.fatal(e.getMessage());
@@ -97,7 +98,7 @@ public class TestExpert {
 			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
 			classUnderTest = Class.forName(classFile); //
 
-			List<Method> methods = getMethodsWithAnnotationTestMe(classUnderTest);
+			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
 				TestExpert generator = new TestExpert(classUnderTest, Fixtures.class);
@@ -211,14 +212,14 @@ public class TestExpert {
 
 	private void generateFixturesForEntireClass() {
 		logger.debug("enter");
-		List<Method> methodes = getMethodsWithAnnotationTestMe(this.classUnderTest);
+		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
 			generateFixturesForMethod(methode);
 		}
 		logger.debug("leave");
 	}
 
-	private void generateHeader() {
+	protected void generateHeader() {
 		logger.debug("enter");
 		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTestExpert { \n";
 		logger.debug("leave");
@@ -924,7 +925,7 @@ public class TestExpert {
 
 	public void generateMethodsWithAnnotationTestMe() {
 		logger.debug("enter");
-		List<Method> methodes = getMethodsWithAnnotationTestMe(this.classUnderTest);
+		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
 
 			String testMethodName = EMPTY_STRING;
@@ -1079,7 +1080,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public static List<Method> getMethodsWithAnnotationTestMe(Class<?> clazz) {
+	public static List<Method> getMethodsWithAnnotationCreateUnitTest(Class<?> clazz) {
 		logger.debug("enter");
 		List<Method> result = new ArrayList<Method>();
 		for (Method methode : clazz.getDeclaredMethods()) {
@@ -1361,6 +1362,10 @@ public class TestExpert {
 
 	public ApplicationContext getCtx() {
 		return ctx;
+	}
+
+	public String getHeader() {
+		return header;
 	}
 	
 	

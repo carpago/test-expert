@@ -186,7 +186,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 	@Test
 	public void testGetMethodsWithAnnotationCreateUnittest() {
-		List<Method> methods = TestExpert.getMethodsWithAnnotationTestMe(TestClassInner.class);
+		List<Method> methods = TestExpert.getMethodsWithAnnotationCreateUnitTest(TestClassInner.class);
 
 		assertTrue(methods.size() == 4);
 	}
@@ -384,6 +384,15 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	@Test
+	public void testGetHeader() {
+		TestExpert t = new TestExpert(AClassUnderTest.class, Fixtures.class);
+		t.generate
+		String header = t.getHeader();
+		String expected = "public class AClassUnderTestTest extends AbstractTestExpert {";
+		assertEquals(expected, header);
 	}
 
 }
