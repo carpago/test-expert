@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 class Person {
 	private String name;

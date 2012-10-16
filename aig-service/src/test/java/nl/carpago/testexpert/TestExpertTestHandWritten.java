@@ -1,4 +1,4 @@
-package nl.carpago.unittestgenerator;
+package nl.carpago.testexpert;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -23,7 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Fixtures.class })
+@ContextConfiguration(classes = { FixturesForTest.class })
 public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 	class TestClassInner {
@@ -85,15 +85,15 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 	@Before
 	public void setUp() {
-		this.testExpert = new TestExpert(OnderhoudenMeldingServiceImpl.class, Fixtures.class);
+		this.testExpert = new TestExpert(OnderhoudenMeldingServiceImpl.class, FixturesForTest.class);
 	}
 
 	@Test
 	public void testConstructor() {
-		TestExpert testExpertLocal = new TestExpert(AClassUnderTest.class, Fixtures.class);
+		TestExpert testExpertLocal = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
 
 		Assert.assertEquals(AClassUnderTest.class, testExpertLocal.getClassUnderTest());
-		Assert.assertEquals(Fixtures.class, testExpertLocal.getContextClass());
+		Assert.assertEquals(FixturesForTest.class, testExpertLocal.getContextClass());
 		Assert.assertEquals(TestExpertTestHandWritten.AClassUnderTest.class.getPackage(), testExpertLocal.getPakkage());
 		
 		ApplicationContext context = testExpertLocal.getCtx();
@@ -103,6 +103,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		Assert.assertNotNull(personFromContext);
 		
 		Assert.assertEquals("John Doe", personFromContext.getName());
+		
+		// should test initalizeTestClass but we do it outside this block.
+		
 		
 	}
 
@@ -387,12 +390,95 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	}
 	
 	@Test
-	public void testGetHeader() {
-		TestExpert t = new TestExpert(AClassUnderTest.class, Fixtures.class);
-		t.generate
+	public void testGenerateHeader() {
+		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
+		t.generateHeader();
 		String header = t.getHeader();
-		String expected = "public class AClassUnderTestTest extends AbstractTestExpert {";
+		String expected = "public class AClassUnderTestTest extends AbstractTestExpert {\n";
 		assertEquals(expected, header);
 	}
+	
+	@Test
+	public void testGenerateFooter() {
+		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
+		t.generateFooter();
+		String footer = t.getFooter();
+		String expected = "}";
+		Assert.assertEquals(expected, footer);
+	}
+	
+	@Test
+	public void testGenerateAnnotationsForSpringTest() {
+		/*
+		 * 
+		 * logger.debug("enter");
+
+		this.checkAndAddImport(org.junit.runner.RunWith.class);
+		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
+		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
+		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
+		// ???? fixtures ??? wordt toch geinsert door klant ????
+		// this.addImport(classToImport)
+
+		this.annotionsBeforeTestClass.add("@RunWith(SpringJUnit4ClassRunner.class)");
+		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={Fixtures.class})");
+
+		 */
+		
+		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
+		
+		t.generateAnnotationsForSpringTest();
+		List<String> annotations = t.getAnnotionsBeforeTestClass();
+		
+		Assert.assertEquals(2, annotations.size());
+		Assert.assertTrue(annotations.contains("@RunWith(SpringJUnit4ClassRunner.class)"));
+		Assert.assertTrue(annotations.contains("@ContextConfiguration(classes={FixturesForTest.class})"));
+	}
+	
+	@Test
+	/**
+	 * this.checkAndAddImport(org.junit.Before.class);
+		this.checkAndAddImport(org.junit.Test.class);
+		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
+		this.checkAndAddImport(this.contextClass);
+		this.checkAndAddImport(org.junit.runner.RunWith.class);
+		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
+		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
+		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
+	 */
+	public void testInitalizeTestFramework() {
+		// the work should already be done by the constructor
+		
+		// same package
+		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
+		
+		
+		Set<String> imports = t.getImports();
+		Assert.assertEquals(6, imports.size());
+		
+		Assert.assertTrue(imports.contains("org.junit.Before"));
+		Assert.assertTrue(imports.contains("org.junit.Test"));
+		//Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
+		//Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
+		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
+		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
+		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
+		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+		
+		// other package
+		t = new TestExpert(String.class, FixturesForTest.class);
+		imports = t.getImports();
+		Assert.assertEquals(8,  imports.size());
+		Assert.assertTrue(imports.contains("org.junit.Before"));
+		Assert.assertTrue(imports.contains("org.junit.Test"));
+		Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
+		Assert.assertTrue(imports.contains(t.getContextClass().getName()));
+		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
+		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
+		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
+		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+		
+	}
+	
 
 }

@@ -174,16 +174,21 @@ public class TestExpert {
 		logger.debug("setting ApplicationContext");
 		this.ctx = new AnnotationConfigApplicationContext(this.contextClass);
 
-		if (MockFramework.EASYMOCK.equals(currentFramework)) {
-			this.checkAndAddImport(org.easymock.EasyMock.class);
-		}
-
+		initializeTestFramework();
+		
+		logger.debug("leaving");
+	}
+	
+	private void initializeTestFramework() {
+		
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
 		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
 		this.checkAndAddImport(this.contextClass);
-
-		logger.debug("leaving");
+		this.checkAndAddImport(org.junit.runner.RunWith.class);
+		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
+		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
+		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
 	}
 
 	public void generateTestClass() {
@@ -221,28 +226,21 @@ public class TestExpert {
 
 	protected void generateHeader() {
 		logger.debug("enter");
-		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTestExpert { \n";
+		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTestExpert {\n";
 		logger.debug("leave");
 	}
 
-	private void generateFooter() {
+	protected void generateFooter() {
 		logger.debug("enter");
 		this.footer += "}";
 		logger.debug("leave");
 	}
 
-	private void generateAnnotationsForSpringTest() {
+	protected void generateAnnotationsForSpringTest() {
 		logger.debug("enter");
-
-		this.checkAndAddImport(org.junit.runner.RunWith.class);
-		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
-		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
-		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-		// ???? fixtures ??? wordt toch geinsert door klant ????
-		// this.addImport(classToImport)
-
+		
 		this.annotionsBeforeTestClass.add("@RunWith(SpringJUnit4ClassRunner.class)");
-		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={Fixtures.class})");
+		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={"+this.contextClass.getSimpleName()+".class})");
 
 		logger.debug("leave");
 
@@ -411,7 +409,18 @@ public class TestExpert {
 						logger.debug("methods return type:" + method.getReturnType());
 						logger.debug("methods generic return type:" + method.getGenericReturnType());
 						// tjakkaa: hier heb ik dus het generieke type.
-
+						
+						// we are going to mock something so now include the imports
+						if (MockFramework.EASYMOCK.equals(currentFramework)) {
+							this.checkAndAddImport(org.easymock.EasyMock.class);
+						}
+						else {
+							if(MockFramework.MOCKIT.equals(currentFramework)) {
+								this.checkAndAddImport(mockit.Mocked.class);
+							}
+						}
+						
+						
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
 
@@ -1348,24 +1357,36 @@ public class TestExpert {
 		return result;
 	}
 
-	public Class<?> getClassUnderTest() {
+	protected Class<?> getClassUnderTest() {
 		return classUnderTest;
 	}
 
-	public Class<?> getContextClass() {
+	protected Class<?> getContextClass() {
 		return contextClass;
 	}
 
-	public Package getPakkage() {
+	protected Package getPakkage() {
 		return pakkage;
 	}
 
-	public ApplicationContext getCtx() {
+	protected ApplicationContext getCtx() {
 		return ctx;
 	}
 
-	public String getHeader() {
+	protected String getHeader() {
 		return header;
+	}
+	
+	protected String getFooter() {
+		return footer;
+	}
+
+	protected Set<String> getImports() {
+		return imports;
+	}
+
+	protected List<String> getAnnotionsBeforeTestClass() {
+		return annotionsBeforeTestClass;
 	}
 	
 	
