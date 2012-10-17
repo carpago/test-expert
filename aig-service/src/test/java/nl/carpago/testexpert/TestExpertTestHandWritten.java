@@ -11,6 +11,7 @@ import java.util.Set;
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
 import nl.carpago.unittestgenerator.annotation.CreateUnittest;
+import nl.carpago.unittestgenerator.annotation.Expect;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -42,6 +43,11 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 		}
 
+		@Expect(in = { "3" }, out = "5")
+		public int test4(int a) {
+			return a + 2;
+		}
+
 		@CreateUnittest
 		public String testForParameterNames(String one, String two, String three) {
 			return "" + one + two + three;
@@ -66,10 +72,15 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		public void testIn(int i) {
 
 		}
-		
-		@CreateUnittest(in={"3", "2","person"})
+
+		@CreateUnittest(in = { "?", "?", "?" })
 		public void methodForCreateArguments(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
-			
+
+		}
+
+		@CreateUnittest(in = { "?", "?" })
+		public void methodForCreateArgumentsError(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
+
 		}
 	}
 
@@ -141,6 +152,10 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		assertTrue(this.testExpert.isLiteral(null));
 
 		assertTrue(this.testExpert.isLiteral(""));
+		
+		assertTrue(this.testExpert.isLiteral("true"));
+		
+		assertTrue(this.testExpert.isLiteral("false"));
 
 	}
 
@@ -150,10 +165,10 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		try {
 			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			fail();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
+			fail();
 			e.printStackTrace();
 		}
 
@@ -163,6 +178,18 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 		assertEquals(Arrays.asList(actualIn), Arrays.asList(expectedIn));
 
+		try {
+			method = TestClassInner.class.getMethod("test4", new Class<?>[] { int.class });
+			expectedIn = new String[] { "3" };
+			actualIn = this.testExpert.getInAnnotationsForMethod(method);
+			assertEquals(Arrays.asList(expectedIn), Arrays.asList(actualIn));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 	@Test
@@ -183,6 +210,19 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String actualOut = this.testExpert.getOutAnnotationForMethod(method);
 
 		assertEquals(expectedOut, actualOut);
+		
+		try {
+			method = TestClassInner.class.getMethod("test4", new Class<?>[] { int.class });
+			expectedOut =  "5" ;
+			actualOut = this.testExpert.getOutAnnotationForMethod(method);
+			assertEquals(expectedOut, actualOut);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 	@Test
@@ -198,6 +238,36 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		expected = "new Persoon(17, new String())";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = byte.class;
+				
+		expected = "(byte) 15";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = short.class;
+		
+		expected = "(short) 1";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = long.class;
+		
+		expected = "18L";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = float.class;
+		
+		expected = "19.5F";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = double.class;
+		
+		expected = "20.5";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 
 	}
 
@@ -205,7 +275,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	public void testGetMethodsWithAnnotationCreateUnittest() {
 		List<Method> methods = TestExpert.getMethodsWithAnnotationCreateUnitTest(TestClassInner.class);
 
-		assertTrue("Number of testable methods not correct", methods.size() == 7);
+		assertTrue("Number of testable methods not correct", methods.size() == 8);
 	}
 
 	@Test
@@ -537,7 +607,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 		Assert.assertFalse(fixturesFromTestExpert.containsKey("3"));
 	}
-	
+
 	@Test
 	public void testCodegenFixtures() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
@@ -546,18 +616,24 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			List<Class<?>> fixtures = t.generateFixturesForMethod(TestClassInner.class.getMethod("testForGenerateFixturesForMethod", new Class<?>[] { Person.class }));
 			Assert.assertEquals(2, fixtures.size());
 			Assert.assertTrue(fixtures.contains(Person.class));
-			
+
 			String actual = t.codeGenFixtures();
-			
+
 			String expected = "\t@Autowired private Person person;";
 			Assert.assertTrue("@Autowired private Person person not found in fixtureCodeGen", actual.indexOf(expected) > -1);
-			
+
 			expected = "\t@Autowired private Person anotherPerson;";
 			Assert.assertTrue("@Autowired private Person anotherPerson not found in fixtureCodeGen", actual.indexOf(expected) > -1);
-			
+
 			String[] actualSplitted = actual.split("\n");
-			Assert.assertEquals(4,  actualSplitted.length); //4 --> emptyline followed by header (//fixtures) followed by two @Autowired statements.
-			
+			Assert.assertEquals(4, actualSplitted.length); // 4 --> emptyline
+															// followed by
+															// header
+															// (//fixtures)
+															// followed by two
+															// @Autowired
+															// statements.
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -570,18 +646,20 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 		Assert.assertTrue(fixturesFromTestExpert.containsKey("person"));
 		Assert.assertTrue(fixturesFromTestExpert.containsKey("anotherPerson"));
-		
 	}
-	
 
 	@Test
 	public void testGenerateCreateArgumentsForTestMethod() {
-		
+
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
 		try {
-			Method method = TestClassInner.class.getMethod("methodForCreateArguments", new Class<?>[]{int.class, String.class, Person.class});
-			String code = t.generateCreateArgumentsForTestMethod(method); 
-			System.out.println(code);
+			Method method = TestClassInner.class.getMethod("methodForCreateArguments", new Class<?>[] { int.class, String.class, Person.class });
+			String code = t.generateCreateArgumentsForTestMethod(method);
+			String expected = "" + "int firstUnknowArgument = 17;" + "String secondUnknowArgument = new String();" + "Person thirdUnknowArgument = new Person(new String(), 17);";
+			String[] codeSplitted = code.split("\n");
+			for (String line : codeSplitted) {
+				Assert.assertTrue(expected.indexOf(line.trim()) > -1);
+			}
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -589,6 +667,23 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		}
+		try {
+			Method method = TestClassInner.class.getMethod("methodForCreateArgumentsError", new Class<?>[] { int.class, String.class, Person.class });
+			try {
+				t.generateCreateArgumentsForTestMethod(method);
+				fail();
+			} catch (RuntimeException rte) {
+
+			}
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+
 	}
 
 }

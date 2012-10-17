@@ -196,5 +196,13 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 
 		return result;
 	}
+	 
+	 
+	 @CreateUnittest(in="3", out="vince3")
+	 public String vince(int in) {
+		 return "vince"+in;
+	 }
+	 
+	 
 
 }
