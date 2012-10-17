@@ -960,7 +960,7 @@ public class TestExpert {
 			addCodeLn("){ ");
 
 			if (methode.getParameterTypes().length != 0) {
-				generateCreerParametersVoorTestmethode(methode);
+				generateCreateArgumentsForTestMethod(methode);
 			}
 
 			try {
@@ -1110,33 +1110,39 @@ public class TestExpert {
 		return result;
 	}
 
-	public void generateCreerParametersVoorTestmethode(Method methode) {
+	protected String generateCreateArgumentsForTestMethod(Method methodeToBeTested) {
 		logger.debug("enter");
 
 		String[] parameterNames = null;
 
-		parameterNames = this.getParameterNamesForMethod(methode);
+		parameterNames = this.getParameterNamesForMethod(methodeToBeTested);
 
-		String[] inputParametersViaAnnotatie = methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
+		assert parameterNames != null;
+		
+		System.out.println(Arrays.asList(parameterNames));
+		
+		String[] inputParametersViaAnnotatie = methodeToBeTested.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
 			throw new RuntimeException("Annotation and parameters are ordinal not equal!");
 		}
 
-		Class<?>[] parameterTypes = methode.getParameterTypes();
+		Class<?>[] parameterTypes = methodeToBeTested.getParameterTypes();
 
+		String result = EMPTY_STRING;
 		for (int i = 0; i < parameterNames.length; i++) {
 			// if ? than create via constructor. if * than try first via
 			// appcontext else via constructor through name of the variable.
 			if (QUESTION_MARK.equals(inputParametersViaAnnotatie[i]) || (ASTERISK.equals(inputParametersViaAnnotatie[i]) && !this.fixtures.containsKey(parameterNames[i]))) {
-				addCode("\t\t" + parameterTypes[i].getSimpleName() + " " + parameterNames[i] + " = ");
-				addCode(generateConstructorForClass(parameterTypes[i]));
-				addCodeLn(";");
+				result += addCode("\t\t" + parameterTypes[i].getSimpleName() + " " + parameterNames[i] + " = ");
+				result += addCode(generateConstructorForClass(parameterTypes[i]));
+				result += addCodeLn(";");
 			}
-
 		}
 		logger.debug("leave");
+		
+		return result;
 	}
 
 	public String[] getParameterNamesForMethod(Method method) {
@@ -1274,21 +1280,23 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private void addCode(String code) {
+	private String addCode(String code) {
 		logger.debug("enter");
 		logger.debug("Adding code " + code);
 
 		this.body += code;
 
 		logger.debug("leave");
+		
+		return code;
 	}
 
-	private void addCodeLn(String code) {
-		this.addCode(code + "\n");
+	private String addCodeLn(String code) {
+		return this.addCode(code + "\n");
 	}
 
-	private void addCodeLn() {
-		this.addCode("\n");
+	private String addCodeLn() {
+		return this.addCode("\n");
 	}
 
 	public void printCode() {

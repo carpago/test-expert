@@ -66,6 +66,11 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		public void testIn(int i) {
 
 		}
+		
+		@CreateUnittest(in={"3", "2","person"})
+		public void methodForCreateArguments(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
+			
+		}
 	}
 
 	class AClassUnderTest {
@@ -200,7 +205,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	public void testGetMethodsWithAnnotationCreateUnittest() {
 		List<Method> methods = TestExpert.getMethodsWithAnnotationCreateUnitTest(TestClassInner.class);
 
-		assertTrue(methods.size() == 6);
+		assertTrue("Number of testable methods not correct", methods.size() == 7);
 	}
 
 	@Test
@@ -544,10 +549,14 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			
 			String actual = t.codeGenFixtures();
 			
-			String expected="";
-			expected += "\t @Autowired ";
-			expected += //
-			x hier verder. kijken of met indexOf kan zien of de goede code wordt gemaakt.
+			String expected = "\t@Autowired private Person person;";
+			Assert.assertTrue("@Autowired private Person person not found in fixtureCodeGen", actual.indexOf(expected) > -1);
+			
+			expected = "\t@Autowired private Person anotherPerson;";
+			Assert.assertTrue("@Autowired private Person anotherPerson not found in fixtureCodeGen", actual.indexOf(expected) > -1);
+			
+			String[] actualSplitted = actual.split("\n");
+			Assert.assertEquals(4,  actualSplitted.length); //4 --> emptyline followed by header (//fixtures) followed by two @Autowired statements.
 			
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -564,5 +573,22 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		
 	}
 	
+
+	@Test
+	public void testGenerateCreateArgumentsForTestMethod() {
+		
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		try {
+			Method method = TestClassInner.class.getMethod("methodForCreateArguments", new Class<?>[]{int.class, String.class, Person.class});
+			String code = t.generateCreateArgumentsForTestMethod(method); 
+			System.out.println(code);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
 
 }
