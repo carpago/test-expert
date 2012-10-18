@@ -756,7 +756,7 @@ public class TestExpert {
 		}
 
 		if ("char".equals(t.toString())) {
-			addCode("'a'");
+			result += "'a'";
 		}
 
 		if ("boolean".equals(t.toString())) {

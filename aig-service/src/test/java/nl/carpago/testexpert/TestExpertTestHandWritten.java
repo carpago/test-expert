@@ -268,16 +268,35 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		expected = "20.5";
 		
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = char.class;
+		
+		expected = "'a'";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		c = boolean.class;
+		
+		expected = "true";
+		
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
+		
+		int[] array = new int[]{1,2,3};
+		
+		c = array.getClass();
+		
+		expected = "new int[]{1,2,3}";
+		
+		assertEquals(expected, testExpert.generateConstructorForClass(c));
+		
+		c = Set.class;
 
+		expected = "EasyMock.createMock(Set.class)";
+
+		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 	}
-
-	@Test
-	public void testGetMethodsWithAnnotationCreateUnittest() {
-		List<Method> methods = TestExpert.getMethodsWithAnnotationCreateUnitTest(TestClassInner.class);
-
-		assertTrue("Number of testable methods not correct", methods.size() == 8);
-	}
-
+	
+	
 	@Test
 	public void testGenerateSomethingForInterface() {
 
