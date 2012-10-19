@@ -22,68 +22,78 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+
+class TestClassInner {
+
+	private List<String> lijst;
+
+	@CreateUnittest
+	public void test1() {
+
+	}
+
+	@CreateUnittest
+	public void test2() {
+
+	}
+
+	@CreateUnittest
+	public void test3() {
+
+	}
+
+	@Expect(in = { "3" }, out = "5")
+	public int test4(int a) {
+		return a + 2;
+	}
+
+	@CreateUnittest
+	public String testForParameterNames(String one, String two, String three) {
+		return "" + one + two + three;
+	}
+
+	public String testForParameterTypes(int one, String two, Person three) {
+
+		return "string";
+	}
+
+	public String testForParameterTypesAndName(int one, String two, Person three) {
+		return "string";
+	}
+
+	@CreateUnittest(in = "person", out = "anotherPerson")
+	public Person testForGenerateFixturesForMethod(Person in) {
+
+		return new Person("Jane Doe", 45);
+	}
+
+	@CreateUnittest(in = "3")
+	public void testIn(int i) {
+
+	}
+
+	@CreateUnittest(in = { "?", "?", "?" })
+	public void methodForCreateArguments(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
+
+	}
+
+	@CreateUnittest(in = { "?", "?" })
+	public void methodForCreateArgumentsError(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
+
+	}
+
+	@CreateUnittest
+	public void tryCollabCall() {
+		int length = lijst.size();
+
+	}
+}
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { FixturesForTest.class })
 public class TestExpertTestHandWritten extends AbstractTestExpert {
 
-	class TestClassInner {
-
-		@CreateUnittest
-		public void test1() {
-
-		}
-
-		@CreateUnittest
-		public void test2() {
-
-		}
-
-		@CreateUnittest
-		public void test3() {
-
-		}
-
-		@Expect(in = { "3" }, out = "5")
-		public int test4(int a) {
-			return a + 2;
-		}
-
-		@CreateUnittest
-		public String testForParameterNames(String one, String two, String three) {
-			return "" + one + two + three;
-		}
-
-		public String testForParameterTypes(int one, String two, Person three) {
-
-			return "string";
-		}
-
-		public String testForParameterTypesAndName(int one, String two, Person three) {
-			return "string";
-		}
-
-		@CreateUnittest(in = "person", out = "anotherPerson")
-		public Person testForGenerateFixturesForMethod(Person in) {
-
-			return new Person("Jane Doe", 45);
-		}
-
-		@CreateUnittest(in = "3")
-		public void testIn(int i) {
-
-		}
-
-		@CreateUnittest(in = { "?", "?", "?" })
-		public void methodForCreateArguments(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
-
-		}
-
-		@CreateUnittest(in = { "?", "?" })
-		public void methodForCreateArgumentsError(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
-
-		}
-	}
-
+	
 	class AClassUnderTest {
 
 	}
@@ -152,9 +162,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		assertTrue(this.testExpert.isLiteral(null));
 
 		assertTrue(this.testExpert.isLiteral(""));
-		
+
 		assertTrue(this.testExpert.isLiteral("true"));
-		
+
 		assertTrue(this.testExpert.isLiteral("false"));
 
 	}
@@ -210,10 +220,10 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String actualOut = this.testExpert.getOutAnnotationForMethod(method);
 
 		assertEquals(expectedOut, actualOut);
-		
+
 		try {
 			method = TestClassInner.class.getMethod("test4", new Class<?>[] { int.class });
-			expectedOut =  "5" ;
+			expectedOut = "5";
 			actualOut = this.testExpert.getOutAnnotationForMethod(method);
 			assertEquals(expectedOut, actualOut);
 		} catch (SecurityException e) {
@@ -238,65 +248,64 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		expected = "new Persoon(17, new String())";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = byte.class;
-				
+
 		expected = "(byte) 15";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = short.class;
-		
+
 		expected = "(short) 1";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = long.class;
-		
+
 		expected = "18L";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = float.class;
-		
+
 		expected = "19.5F";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = double.class;
-		
+
 		expected = "20.5";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = char.class;
-		
+
 		expected = "'a'";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
+
 		c = boolean.class;
-		
+
 		expected = "true";
-		
+
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
-		
-		int[] array = new int[]{1,2,3};
-		
+
+		int[] array = new int[] { 1, 2, 3 };
+
 		c = array.getClass();
-		
+
 		expected = "new int[]{1,2,3}";
-		
+
 		assertEquals(expected, testExpert.generateConstructorForClass(c));
-		
+
 		c = Set.class;
 
 		expected = "EasyMock.createMock(Set.class)";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 	}
-	
-	
+
 	@Test
 	public void testGenerateSomethingForInterface() {
 
@@ -703,6 +712,34 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			fail();
 		}
 
+	}
+
+	@Test
+	public void testIsCallerForCollab() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		try {
+			t.generateTestClass();
+		} catch (RuntimeException rte) {
+			// ok for now since the generateCreateArgumentsFormethod should
+			// throw since there a intentional error in this class...
+		}
+
+		Assert.assertTrue("lijst should be a collab InnerclassTest", t.isCallerForCollab("lijst"));
+	}
+
+	@Test
+	public void testGenerateReplays() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		try {
+			t.generateTestClass();
+		} catch (RuntimeException rte) {
+			// ok for now since the generateCreateArgumentsFormethod should
+			// throw since there a intentional error in this class...
+		}
+
+		String replays = t.generateReplays();
+
+		Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
 	}
 
 }

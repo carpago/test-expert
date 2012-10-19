@@ -632,7 +632,7 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private boolean isCallerForCollab(String aCollabKandidate) {
+	protected boolean isCallerForCollab(String aCollabKandidate) {
 
 		for (String element : this.collabs) {
 			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) { 
@@ -644,11 +644,13 @@ public class TestExpert {
 
 	}
 
-	private void generateReplays() {
-		addCodeLn();
+	protected String generateReplays() {
+		String result = addCodeLn();
 		for (String collab : this.collabs) {
-			addCodeLn("\t\tEasyMock.replay(" + collab + ");");
+			result += addCodeLn("\t\tEasyMock.replay(" + collab + ");");
 		}
+		
+		return result;
 	}
 
 	private void generateVerifies() {
@@ -1125,6 +1127,8 @@ public class TestExpert {
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
+			System.out.println(Arrays.asList(parameterNames));
+			System.out.println(Arrays.asList(inputParametersViaAnnotatie));
 			throw new RuntimeException("Annotation and parameters are ordinal not equal!");
 		}
 
