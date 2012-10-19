@@ -653,11 +653,13 @@ public class TestExpert {
 		return result;
 	}
 
-	private void generateVerifies() {
-		addCodeLn();
+	protected String generateVerifies() {
+		String result = addCodeLn();
 		for (String collab : this.collabs) {
-			addCodeLn("\t\tEasyMock.verify(" + collab + ");");
+			result += addCodeLn("\t\tEasyMock.verify(" + collab + ");");
 		}
+		
+		return result;
 	}
 
 	public String[] getInAnnotationsForMethod(Method method) {
@@ -857,36 +859,39 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private void generateGeneric(ParameterizedType pType) {
-		addCode("<");
+	private String generateGeneric(ParameterizedType pType) {
+		String result = addCode("<");
 		for (Type t : pType.getActualTypeArguments()) {
 			if (t instanceof Class) {
 				Class<?> genericArgument = (Class<?>) t;
-				addCode(genericArgument.getSimpleName());
+				result += addCode(genericArgument.getSimpleName());
 				this.checkAndAddImport(genericArgument);
 			} else {
 				// ja wat eigenlijk ? :-))
 			}
 		}
-		addCode("> ");
+		result += addCode("> ");
+		
+		return result;
 	}
 
-	private void generateGettersForCollaborators() {
+	protected String generateGettersForCollaborators() {
 		logger.debug("enter");
 		Field[] fields = this.classUnderTest.getDeclaredFields();
-
+		String result = "";
 		for (Field field : fields) {
-			addCodeLn();
-			addCode("\tpublic " + field.getType().getSimpleName() + " ");
+			result += addCodeLn();
+			result += addCode("\tpublic " + field.getType().getSimpleName() + " ");
 			if (field.getGenericType() instanceof ParameterizedType) {
-				this.generateGeneric((ParameterizedType) field.getGenericType());
+				result += this.generateGeneric((ParameterizedType) field.getGenericType());
 			}
-			addCodeLn("get" + WordUtils.capitalize(field.getName()) + "(){");
-			addCodeLn("\t\treturn this." + WordUtils.uncapitalize(field.getName()) + ";");
-			addCodeLn("\t}");
+			result += addCodeLn("get" + WordUtils.capitalize(field.getName()) + "(){");
+			result += addCodeLn("\t\treturn this." + WordUtils.uncapitalize(field.getName()) + ";");
+			result += addCodeLn("\t}");
 		}
-
 		logger.debug("leave");
+		
+		return result;
 	}
 
 	private void generateSetup() {

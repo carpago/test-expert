@@ -653,6 +653,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		}
 
 		Assert.assertTrue("lijst should be a collab InnerclassTest", t.isCallerForCollab("lijst"));
+		Assert.assertFalse("klasdfjalk;sdfjkads should not be a ..", t.isCallerForCollab("alksdfjkasdf"));
 	}
 
 	@Test
@@ -665,10 +666,36 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// throw since there a intentional error in this class...
 		}
 
-		String replays = t.generateReplays();
-
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
 		Assert.assertTrue(t.generateReplays().indexOf("EasyMock.replay(lijst);") > -1);
 	}
 
+	
+	@Test
+	public void testGenerateVerifies() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		try {
+			t.generateTestClass();
+		} catch (RuntimeException rte) {
+			// ok for now since the generateCreateArgumentsFormethod should
+			// throw since there a intentional error in this class...
+		}
+
+		// ??? why nog?Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
+		Assert.assertTrue(t.generateVerifies().indexOf("EasyMock.verify(lijst);") > -1);
+	}
+	
+	@Test
+	public void testGenerateGettersForCollaborators() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		try {
+			t.generateTestClass();
+		} catch (RuntimeException rte) {
+			// ok for now since the generateCreateArgumentsFormethod should
+			// throw since there a intentional error in this class...
+		}
+
+		// ??? why nog?Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
+		Assert.assertTrue(t.generateVerifies().indexOf("EasyMock.verify(lijst);") > -1);
+	}
 }
