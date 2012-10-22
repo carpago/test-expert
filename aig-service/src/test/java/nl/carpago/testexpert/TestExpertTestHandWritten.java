@@ -843,8 +843,18 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));") > -1);
 				method = TestClassInner.class.getMethod("getPersoon", new Class<?>[]{int.class});
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
-				System.out.println(expectAndReplays);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));") > -1);
+			
+				method = TestClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[]{int.class, Person.class});
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") >-1);
+			
+				method = TestClassInner.class.getMethod("testWithCallToSelf", new Class<?>[]{int.class});
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				System.out.println(">"+expectAndReplays+"<");
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(inner.inc(number)).andReturn(4);") >-1);
+			
+			
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

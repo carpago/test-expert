@@ -15,6 +15,7 @@ public class TestClassInner {
 	private int leeftijd;
 	private String variableWithSetterForTest;
 	private PersoonDAO persoonDao;
+	private TestClassInner inner;
 	
 	@CreateUnittest
 	public void test1() {
@@ -97,6 +98,18 @@ public class TestClassInner {
 	@CreateUnittest(in="number", out="eenAnderPersoon")
 	public Persoon getPersoon(int number) {
 		return persoonDao.getPersoon(number);
+	}
+	
+	@CreateUnittest(in={"number", "person"}, out="anotherPerson")
+	public Person testWithMoreThanOneArgument(int aNumber, Person aPerson) {
+		Person result = this.persoonDao.getPerson(aNumber, aPerson);
+		
+		return result;
+	}
+	
+	@CreateUnittest(in={"number"}, out="number")
+	public int testWithCallToSelf(int in) {
+		return inner.inc(in);
 	}
 
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {

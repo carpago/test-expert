@@ -400,10 +400,6 @@ public class TestExpert {
 							// MeldingDAO wordt:
 							// nl.belastingdienst.aig.dao.MeldingDao
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
-							if (collab.equals(this.classUnderTest.getName())) {
-								continue inner;
-							}
-
 							// method = Class.forName(collab).getmet
 						} catch (SecurityException e) {
 							logger.error(e);
