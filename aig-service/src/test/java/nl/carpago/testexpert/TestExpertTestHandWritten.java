@@ -774,13 +774,53 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		Assert.assertTrue(currentSize == newSize);
 	}
 
+	/**
+	 * 
+	 * @Before
+	@SuppressWarnings("unchecked")
+	public void setUp() {
+		this.testClassInner = new TestClassInner();
+
+		this.lijst = EasyMock.createMock(List.class);
+		setFieldThroughReflection(testClassInner, "lijst", this.lijst);
+
+		this.voornaam = EasyMock.createMock(String.class);
+		setFieldThroughReflection(testClassInner, "voornaam", this.voornaam);
+
+
+		this.variableWithSetterForTest = EasyMock.createMock(String.class);
+		this.testClassInner.setVariableWithSetterForTest(this.variableWithSetterForTest);
+
+		this.persoonDao = EasyMock.createMock(PersoonDAO.class);
+		setFieldThroughReflection(testClassInner, "persoonDao", this.persoonDao);
+	}
+	 */
+	
 	@Test
 	public void testGenerateSetup() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 
 		String setup = t.generateSetup();
-		System.out.println(setup);
+		String anExpectedLine = "@Before";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.testClassInner = new TestClassInner();";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.lijst = EasyMock.createMock(List.class);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "setFieldThroughReflection(testClassInner, \"lijst\", this.lijst);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.voornaam = EasyMock.createMock(String.class);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "setFieldThroughReflection(testClassInner, \"voornaam\", this.voornaam);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.variableWithSetterForTest = EasyMock.createMock(String.class);";
+		anExpectedLine = "this.testClassInner.setVariableWithSetterForTest(this.variableWithSetterForTest);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "setFieldThroughReflection(testClassInner, \"persoonDao\", this.persoonDao);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 	}
 
 	@Test
