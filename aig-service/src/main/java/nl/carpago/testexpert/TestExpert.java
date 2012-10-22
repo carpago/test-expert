@@ -1138,8 +1138,8 @@ public class TestExpert {
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
-			System.out.println(Arrays.asList(parameterNames));
-			System.out.println(Arrays.asList(inputParametersViaAnnotatie));
+			logger.fatal(Arrays.asList(parameterNames));
+			logger.fatal(Arrays.asList(inputParametersViaAnnotatie));
 			throw new RuntimeException("Annotation and parameters are ordinal not equal!");
 		}
 
@@ -1268,7 +1268,7 @@ public class TestExpert {
 		}
 	}
 
-	private void checkAndAddImport(Class<?> classToImport) {
+	protected void checkAndAddImport(Class<?> classToImport) {
 		logger.debug("enter");
 		if (this.isPrimitive(classToImport.getName())) {
 			return;

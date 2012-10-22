@@ -728,10 +728,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			String expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(anotherPerson, resultFromMethod));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 			
-			method = TestClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { int.class });
+			method = TestClassInner.class.getMethod("inc", new Class<?>[] { int.class });
 			assertStatement = t.generateAssertStatements(method);
-			System.out.println(assertStatement);
-			expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be equal!\", 4 == resultFromMethod));";
+			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be equal!\", 4 == resultFromMethod);";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -741,5 +740,18 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Test
+	public void testCheckAndImport() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		int currentSize =  t.getImports().size();
+	
+		t.checkAndAddImport(int.class);
+		t.checkAndAddImport(java.lang.String.class);
+		
+		int newSize = t.getImports().size();
+		
+		Assert.assertTrue(currentSize == newSize);
 	}
 }
