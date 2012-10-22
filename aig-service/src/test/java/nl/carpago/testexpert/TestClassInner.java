@@ -10,6 +10,7 @@ public class TestClassInner {
 	private List<String> lijst;
 	private String voornaam;
 	private int leeftijd;
+	private String variableWithSetterForTest;
 
 	@CreateUnittest
 	public void test1() {
@@ -80,5 +81,9 @@ public class TestClassInner {
 	@CreateUnittest(in="3", out="4")
 	public int inc(int input) {
 		return input + 1;
+	}
+
+	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
+		this.variableWithSetterForTest = variableWithSetterForTest;
 	}
 }

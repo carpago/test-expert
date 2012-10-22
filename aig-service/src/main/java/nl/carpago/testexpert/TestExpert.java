@@ -42,7 +42,7 @@ import com.thoughtworks.paranamer.Paranamer;
 
 public class TestExpert {
 
-	private enum MockFramework {
+	protected enum MockFramework {
 		EASYMOCK, MOCKIT
 	}
 
@@ -894,49 +894,53 @@ public class TestExpert {
 		return result;
 	}
 
-	private void generateSetup() {
+	protected String generateSetup() {
 		logger.debug("enter");
-		addCodeLn("\t@Before");
+		
+		String result = EMPTY_STRING;
+		
+		result += addCodeLn("\t@Before");
 		if (MockFramework.EASYMOCK.equals(currentFramework)) {
-			addCodeLn("\t@SuppressWarnings(\"unchecked\")");
+			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
 		// hoeft niet meer met JUNit 4 ? System.out.println("\t@Override");
-		addCodeLn("\tpublic void setUp() {");
+		result += addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
-		addCode("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + " = ");
-		addCode(generateConstructorForClass(this.classUnderTest));
-		addCodeLn(";");
+		result += addCode("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + " = ");
+		result += addCode(generateConstructorForClass(this.classUnderTest));
+		result += addCodeLn(";");
 
 		// init the collaborating classes
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
-			addCodeLn();
+			result += addCodeLn();
 			if (!(this.isPrimitive(field.getType().getName()))) {
 				if (MockFramework.EASYMOCK.equals(currentFramework)) {
-					addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
+					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 				}
 
 				// probeer de setter te vinden. Indien dit niet kan dan niet ...
 				// dan lijkt het niet nodig.
 				try {
 					String fieldNameFirstLetterCap = WordUtils.capitalize(field.getName());
+					System.out.println(fieldNameFirstLetterCap);
 					Method setter = this.classUnderTest.getMethod("set" + fieldNameFirstLetterCap, field.getType());
-					addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName() + "(" + "this." + WordUtils.uncapitalize(field.getName()) + ");");
+					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName() + "(" + "this." + WordUtils.uncapitalize(field.getName()) + ");");
 
 				} catch (SecurityException e) {
 					e.printStackTrace();
 				} catch (NoSuchMethodException e) { // rloman: refactoren. Houd
 													// niet van exceptions
-					addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
+					result += addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
 							+ WordUtils.uncapitalize(field.getName()) + ");");
 					// only in this case ... this exception is valid
 				}
 			}
 		}
-
-		addCodeLn("\t}");
+		result += addCodeLn("\t}");
 
 		logger.debug("leave");
-
+		
+		return result;
 	}
 
 	public void generateMethodsWithAnnotationTestMe() {

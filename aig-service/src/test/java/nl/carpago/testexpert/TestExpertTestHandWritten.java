@@ -10,6 +10,7 @@ import java.util.Set;
 
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
+import nl.carpago.testexpert.TestExpert.MockFramework;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -753,5 +754,17 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		int newSize = t.getImports().size();
 		
 		Assert.assertTrue(currentSize == newSize);
+	}
+	
+	@Test
+	public void testGenerateSetup() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		
+		String setup = t.generateSetup();
+		System.out.println(setup);
+		
+		
+
 	}
 }
