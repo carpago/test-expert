@@ -25,11 +25,6 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public String vince3() {
-		return "vince3";
-	}
-	
-	@Bean
 	public String string() {
 		return "3";
 	}

@@ -2,8 +2,11 @@ package nl.carpago.testexpert;
 
 import java.util.List;
 
+import nl.belastingdienst.aig.melding.PersoonDAO;
 import nl.carpago.unittestgenerator.annotation.CreateUnittest;
 import nl.carpago.unittestgenerator.annotation.Expect;
+
+
 
 public class TestClassInner {
 
@@ -11,7 +14,8 @@ public class TestClassInner {
 	private String voornaam;
 	private int leeftijd;
 	private String variableWithSetterForTest;
-
+	private PersoonDAO persoonDao;
+	
 	@CreateUnittest
 	public void test1() {
 
@@ -82,8 +86,26 @@ public class TestClassInner {
 	public int inc(int input) {
 		return input + 1;
 	}
+	
+	@CreateUnittest(in={"number"}, out="string")
+	public String getNumber(int aNumber) {
+		String result = persoonDao.getSofi(aNumber);
+		
+		return result;
+	}
+	
+	@CreateUnittest(in="number", out="eenAnderPersoon")
+	public Persoon getPersoon(int number) {
+		return persoonDao.getPersoon(number);
+	}
 
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;
 	}
+
+	protected void setPersoonDao(PersoonDAO persoonDao) {
+		this.persoonDao = persoonDao;
+	}
+	
+	
 }

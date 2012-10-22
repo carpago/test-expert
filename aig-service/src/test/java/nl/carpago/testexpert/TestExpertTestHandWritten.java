@@ -609,12 +609,19 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
 		try {
 			Method method = TestClassInner.class.getMethod("methodForCreateArguments", new Class<?>[] { int.class, String.class, Person.class });
-			String code = t.generateCreateArgumentsForTestMethod(method);
-			String expected = "" + "int firstUnknowArgument = 17;" + "String secondUnknowArgument = new String();" + "Person thirdUnknowArgument = new Person(new String(), 17);";
-			String[] codeSplitted = code.split("\n");
-			for (String line : codeSplitted) {
-				Assert.assertTrue(expected.indexOf(line.trim()) > -1);
+			String code;
+			try {
+				code = t.generateCreateArgumentsForTestMethod(method);
+				String expected = "" + "int firstUnknowArgument = 17;" + "String secondUnknowArgument = new String();" + "Person thirdUnknowArgument = new Person(new String(), 17);";
+				String[] codeSplitted = code.split("\n");
+				for (String line : codeSplitted) {
+					Assert.assertTrue(expected.indexOf(line.trim()) > -1);
+				}
+			} catch (InvalidAnnotationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -626,11 +633,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			Method method = TestClassInner.class.getMethod("methodForCreateArgumentsError", new Class<?>[] { int.class, String.class, Person.class });
 			try {
 				t.generateCreateArgumentsForTestMethod(method);
-				fail();
-			} catch (RuntimeException rte) {
-
+			} catch (InvalidAnnotationException e) {
+				// ok
 			}
-
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -638,14 +643,18 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		}
-
 	}
 
 	@Test
 	public void testIsCallerForCollab() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
 		try {
-			t.generateTestClass();
+			try {
+				t.generateTestClass();
+			} catch (InvalidAnnotationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (RuntimeException rte) {
 			// ok for now since the generateCreateArgumentsFormethod should
 			// throw since there a intentional error in this class...
@@ -663,6 +672,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		} catch (RuntimeException rte) {
 			// ok for now since the generateCreateArgumentsFormethod should
 			// throw since there a intentional error in this class...
+		} catch (InvalidAnnotationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
@@ -678,6 +690,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		} catch (RuntimeException rte) {
 			// ok for now since the generateCreateArgumentsFormethod should
 			// throw since there a intentional error in this class...
+		} catch (InvalidAnnotationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
@@ -693,6 +708,9 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		} catch (RuntimeException rte) {
 			// ok for now since the generateCreateArgumentsFormethod should
 			// throw since there a intentional error in this class...
+		} catch (InvalidAnnotationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		String collabString = t.generateGettersForCollaborators();
@@ -728,7 +746,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			System.out.println(assertStatement);
 			String expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(anotherPerson, resultFromMethod));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
-			
+
 			method = TestClassInner.class.getMethod("inc", new Class<?>[] { int.class });
 			assertStatement = t.generateAssertStatements(method);
 			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be equal!\", 4 == resultFromMethod);";
@@ -742,29 +760,62 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		}
 
 	}
-	
+
 	@Test
 	public void testCheckAndImport() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
-		int currentSize =  t.getImports().size();
-	
+		int currentSize = t.getImports().size();
+
 		t.checkAndAddImport(int.class);
 		t.checkAndAddImport(java.lang.String.class);
-		
+
 		int newSize = t.getImports().size();
-		
+
 		Assert.assertTrue(currentSize == newSize);
 	}
-	
+
 	@Test
 	public void testGenerateSetup() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
-		
+
 		String setup = t.generateSetup();
 		System.out.println(setup);
-		
-		
+	}
 
+	@Test
+	public void testGenerateExpectAndReplayForCollaboratorsOfMethod() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("getNumber", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));") > -1);
+				method = TestClassInner.class.getMethod("getPersoon", new Class<?>[]{int.class});
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				System.out.println(expectAndReplays);
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));") > -1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

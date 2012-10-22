@@ -103,7 +103,12 @@ public class TestExpert {
 
 				TestExpert generator = new TestExpert(classUnderTest, Fixtures.class);
 
-				generator.generateTestClass();
+				try {
+					generator.generateTestClass();
+				} catch (InvalidAnnotationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				generator.writeFile();
 			}
@@ -191,7 +196,7 @@ public class TestExpert {
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
 	}
 
-	public void generateTestClass() {
+	public void generateTestClass() throws InvalidAnnotationException {
 		logger.debug("enter");
 
 		generateAnnotationsForSpringTest();
@@ -262,8 +267,10 @@ public class TestExpert {
 	 * call naar interface (dao)
 	 */
 	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-	private void generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
+	protected String generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 		logger.debug("enter");
+		
+		String result = EMPTY_STRING;
 
 		String[] inputParametersViaAnnotations = methodeArgument.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
@@ -503,9 +510,9 @@ public class TestExpert {
 											} else {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
-													addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
-													addCode(generateConstructorForClass(parameterType));
-													addCodeLn(";");
+													result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
+													result += addCode(generateConstructorForClass(parameterType));
+													result += addCodeLn(";");
 												}
 
 											}
@@ -518,9 +525,9 @@ public class TestExpert {
 											try {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
-													addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
-													addCode(generateConstructorForClass(parameterType));
-													addCodeLn(";");
+													result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
+													result += addCode(generateConstructorForClass(parameterType));
+													result += addCodeLn(";");
 												}
 
 											} catch (IndexOutOfBoundsException iobe) {
@@ -550,7 +557,7 @@ public class TestExpert {
 								
 								String returnFromMethod = null;
 								if (method.getReturnType().toString().equals("void")) {
-									addCodeLn("\t\t" + construction + ";");
+									result += addCodeLn("\t\t" + construction + ";");
 								} else {
 									if (out != null) {
 										returnFromMethod = out;
@@ -565,20 +572,20 @@ public class TestExpert {
 									}
 									if (MockFramework.MOCKIT.equals(currentFramework)) {
 										this.checkAndAddImport(mockit.Expectations.class);
-										addCodeLn("\t\tnew Expectations() {");
-										addCodeLn("\t\t\t{");
-										addCodeLn("\t\t\t\t" + construction + ";");
-										addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
-										addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
+										result += addCodeLn("\t\tnew Expectations() {");
+										result += addCodeLn("\t\t\t{");
+										result += addCodeLn("\t\t\t\t" + construction + ";");
+										result += addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
+										result += addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
 										this.checkAndAddImport(method.getReturnType().getClass());
-										addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
-										addCode(" validate(");
-										addCode(this.getParameterTypesAndNameAsString(method));
-										addCodeLn("){");
+										result += addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
+										result += addCode(" validate(");
+										result += addCode(this.getParameterTypesAndNameAsString(method));
+										result += addCodeLn("){");
 
 									} else {
 										if (MockFramework.EASYMOCK.equals(currentFramework)) {
-											addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
+											result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 										}
 									}
 									if (MockFramework.EASYMOCK.equals(currentFramework)) {
@@ -599,22 +606,22 @@ public class TestExpert {
 												cloneString = returnFromMethod;
 											}
 
-											addCode(cloneString);
+											result += addCode(cloneString);
 
 										} else {
-											addCode(generateConstructorForClass(method.getReturnType()));
+											result += addCode(generateConstructorForClass(method.getReturnType()));
 										}
-										addCodeLn(");");
+										result += addCodeLn(");");
 
 									} else {
 										if (MockFramework.MOCKIT.equals(currentFramework)) {
 											// return the value.
-											addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
+											result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
 
-											addCodeLn("\t\t\t\t\t}");
-											addCodeLn("\t\t\t\t};");
-											addCodeLn("\t\t\t}");
-											addCodeLn("\t\t};");
+											result += addCodeLn("\t\t\t\t\t}");
+											result += addCodeLn("\t\t\t\t};");
+											result += addCodeLn("\t\t\t}");
+											result += addCodeLn("\t\t};");
 										}
 									}
 								}
@@ -630,6 +637,8 @@ public class TestExpert {
 
 		}
 		logger.debug("leave");
+		
+		return result;
 	}
 
 	protected boolean isCallerForCollab(String aCollabKandidate) {
@@ -943,7 +952,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public void generateMethodsWithAnnotationTestMe() {
+	public void generateMethodsWithAnnotationTestMe() throws InvalidAnnotationException {
 		logger.debug("enter");
 		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
@@ -1127,7 +1136,7 @@ public class TestExpert {
 		return result;
 	}
 
-	protected String generateCreateArgumentsForTestMethod(Method methodeToBeTested) {
+	protected String generateCreateArgumentsForTestMethod(Method methodeToBeTested) throws InvalidAnnotationException  {
 		logger.debug("enter");
 
 		String[] parameterNames = null;
@@ -1144,7 +1153,7 @@ public class TestExpert {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
 			logger.fatal(Arrays.asList(parameterNames));
 			logger.fatal(Arrays.asList(inputParametersViaAnnotatie));
-			throw new RuntimeException("Annotation and parameters are ordinal not equal!");
+			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 
 		Class<?>[] parameterTypes = methodeToBeTested.getParameterTypes();
