@@ -20,12 +20,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { FixturesForTest.class })
 public class TestExpertTestHandWritten extends AbstractTestExpert {
 
-	
 	// class under test
 	private TestExpert testExpert;
 
@@ -666,11 +664,11 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// throw since there a intentional error in this class...
 		}
 
-		// ??? why nog?Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
+		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
+		// "EasyMock.replay(list);", t.generateReplays());
 		Assert.assertTrue(t.generateReplays().indexOf("EasyMock.replay(lijst);") > -1);
 	}
 
-	
 	@Test
 	public void testGenerateVerifies() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
@@ -681,10 +679,11 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// throw since there a intentional error in this class...
 		}
 
-		// ??? why nog?Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
+		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
+		// "EasyMock.replay(list);", t.generateReplays());
 		Assert.assertTrue(t.generateVerifies().indexOf("EasyMock.verify(lijst);") > -1);
 	}
-	
+
 	@Test
 	public void testGenerateGettersForCollaborators() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
@@ -695,7 +694,52 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// throw since there a intentional error in this class...
 		}
 
-		// ??? why nog?Assert.assertEquals("The generated replay code is wrong", "EasyMock.replay(list);", t.generateReplays());
-		Assert.assertTrue(t.generateVerifies().indexOf("EasyMock.verify(lijst);") > -1);
+		String collabString = t.generateGettersForCollaborators();
+		Assert.assertTrue(collabString.indexOf("public List<String> getLijst()") > -1);
+		Assert.assertTrue(collabString.indexOf("return this.lijst;") > -1);
+	}
+
+	@Test
+	public void testGenerateCallToTestMethod() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+
+		try {
+			Method method = TestClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
+			String callTotTestMethod = t.generateCallToTestMethod(method);
+			String expected = "Person resultFromMethod = testClassInner.testMethodeForCreateCallToTestMethod(person, anotherPerson);";
+			Assert.assertTrue(callTotTestMethod.indexOf(expected) > -1);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testGenerateAssertStatementsForMethod() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+
+		try {
+			Method method = TestClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
+			String assertStatement = t.generateAssertStatements(method);
+			System.out.println(assertStatement);
+			String expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(anotherPerson, resultFromMethod));";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			
+			method = TestClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { int.class });
+			assertStatement = t.generateAssertStatements(method);
+			System.out.println(assertStatement);
+			expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be equal!\", 4 == resultFromMethod));";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+			e.printStackTrace();
+		}
+
 	}
 }

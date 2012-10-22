@@ -8,6 +8,8 @@ import nl.carpago.unittestgenerator.annotation.Expect;
 public class TestClassInner {
 
 	private List<String> lijst;
+	private String voornaam;
+	private int leeftijd;
 
 	@CreateUnittest
 	public void test1() {
@@ -68,5 +70,15 @@ public class TestClassInner {
 	public void tryCollabCall() {
 		int length = lijst.size();
 
+	}
+	
+	@CreateUnittest(in={"person","anotherPerson"}, out="anotherPerson")
+	public Person testMethodeForCreateCallToTestMethod(Person person, Person anotherPerson) {
+		return new Person("John Doe", 44);
+	}
+	
+	@CreateUnittest(in="3", out="4")
+	public int inc(int input) {
+		return input + 1;
 	}
 }

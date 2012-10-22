@@ -870,7 +870,7 @@ public class TestExpert {
 				// ja wat eigenlijk ? :-))
 			}
 		}
-		result += addCode("> ");
+		result += addCode(">");
 		
 		return result;
 	}
@@ -881,11 +881,11 @@ public class TestExpert {
 		String result = "";
 		for (Field field : fields) {
 			result += addCodeLn();
-			result += addCode("\tpublic " + field.getType().getSimpleName() + " ");
+			result += addCode("\tpublic " + field.getType().getSimpleName());
 			if (field.getGenericType() instanceof ParameterizedType) {
 				result += this.generateGeneric((ParameterizedType) field.getGenericType());
 			}
-			result += addCodeLn("get" + WordUtils.capitalize(field.getName()) + "(){");
+			result += addCodeLn(" get" + WordUtils.capitalize(field.getName()) + "(){");
 			result += addCodeLn("\t\treturn this." + WordUtils.uncapitalize(field.getName()) + ";");
 			result += addCodeLn("\t}");
 		}
@@ -994,19 +994,20 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private void generateCallToTestMethod(Method methode) {
+	protected String generateCallToTestMethod(Method methode) {
 		logger.debug("enter");
 
 		String parameterString = EMPTY_STRING;
-
-		addCodeLn();
-		addCode("\t\t");
+		String result = EMPTY_STRING;
+		
+		result += addCodeLn();
+		result += addCode("\t\t");
 
 		if (!"void".equals(methode.getReturnType().toString())) {
 			this.checkAndAddImport(methode.getReturnType());
-			addCode(methode.getReturnType().getSimpleName() + " " + this.RESULTFROMMETHOD + " = ");
+			result += addCode(methode.getReturnType().getSimpleName() + " " + this.RESULTFROMMETHOD + " = ");
 		}
-		addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
+		result += addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
 
 		String[] parameterNames = methode.getAnnotation(CreateUnittest.class).in(); // this.getParameterNamesForMethod(methode);
 		String first = EMPTY_STRING;
@@ -1020,26 +1021,31 @@ public class TestExpert {
 
 		parameterString = first + tail;
 
-		addCode(parameterString);
-		addCode(");");
+		result += addCode(parameterString);
+		result += addCode(");");
 
-		addCodeLn();
+		result += addCodeLn();
 
 		logger.debug("leave");
+		
+		return result;
 	}
 
-	private void generateAssertStatements(Method method) {
+	protected String generateAssertStatements(Method method) {
 		logger.debug("enter");
+		String result = EMPTY_STRING;
 		String expected = method.getAnnotation(CreateUnittest.class).out();
 		String actual = this.RESULTFROMMETHOD;
-		addCode("\n\t\t");
+		result += addCode("\n\t\t");
 		if (this.isPrimitive(method.getReturnType().toString())) {
-			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == " + actual + ");");
+			result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == " + actual + ");");
 		} else {
-			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
+			result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
 		}
 
 		logger.debug("leave");
+		
+		return result;
 	}
 
 	protected List<Class<?>> generateFixturesForMethod(Method methode) {
@@ -1415,6 +1421,10 @@ public class TestExpert {
 
 	protected HashMap<String, Class<?>> getFixtures() {
 		return fixtures;
+	}
+
+	protected void setCurrentFramework(MockFramework currentFramework) {
+		this.currentFramework = currentFramework;
 	}
 	
 	
