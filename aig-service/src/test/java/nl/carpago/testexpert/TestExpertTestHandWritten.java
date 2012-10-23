@@ -869,4 +869,38 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVar() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("testWithLocalVariable", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				System.out.println(expectAndReplays);
+				Assert.assertTrue(expectAndReplays.indexOf("Person localPerson = new Person(new String(), 17);") > -1);
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));") > -1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

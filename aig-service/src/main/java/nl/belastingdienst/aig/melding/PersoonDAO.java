@@ -20,4 +20,8 @@ public class PersoonDAO {
 	public Person getPerson(int aNumber, Person aPerson) {
 		return new Person("John Doe", 45);
 	}
+	
+	public Person getPersonWithoutHelp(int aNumber, Person aPerson) {
+		return new Person("John Doe", 99);
+	}
 }
