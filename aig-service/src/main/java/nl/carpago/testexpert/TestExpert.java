@@ -46,7 +46,7 @@ public class TestExpert {
 		EASYMOCK, MOCKIT
 	}
 
-	private MockFramework currentFramework = MockFramework.MOCKIT;
+	private MockFramework currentFramework = MockFramework.EASYMOCK;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
@@ -401,6 +401,9 @@ public class TestExpert {
 							// nl.belastingdienst.aig.dao.MeldingDao
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
 							// method = Class.forName(collab).getmet
+							if (collab.equals(this.classUnderTest.getName())) {
+								continue inner;
+							}
 						} catch (SecurityException e) {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
@@ -460,7 +463,7 @@ public class TestExpert {
 								// En neem de wiskundige A-B
 								logger.debug(method);
 								logger.debug("returns:" + out);
-
+								
 								for (int n = 0; n < collabZijnParams.size(); n++) {
 									String element = collabZijnParams.get(n);
 									if (!testMethodeZijnParams.contains(element) && !(isLiteral(element)) && !(localVars.contains(element))) {
