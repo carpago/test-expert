@@ -3,7 +3,6 @@ package nl.carpago.testexpert;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +11,6 @@ import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
 import nl.carpago.testexpert.TestExpert.MockFramework;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,27 +26,16 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	// class under test
 	private TestExpert testExpert;
 
-	// collaborating classes
-	private Logger logger;
-	private Class classUnderTest;
-	private Package pakkage;
-	private Set imports;
-	private List annotionsBeforeTestClass;
-	private String header;
-	private String body;
-	private HashMap fixtures;
-	private Set collabs;
-	private ApplicationContext ctx;
-	private Class contextClass;
-	private String footer;
-	private String eMPTY_STRING;
-	private String qUESTION_MARK;
-	private String aSTERISK;
-	private String rESULTFROMMETHOD;
-
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
+		super.setUp();
 		this.testExpert = new TestExpert(OnderhoudenMeldingServiceImpl.class, FixturesForTest.class);
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		this.testExpert = null;
 	}
 
 	@Test
@@ -887,7 +874,6 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
-				System.out.println(expectAndReplays);
 				Assert.assertTrue(expectAndReplays.indexOf("Person localPerson = new Person(new String(), 17);") > -1);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));") > -1);
 			} catch (IOException e) {
@@ -902,5 +888,42 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVarWithHelp() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("testWithLocalVariableWithHelp", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") > -1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testWithQuestionMarkOrAsteriskInAnnotation(){
+		
 	}
 }

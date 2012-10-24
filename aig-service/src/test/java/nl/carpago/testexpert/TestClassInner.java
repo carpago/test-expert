@@ -116,6 +116,17 @@ public class TestClassInner {
 		return result;
 	}
 	
+	
+	@CreateUnittest(in={"number"}, out="person")
+	public Person testWithLocalVariableWithHelp(int aNumber) {
+		Person localPerson = new Person("John Doe", 46);
+		
+		Person result = this.persoonDao.getPerson(aNumber,  localPerson);
+		
+		return result;
+	}
+	
+	
 	@CreateUnittest(in={"number"}, out="number")
 	public int testWithCallToSelf(int in) {
 		return inner.inc(in);
