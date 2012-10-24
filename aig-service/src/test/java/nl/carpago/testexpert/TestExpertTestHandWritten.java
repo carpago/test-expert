@@ -1009,4 +1009,37 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testMethodWithVoidReturn() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("helperVoidMethod", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method).trim();
+				String expected = "persoonDao.voidmethod(number);";
+				Assert.assertEquals(expected, expectAndReplays);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

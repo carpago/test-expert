@@ -29,4 +29,9 @@ public class PersoonDAO {
 	public int getPersonWithQuestionmarksAnnotation(int numbertje) {
 		return numbertje++;
 	}
+
+	public void voidmethod(int input) {
+		System.out.println("input:"+input);
+		
+	}
 }

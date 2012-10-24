@@ -140,6 +140,11 @@ public class TestClassInner {
 		
 		return result;
 	}
+	
+	@CreateUnittest(in="number")
+	public void helperVoidMethod(int input) {
+		this.persoonDao.voidmethod(input);
+	}
 
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;

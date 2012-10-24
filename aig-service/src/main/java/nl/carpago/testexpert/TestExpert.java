@@ -555,7 +555,7 @@ public class TestExpert {
 								}
 								
 								String returnFromMethod = null;
-								if (method.getReturnType().toString().equals("void")) {
+								if ("void".equals(method.getReturnType().toString())) {
 									result += addCodeLn("\t\t" + construction + ";");
 								} else {
 									if (out != null) {
