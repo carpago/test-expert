@@ -1042,4 +1042,40 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * This methods tests - and tests only - if a non-literal return from a collab is correctly used.
+	 */
+	@Test
+	public void testCallToCollabWithReturn() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("addMe", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method).trim();
+				String expected = "EasyMock.expect(persoonDao.inc(number)).andReturn(number);";
+				Assert.assertEquals(expected, expectAndReplays);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

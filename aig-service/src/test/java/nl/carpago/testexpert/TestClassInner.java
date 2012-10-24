@@ -146,10 +146,22 @@ public class TestClassInner {
 		this.persoonDao.voidmethod(input);
 	}
 
+	
+	@CreateUnittest(in="number")
+	public void addMe(int number) {
+		int result = this.persoonDao.inc(number);
+	}
+	
+	@CreateUnittest(in="number")
+	public int addMeWithoutUsingReturn(int number) {
+		return this.persoonDao.inc(number);
+	}
+	
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;
 	}
 
+	
 	protected void setPersoonDao(PersoonDAO persoonDao) {
 		this.persoonDao = persoonDao;
 	}

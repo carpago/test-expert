@@ -34,4 +34,9 @@ public class PersoonDAO {
 		System.out.println("input:"+input);
 		
 	}
+	
+	@Expect(in="3", out="number")
+	public int inc(int input) {
+		return input++;
+	}
 }
