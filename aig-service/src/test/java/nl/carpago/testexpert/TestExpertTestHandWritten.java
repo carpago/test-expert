@@ -923,7 +923,90 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 	}
 	
 	@Test
+	public void testGenerateExpectAndReplayForMockit() {
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.MOCKIT);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("getNumber", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				
+				String[] expectedLines = new String[6];
+				expectedLines[0] = "new Expectations() {";
+				expectedLines[1] = "persoonDao.getSofi(number);";
+				expectedLines[2] = "forEachInvocation = new Object() {";
+				expectedLines[3] = "@SuppressWarnings(\"unused\")";
+				expectedLines[4] ="String validate(int number){";
+				expectedLines[5] = "return string;";
+				
+				for(String anExpectedLine : expectedLines) {
+					Assert.assertTrue("Line:"+anExpectedLine+" not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
+				}
+				
+				// asssert that mockit is imported
+				Assert.assertTrue(t.getImports().contains("mockit.Mocked"));
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	@Test
 	public void testWithQuestionMarkOrAsteriskInAnnotation(){
-		
+		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		try {
+			t.generateTestClass();
+		}
+		catch (InvalidAnnotationException e) {
+			e.printStackTrace();
+		}
+
+		Method method;
+		try {
+			method = TestClassInner.class.getMethod("testHelperMethodForQuestionmark", new Class<?>[] { int.class });
+			String expectAndReplays;
+			try {
+				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				
+				String[] expectedLines = new String[2];
+				expectedLines[0] = "int aNumber = 17;";
+				expectedLines[1] = "EasyMock.expect(persoonDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
+				
+				for(String anExpectedLine : expectedLines) {
+					Assert.assertTrue("Line:"+anExpectedLine+" not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

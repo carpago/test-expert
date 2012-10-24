@@ -24,4 +24,9 @@ public class PersoonDAO {
 	public Person getPersonWithoutHelp(int aNumber, Person aPerson) {
 		return new Person("John Doe", 99);
 	}
+	
+	@Expect(in={"*"}, out="4")
+	public int getPersonWithQuestionmarksAnnotation(int numbertje) {
+		return numbertje++;
+	}
 }

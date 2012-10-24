@@ -131,6 +131,15 @@ public class TestClassInner {
 	public int testWithCallToSelf(int in) {
 		return inner.inc(in);
 	}
+	
+	@CreateUnittest(in="number", out="4")
+	public int testHelperMethodForQuestionmark(int number) {
+		
+		int aNumber = 3;
+		int result = this.persoonDao.getPersonWithQuestionmarksAnnotation(aNumber);
+		
+		return result;
+	}
 
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;
