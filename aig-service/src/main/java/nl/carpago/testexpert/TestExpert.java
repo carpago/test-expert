@@ -141,6 +141,7 @@ public class TestExpert {
 			logger.error("Unable to create outputfile. System halted.");
 			System.exit(1);
 		}
+		
 		PrintStream po = new PrintStream(stream);
 		po.print(this.codeGen());
 		po.close();
@@ -149,28 +150,47 @@ public class TestExpert {
 		logger.debug("leaving writeFile");
 	}
 	
-	public InputStream getInputStreamFromCode() {
+	public BufferedInputStream getInputStreamFromGeneratedCode() {
 
 		final PipedInputStream pipedInputStream = new PipedInputStream();
 		try {
 			final PipedOutputStream pipedOutputStream =  new PipedOutputStream(pipedInputStream);
-			new Thread(new Runnable(){
+			Thread t = new Thread(new Runnable(){
 
 				@Override
 				public void run() {
 					PrintStream po = new PrintStream(pipedOutputStream);
 					po.print(codeGen());
+					po.flush();
+					po.close();
+					try {
+						pipedOutputStream.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						pipedOutputStream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}
 				
-			}).start();
-			pipedOutputStream.flush();
-			pipedOutputStream.close();
+			});
+			t.start();
 			
-			return pipedInputStream;
+			return new BufferedInputStream(pipedInputStream);
 		} catch (IOException e) {
 			e.printStackTrace();
-			
-			return null;
+			return new BufferedInputStream(pipedInputStream) {
+				
+				@Override
+				public int read() throws IOException {
+					return 0;
+				}
+			};
 		}
 	}
 
