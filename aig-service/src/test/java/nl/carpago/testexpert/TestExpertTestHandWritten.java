@@ -422,6 +422,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String header = t.getHeader();
 		String expected = "public class AClassUnderTestTest extends AbstractTestExpert {\n";
 		assertEquals(expected, header);
+		Assert.assertEquals(expected, t.codeGenHeader());
 	}
 
 	@Test
@@ -431,6 +432,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String footer = t.getFooter();
 		String expected = "}";
 		Assert.assertEquals(expected, footer);
+		Assert.assertEquals(expected, t.codeGenFooter());
 	}
 
 	@Test
@@ -454,14 +456,18 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		 * .add("@ContextConfiguration(classes={Fixtures.class})");
 		 */
 
-		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
+		TestExpert testExpert = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
 
-		t.generateAnnotationsForSpringTest();
-		List<String> annotations = t.getAnnotionsBeforeTestClass();
+		testExpert.generateAnnotationsForSpringTest();
+		List<String> annotations = testExpert.getAnnotionsBeforeTestClass();
 
 		Assert.assertEquals(2, annotations.size());
 		Assert.assertTrue(annotations.contains("@RunWith(SpringJUnit4ClassRunner.class)"));
 		Assert.assertTrue(annotations.contains("@ContextConfiguration(classes={FixturesForTest.class})"));
+		
+		String codeGenAnnotations = testExpert.codeGenAnnotationsForSpringTest();
+		Assert.assertTrue(codeGenAnnotations.indexOf("@RunWith(SpringJUnit4ClassRunner.class)") > -1);
+		Assert.assertTrue(codeGenAnnotations.indexOf("@ContextConfiguration(classes={FixturesForTest.class})") > -1);
 	}
 
 	@Test
@@ -479,32 +485,62 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		// the work should already be done by the constructor
 
 		// same package
-		TestExpert t = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
+		TestExpert testExpert = new TestExpert(AClassUnderTest.class, FixturesForTest.class);
 
-		Set<String> imports = t.getImports();
+		Set<String> imports = testExpert.getImports();
 		Assert.assertEquals(6, imports.size());
 
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
-		// Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
-		// Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
+		// not te be inserted: Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
+		// not to be inserted: Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
 		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
 
+		// test the code that eventually is generated.
+		String code = testExpert.codeGenImports();
+		String[] lines = code.split("\n");
+		Assert.assertEquals(6, lines.length);
+		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
+		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
+		// not te be inserted: Assert.assertTrue(code.contains("nl.carpago.testexpert.AbstractTestExpert") > -1);
+		// not to be inserted: Assert.assertTrue(code.contains(t.getContextClass().getSimpleName()));
+		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
+		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
+		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
+		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
+		
 		// other package
-		t = new TestExpert(String.class, FixturesForTest.class);
-		imports = t.getImports();
+		testExpert = new TestExpert(String.class, FixturesForTest.class);
+		imports = testExpert.getImports();
 		Assert.assertEquals(8, imports.size());
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
 		Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
-		Assert.assertTrue(imports.contains(t.getContextClass().getName()));
+		Assert.assertTrue(imports.contains(testExpert.getContextClass().getName()));
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
 		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+		
+		code = testExpert.codeGenImports();
+		lines = code.split("\n");
+		
+		Assert.assertEquals(8, lines.length);
+		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
+		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
+		Assert.assertTrue(code.indexOf("nl.carpago.testexpert.AbstractTestExpert") > -1);
+		 Assert.assertTrue(code.indexOf(testExpert.getContextClass().getSimpleName()) > -1);
+		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
+		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
+		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
+		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
+		
+		
+		
+		
 
 	}
 
@@ -549,7 +585,17 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 
 		Assert.assertFalse(fixturesFromTestExpert.containsKey("3"));
 	}
-
+	
+	@Test
+	public void testCodegenPackage() {
+		TestExpert testExpert = new TestExpert(TestClassInner.class, FixturesForTest.class);
+		
+		String code = testExpert.codeGenPackage();
+		System.out.println(">"+code+"<");
+		
+		Assert.assertTrue(code+" is not equal to 'nl.carpago.testexpert<crlf><crlf>'", "package nl.carpago.testexpert;\n\n".equals(code));
+	}
+	
 	@Test
 	public void testCodegenFixtures() {
 		TestExpert t = new TestExpert(TestClassInner.class, FixturesForTest.class);

@@ -1341,7 +1341,7 @@ public class TestExpert {
 		return result.trim();
 	}
 
-	private String codeGenHeader() {
+	protected String codeGenHeader() {
 		return this.header;
 	}
 
@@ -1349,11 +1349,11 @@ public class TestExpert {
 		return this.body;
 	}
 
-	private String codeGenFooter() {
+	protected String codeGenFooter() {
 		return this.footer;
 	}
 
-	private String codeGenAnnotationsForSpringTest() {
+	protected String codeGenAnnotationsForSpringTest() {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 
@@ -1366,7 +1366,7 @@ public class TestExpert {
 		return result;
 	}
 
-	private String codeGenPackage() {
+	protected String codeGenPackage() {
 
 		String result = EMPTY_STRING;
 		result += this.pakkage + ";\n\n";
@@ -1374,7 +1374,7 @@ public class TestExpert {
 		return result;
 	}
 
-	private String codeGenImports() {
+	protected String codeGenImports() {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 
