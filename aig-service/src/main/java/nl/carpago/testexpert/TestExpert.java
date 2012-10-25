@@ -1,11 +1,18 @@
 package nl.carpago.testexpert;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -127,18 +134,44 @@ public class TestExpert {
 		logger.debug("finished creating directory " + directoryName);
 
 		File file = new File(fileName);
+		FileOutputStream stream = new FileOutputStream(file);
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
 			logger.error("Unable to create outputfile. System halted.");
 			System.exit(1);
 		}
-		PrintStream po = new PrintStream(file);
+		PrintStream po = new PrintStream(stream);
 		po.print(this.codeGen());
 		po.close();
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
+	}
+	
+	public InputStream getInputStreamFromCode() {
+
+		final PipedInputStream pipedInputStream = new PipedInputStream();
+		try {
+			final PipedOutputStream pipedOutputStream =  new PipedOutputStream(pipedInputStream);
+			new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					PrintStream po = new PrintStream(pipedOutputStream);
+					po.print(codeGen());
+				}
+				
+			}).start();
+			pipedOutputStream.flush();
+			pipedOutputStream.close();
+			
+			return pipedInputStream;
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			return null;
+		}
 	}
 
 	public static List<String> findAllJavaFiles(String folder) throws IOException {
@@ -370,10 +403,9 @@ public class TestExpert {
 									logger.info("Class not found for " + param);
 									if ((this.isPrimitive(param))) {
 										parameter = this.getPrimitiveType(param);
-									} else {
-										logger.error("zowel geen class alsook geen primitive " + param);
-
-										throw new InvalidArgumentException("Parameter '" + param + "' is neither class as primitive");
+									} 
+									else {
+										assert false; // should never happen.
 									}
 								}
 								params.add(parameter);
@@ -406,8 +438,10 @@ public class TestExpert {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
 							logger.error(e);
+							assert false;
 						} catch (ClassNotFoundException e) {
 							logger.error(e);
+							assert false;
 						}
 						logger.debug("methode to collab is:" + method);
 						logger.debug("methods return type:" + method.getReturnType());
@@ -787,7 +821,7 @@ public class TestExpert {
 				} catch (SecurityException e) {
 					logger.error(e);
 				} catch (NoSuchMethodException e) {
-					logger.info(e + ", default constructor failed so trying first (real) constructor");
+					//default constructor failed so trying first (real) constructor");
 					c = clazz.getConstructors()[0];
 				}
 				this.checkAndAddImport(c.getDeclaringClass());
