@@ -4,8 +4,8 @@ classes
 *.log
 .metadata
 target
-c:
-todo.txt
 *.tar.gz
 generated-java
 generated-test
+build
+dist
