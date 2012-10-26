@@ -301,7 +301,6 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		String[] actualParameterNames = this.testExpert.getParameterNamesForMethod(m);
 
 		assertEquals(Arrays.asList(expectedParameterNames), Arrays.asList(actualParameterNames));
-
 	}
 
 	@Test
