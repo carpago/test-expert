@@ -15,7 +15,6 @@ public class TestClassInner {
 	private int leeftijd;
 	private String variableWithSetterForTest;
 	private PersoonDAO persoonDao;
-	private TestClassInner inner;
 	
 	@CreateUnittest
 	public void test1() {
@@ -129,7 +128,8 @@ public class TestClassInner {
 	
 	@CreateUnittest(in={"number"}, out="number")
 	public int testWithCallToSelf(int in) {
-		return inner.inc(in);
+	//	return inner.inc(in);
+		return 3;
 	}
 	
 	@CreateUnittest(in="number", out="4")

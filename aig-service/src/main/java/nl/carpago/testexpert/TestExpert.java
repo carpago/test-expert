@@ -3,14 +3,11 @@ package nl.carpago.testexpert;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
@@ -194,7 +191,7 @@ public class TestExpert {
 		}
 	}
 
-	public static List<String> findAllJavaFiles(String folder) throws IOException {
+	protected static List<String> findAllJavaFiles(String folder) throws IOException {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
@@ -713,7 +710,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public String[] getInAnnotationsForMethod(Method method) {
+	protected String[] getInAnnotationsForMethod(Method method) {
 
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String[] in = null;
@@ -731,7 +728,7 @@ public class TestExpert {
 	}
 
 	// @CreateUnittest(in={"methode"},out="methodeOutAnnotations")
-	public String getOutAnnotationForMethod(Method method) {
+	protected String getOutAnnotationForMethod(Method method) {
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String out = null;
 		if (annotatie == null) {
@@ -747,7 +744,7 @@ public class TestExpert {
 		return out;
 	}
 
-	public boolean isLiteral(String literalOrVariablename) {
+	protected boolean isLiteral(String literalOrVariablename) {
 		logger.debug("enter");
 
 		if (literalOrVariablename == null || EMPTY_STRING.equals(literalOrVariablename.trim())) {
@@ -786,7 +783,7 @@ public class TestExpert {
 		return true;
 	}
 
-	public String generateConstructorForClass(Type t) {
+	protected String generateConstructorForClass(Type t) {
 		logger.debug("enter");
 		String result = "";
 		if ("byte".equals(t.toString())) {
@@ -866,7 +863,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public String generateSomethingForInterface(Class<?> eenInterface) {
+	protected String generateSomethingForInterface(Class<?> eenInterface) {
 		logger.debug("enter");
 
 		this.checkAndAddImport(eenInterface);
@@ -954,7 +951,8 @@ public class TestExpert {
 		if (MockFramework.EASYMOCK.equals(currentFramework)) {
 			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
-		// hoeft niet meer met JUNit 4 ? System.out.println("\t@Override");
+		
+		result += addCodeLn("\t@Override");
 		result += addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
 		result += addCode("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + " = ");
@@ -973,7 +971,6 @@ public class TestExpert {
 				// dan lijkt het niet nodig.
 				try {
 					String fieldNameFirstLetterCap = WordUtils.capitalize(field.getName());
-					System.out.println(fieldNameFirstLetterCap);
 					Method setter = this.classUnderTest.getMethod("set" + fieldNameFirstLetterCap, field.getType());
 					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName() + "(" + "this." + WordUtils.uncapitalize(field.getName())
 							+ ");");
@@ -995,7 +992,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public void generateMethodsWithAnnotationTestMe() throws InvalidAnnotationException {
+	protected void generateMethodsWithAnnotationTestMe() throws InvalidAnnotationException {
 		logger.debug("enter");
 		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
@@ -1119,7 +1116,6 @@ public class TestExpert {
 		}
 
 		for (String fixture : fixturesAll) {
-			System.out.println(fixture);
 			if (!(this.isLiteral(fixture) || QUESTION_MARK.equals(fixture) || ASTERISK.equals(fixture))) {
 				Class<?> fixtureClass = addFixture(fixture);
 				result.add(fixtureClass);
@@ -1165,7 +1161,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public static List<Method> getMethodsWithAnnotationCreateUnitTest(Class<?> clazz) {
+	protected static List<Method> getMethodsWithAnnotationCreateUnitTest(Class<?> clazz) {
 		logger.debug("enter");
 		List<Method> result = new ArrayList<Method>();
 		for (Method methode : clazz.getDeclaredMethods()) {
@@ -1187,8 +1183,6 @@ public class TestExpert {
 		parameterNames = this.getParameterNamesForMethod(methodeToBeTested);
 
 		assert parameterNames != null;
-
-		System.out.println(Arrays.asList(parameterNames));
 
 		String[] inputParametersViaAnnotatie = methodeToBeTested.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 
@@ -1216,7 +1210,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public String[] getParameterNamesForMethod(Method method) {
+	protected String[] getParameterNamesForMethod(Method method) {
 		if (method == null || method.getParameterTypes().length == 0) {
 			return new String[] {};
 		}
@@ -1246,7 +1240,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public String[] getParameterTypesForMethod(Method method) {
+	protected String[] getParameterTypesForMethod(Method method) {
 
 		if (method == null || method.getParameterTypes().length == 0) {
 			return new String[] {};
@@ -1261,7 +1255,7 @@ public class TestExpert {
 		return result.toArray(new String[result.size()]);
 	}
 
-	public String getParameterTypesAndNameAsString(Method method) {
+	protected String getParameterTypesAndNameAsString(Method method) {
 
 		String result = "";
 
@@ -1283,7 +1277,7 @@ public class TestExpert {
 	}
 
 	// in: int, boolean, char ... out: Integer, Boolean Character
-	public Class<?> getPrimitiveType(String baseType) {
+	protected Class<?> getPrimitiveType(String baseType) {
 		logger.debug("enter");
 
 		if ("byte".equals(baseType))
@@ -1308,7 +1302,7 @@ public class TestExpert {
 		throw new InvalidArgumentException("Invalid Argument");
 	}
 
-	public boolean isPrimitive(String type) {
+	protected boolean isPrimitive(String type) {
 		logger.debug("enter");
 		try {
 			this.getPrimitiveType(type);

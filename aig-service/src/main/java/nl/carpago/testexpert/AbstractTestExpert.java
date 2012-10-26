@@ -30,8 +30,6 @@ public  class AbstractTestExpert extends TestCase {
 		String expectedAsString = xstream.toXML(expected);
 		String actualAsString = xstream.toXML(actual);
 		
-		//System.out.println(een);
-		// System.out.println(twee);
 		boolean result = expectedAsString.equals(actualAsString); //= EqualsBuilder.reflectionEquals(expected, actual); werkt namelijk niet.
 
 		return result;

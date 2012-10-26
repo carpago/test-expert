@@ -31,15 +31,6 @@ public class InvokeDTO {
 	
 	private void process() {
 		
-		// Melding result =
-		// getMeldingDao().geefMelding(betrokkene,berichtkenmerkAig);
-		// wordt in testcase:
-		// EasyMock.expect(getMeldingDao().geefMelding(betrokkene,
-		// berichtkenmerkAig)).andReturn(result);
-		// tokens in targetline, syntactically:
-		// <type> <variableName> = <reference/method to
-		// collaborator>.<methodeName>(<parameterlist>)).andReturn(..)
-		// System.out.println("nu in de targetline de goede methode call maken.");
 		Scanner scanner = null;
 		String declaration = null;
 		String construction = null;
@@ -63,9 +54,6 @@ public class InvokeDTO {
 			regel = scanner.next();
 		}
 		
-		// rloman; dit moet ik aanpassen zodat hij niet
-		// over een .toString(.) heen parsed.
-
 		scanner = new Scanner(regel).useDelimiter(";");
 		construction = scanner.next().trim();
 		this.constructionFromLine = construction;
@@ -81,7 +69,6 @@ public class InvokeDTO {
 		while(collab.indexOf(" ") > -1) {
 			collab = collab.substring(collab.indexOf(" ")+1);
 		}
-		System.out.println("collab:"+collab);
 		
 		construction = construction.substring(indexOfFirstDot+1,construction.length());
 		

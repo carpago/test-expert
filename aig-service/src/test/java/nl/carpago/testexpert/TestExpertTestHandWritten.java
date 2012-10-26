@@ -594,7 +594,6 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		TestExpert testExpert = new TestExpert(TestClassInner.class, FixturesForTest.class);
 		
 		String code = testExpert.codeGenPackage();
-		System.out.println(">"+code+"<");
 		
 		Assert.assertTrue(code+" is not equal to 'nl.carpago.testexpert<crlf><crlf>'", "package nl.carpago.testexpert;\n\n".equals(code));
 	}
@@ -779,7 +778,6 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 		try {
 			Method method = TestClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
 			String assertStatement = t.generateAssertStatements(method);
-			System.out.println(assertStatement);
 			String expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(anotherPerson, resultFromMethod));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 
@@ -1152,7 +1150,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 				counter++;
 				Assert.assertTrue(allCode.indexOf(line) > -1);
 			}
-			Assert.assertEquals("Line numbers incorrect in generatedCode!", 91, counter);
+			Assert.assertEquals("Line numbers incorrect in generatedCode!", 86, counter);
 			Assert.assertTrue(allCode.split("\n").length ==  counter);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
