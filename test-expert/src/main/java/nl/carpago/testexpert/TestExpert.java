@@ -105,7 +105,7 @@ public class TestExpert {
 			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
-				TestExpert generator = new TestExpert(classUnderTest, Fixtures.class);
+				TestExpert generator = new TestExpert(classUnderTest, FixturesForTest.class);
 
 				try {
 					generator.generateTestClass();
@@ -198,7 +198,7 @@ public class TestExpert {
 
 		// for Linux: ProcessBuilder builder = new ProcessBuilder("find",
 		// "./src/main/java", "-name", "*.java");
-		ProcessBuilder builder = new ProcessBuilder("/bin/find", folder, "-name", "*.java");
+		ProcessBuilder builder = new ProcessBuilder("c:/bin/find", folder, "-name", "*.java");
 		Process process = builder.start();
 
 		InputStream stream = process.getInputStream();

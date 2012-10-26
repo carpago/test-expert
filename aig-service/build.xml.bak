@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="EnterpriseUI" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+
+  <!-- Read properties from file -->
+  <property file="build.properties"/>
+  <include file="../gwtui/builddefs.xml" />
+  
+  <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+    <classpath path="${lib.dir}/jacoco-0.5.6/jacocoant.jar"/> 
+  </taskdef>
+
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+  	<classpath location="${findbugs.home}/findbugs-ant.jar" />
+  </taskdef>
+
+  <!-- Read properties from enviroment -->
+  <property environment="env"/>
+  
+  <!-- Set defaults -->
+  <property name="to.dir" value="${env.TEMP}" />
+  
+  <!-- Common definitions -->
+  <property name="war.file" value="Gwtui.war" />
+	
+  <!-- Path to the version constants properties file -->
+  <property name="version.properties" value="src/com/infor/gwtui/client/utils/resources/VersionConstants.properties" />
+  
+  <target name="init" description="Initialize build process">
+    <tstamp>
+	  <!-- ISO 8601 format -->
+	  <format property="build.timestamp" pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ" />
+	  <format property="build.date" pattern="dd-MMM-yyyy" />
+	  <format property="build.time" pattern="HH:mm" />
+	</tstamp>
+	<property name="build.label" value="${build.prefix}.${build.number}" />
+
+  	<!--
+	  Create a file with contents like:
+		XX.yz</td><td>
+	    01-Feb-2012</td><td>
+	    22:22</td><td>
+	-->
+	<script language="javascript"><![CDATA[
+	  var out = new java.io.PrintWriter(new java.io.FileWriter("buildnr_" + project.getProperty("build.prefix")));
+	  out.println(project.getProperty("build.label") + "</td><td>");
+	  out.println(project.getProperty("build.date") + "</td><td>");
+	  out.println(project.getProperty("build.time") + "</td><td>");
+	  out.close();
+	]]></script>
+  </target>
+  	
+  <!-- Create build version info -->
+  <target name="version" depends="init" description="Create version information">
+	<!-- Dump the version information in the version properties file -->
+	<echo file="${version.properties}">
+	version=${build.version}
+	release=${build.release}
+	label=${build.label}
+	timestamp=${build.timestamp}</echo>
+  </target>
+	
+  <target name="compile" description="Compile java source to bytecode">
+    <mkdir dir="dist"/>
+    <javac srcdir="src/main/java" includes="**" encoding="utf-8"
+        destdir="war/WEB-INF/classes"
+        source="${javac.source}" target="${javac.target}" nowarn="true"
+        debug="${javac.debug}" debuglevel="lines,vars,source" includeAntRuntime="no">
+      <classpath refid="gwtui.class.path"/>
+    </javac>
+    <copy todir="war/WEB-INF/classes" verbose="false">
+      <fileset dir="src">
+        <exclude name="**/*.java"/>
+        <exclude name="**/.svn/**"/>
+	  </fileset>
+    </copy>
+  </target>
+
+  <target name="gwtc" depends="javac" description="GWT compile to JavaScript (production mode)">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+      <classpath>
+        <pathelement location="src"/>
+        <path refid="gwtui.class.path"/>
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+      </classpath>
+      <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+      <jvmarg value="${gwtc.heapmax}"/>
+      <arg line="-war"/>
+      <arg value="war"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg line="${gwt.args}"/>
+      <arg value="com.infor.gwtui.Gwtui"/>
+   	  <arg value="com.infor.gwtui.Log"/>
+    </java>
+  </target>
+
+  <target name="devmode" depends="javac" description="Run development mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode">
+      <classpath>
+        <pathelement location="src"/>
+        <path refid="gwtui.class.path"/>
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+      </classpath>
+      <jvmarg value="${gwtc.heapmax}"/>
+      <arg value="-startupUrl"/>
+      <arg value="Gwtui.html"/>
+      <arg line="-war"/>
+      <arg value="war"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg line="${gwt.args}"/>
+      <arg value="com.infor.gwtui.Gwtui"/>
+    </java>
+  </target>
+
+  <target name="build" depends="gwtc" description="Build this project" />
+
+  <target name="war" depends="clean,version,build" description="Create a war file">
+    <copy tofile="war/version.txt" file="${version.properties}" />
+    <zip destfile="${war.file}" basedir="war" excludes="WEB-INF/classes/com/infor/gwtui/client/**"/>
+  </target>
+
+  <!-- Deployment to e.g. nlbavwtech4 -->  
+  <target name="deploy">
+	<copy todir="${to.dir}" overwrite="true">
+      <fileset dir=".">
+	    <include name="${war.file}" />
+	    <include name="buildnr_*" />
+      </fileset>
+	</copy>
+  </target>	
+
+  <target name="clean" description="Cleans this project">
+    <delete file="${war.file}" />
+    <delete dir="war/WEB-INF/classes" failonerror="false" />
+    <delete dir="war/gwtui" failonerror="false" />
+  	<delete dir="war/log" failonerror="false" />
+  	<delete dir="gwt-unitCache" failonerror="false" />
+  </target>
+
+  <target name="findbugs" depends="javac" description="Runs the FindBugs static code analysis tool">
+  	<findbugs
+  		home="${findbugs.home}"
+  		failOnError="true"
+  		warningsProperty="findbugs.found"
+  		excludeFilter=".settings/findBugsExcludeFilter.xml"
+  		effort="max"
+  		maxRank="${findbugs.maxRank}"
+  		reportLevel="${findbugs.reportLevel}"
+  		visitors="${findbugs.visitors}"
+  		output="text">
+   	  <class location="war/WEB-INF/classes" />
+  	  <auxClasspath>
+  	    <fileset dir="${gwt.sdk}">
+  	  	  <include name="**/*.jar"/>
+  	    </fileset>
+  	    <fileset dir="war\WEB-INF\lib">
+  	  	  <include name="**/*.jar"/>
+  	    </fileset>
+  	  </auxClasspath>
+  	  <sourcePath path="src" />
+  	  <systemProperty name="findbugs.sf.comment" value="true" />
+  	</findbugs>
+  	<fail if="findbugs.found" message="One or more bugs were found by FindBugs. See console for details." />
+  </target>
+
+  <target name="jacoco-report">
+    <jacoco:report>
+      <executiondata>
+	    <file file="../jacoco.exec" />
+      </executiondata>
+	  
+	  <structure name="GWT UI">
+	    <classfiles>
+		  <fileset dir="war/WEB-INF/classes" />
+	    </classfiles>
+		
+		<sourcefiles encoding="UTF-8">
+		  <fileset dir="src" />
+		</sourcefiles>
+		
+	  </structure>
+	  
+	  <html destdir="../report"/>
+		
+    </jacoco:report>
+  </target>
+  
+  <target name="jacoco-get-remote">
+    <echo>Getting JaCoCo coverage data from ${deploy.hostname}</echo>
+    <jacoco:dump address="${deploy.hostname}" destfile="../jacoco.exec" append="false" />
+  </target>
+  
+</project>

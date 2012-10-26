@@ -2,7 +2,7 @@ package nl.carpago.testexpert.testers;
 
 import java.util.List;
 
-import nl.carpago.unittestgenerator.annotation.Expect;
+import nl.carpago.testexpert.annotation.Expect;
 
 public interface UnittestGeneratorMethodes {
 	

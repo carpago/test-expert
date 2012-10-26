@@ -3,7 +3,7 @@ package nl.carpago.testexpert.testers;
 import java.util.HashMap;
 import java.util.List;
 
-import nl.carpago.unittestgenerator.annotation.CreateUnittest;
+import nl.carpago.testexpert.annotation.CreateUnittest;
 
 public class UnittestGeneratorMethodesMetCollabs {
 	

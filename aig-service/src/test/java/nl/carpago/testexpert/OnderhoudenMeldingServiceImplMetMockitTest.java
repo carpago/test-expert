@@ -6,8 +6,6 @@ import mockit.Expectations;
 import mockit.Mocked;
 import nl.belastingdienst.aig.betrokkene.Betrokkene;
 import nl.belastingdienst.aig.melding.Melding;
-import nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl;
-import nl.belastingdienst.aig.melding.PersoonDAO;
 import nl.carpago.testexpert.AbstractTestExpert;
 import nl.carpago.testexpert.Fixtures;
 
