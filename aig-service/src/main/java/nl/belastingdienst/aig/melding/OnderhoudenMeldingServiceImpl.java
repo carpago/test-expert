@@ -187,14 +187,13 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 	// x verder met het maken van literals ipv vars voor EasyMock ...
 	// @CreateUnittest(in={"1", "2"}, out="3")
 	// straks ook testen zonder parameters
-	// @CreateUnittest(in={"een", "twee"}, out="drie")
-	public int telOp(int aap, int bees) {
+	 @CreateUnittest(in={"2", "3"}, out="drie")
+	public int telOp(int monkey, int horses) {
 
-		int resultFromDao = this.getMeldingDao().telOp(aap, bees);
+		int resultFromDao = this.getMeldingDao().telOp(monkey, horses);
 
-		int result = aap + bees;
+		int result = monkey + horses;
 
 		return result;
 	}
-
 }

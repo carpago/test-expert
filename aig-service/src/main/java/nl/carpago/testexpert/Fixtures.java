@@ -16,10 +16,9 @@ import org.easymock.EasyMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration // is dit wel nodig ???
+@Configuration
 
 public class Fixtures {
-	
 	@Bean
 	public int number() {
 		return 3;

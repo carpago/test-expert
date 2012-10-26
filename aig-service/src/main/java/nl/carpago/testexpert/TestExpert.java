@@ -1,11 +1,15 @@
 package nl.carpago.testexpert;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -42,7 +46,7 @@ import com.thoughtworks.paranamer.Paranamer;
 
 public class TestExpert {
 
-	private enum MockFramework {
+	protected enum MockFramework {
 		EASYMOCK, MOCKIT
 	}
 
@@ -80,7 +84,8 @@ public class TestExpert {
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 
 		try {
-			lijstMetAlleJavaFilesUitProject = findAllJavaFiles();
+			// TODO /src/main/java should be configured through a property file
+			lijstMetAlleJavaFilesUitProject = findAllJavaFiles("./src/main/java");
 		} catch (IOException e) {
 			logger.fatal(e.getMessage());
 		}
@@ -97,12 +102,17 @@ public class TestExpert {
 			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
 			classUnderTest = Class.forName(classFile); //
 
-			List<Method> methods = getMethodsWithAnnotationTestMe(classUnderTest);
+			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
 				TestExpert generator = new TestExpert(classUnderTest, Fixtures.class);
 
-				generator.generateTestClass();
+				try {
+					generator.generateTestClass();
+				} catch (InvalidAnnotationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				generator.writeFile();
 			}
@@ -121,28 +131,74 @@ public class TestExpert {
 		logger.debug("finished creating directory " + directoryName);
 
 		File file = new File(fileName);
+		FileOutputStream stream = new FileOutputStream(file);
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
 			logger.error("Unable to create outputfile. System halted.");
 			System.exit(1);
 		}
-		PrintStream po = new PrintStream(file);
+		
+		PrintStream po = new PrintStream(stream);
 		po.print(this.codeGen());
 		po.close();
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
 	}
+	
+	public BufferedInputStream getInputStreamFromGeneratedCode() {
 
-	public static List<String> findAllJavaFiles() throws IOException {
+		final PipedInputStream pipedInputStream = new PipedInputStream();
+		try {
+			final PipedOutputStream pipedOutputStream =  new PipedOutputStream(pipedInputStream);
+			Thread t = new Thread(new Runnable(){
+
+				@Override
+				public void run() {
+					PrintStream po = new PrintStream(pipedOutputStream);
+					po.print(codeGen());
+					po.flush();
+					po.close();
+					try {
+						pipedOutputStream.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						pipedOutputStream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
+			});
+			t.start();
+			
+			return new BufferedInputStream(pipedInputStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new BufferedInputStream(pipedInputStream) {
+				
+				@Override
+				public int read() throws IOException {
+					return 0;
+				}
+			};
+		}
+	}
+
+	protected static List<String> findAllJavaFiles(String folder) throws IOException {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
 
 		// for Linux: ProcessBuilder builder = new ProcessBuilder("find",
 		// "./src/main/java", "-name", "*.java");
-		ProcessBuilder builder = new ProcessBuilder("/bin/find", "./src/main/java", "-name", "*.java");
+		ProcessBuilder builder = new ProcessBuilder("/bin/find", folder, "-name", "*.java");
 		Process process = builder.start();
 
 		InputStream stream = process.getInputStream();
@@ -152,7 +208,7 @@ public class TestExpert {
 		String line = null;
 		while ((line = bufferReader.readLine()) != null) {
 			logger.debug("processing line " + line);
-			line = line.replaceAll("./src/main/java/", "");
+			line = line.replaceAll(folder + "/", "");
 			line = line.replaceAll("/", ".");
 			line = line.replaceAll(".java", "");
 			lines.add(line);
@@ -167,31 +223,30 @@ public class TestExpert {
 		logger.debug("entering constructor");
 		this.classUnderTest = classUnderTest;
 		this.contextClass = context;
-		this.init();
-		logger.debug("leaving constructor");
-	}
-
-	public void init() {
-		logger.debug("entering");
 
 		this.addPackage();
 
 		logger.debug("setting ApplicationContext");
 		this.ctx = new AnnotationConfigApplicationContext(this.contextClass);
 
-		if (MockFramework.EASYMOCK.equals(currentFramework)) {
-			this.checkAndAddImport(org.easymock.EasyMock.class);
-		}
+		initializeTestFramework();
+
+		logger.debug("leaving");
+	}
+
+	private void initializeTestFramework() {
 
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
 		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
 		this.checkAndAddImport(this.contextClass);
-
-		logger.debug("leaving");
+		this.checkAndAddImport(org.junit.runner.RunWith.class);
+		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
+		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
+		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
 	}
 
-	public void generateTestClass() {
+	public void generateTestClass() throws InvalidAnnotationException {
 		logger.debug("enter");
 
 		generateAnnotationsForSpringTest();
@@ -217,37 +272,30 @@ public class TestExpert {
 
 	private void generateFixturesForEntireClass() {
 		logger.debug("enter");
-		List<Method> methodes = getMethodsWithAnnotationTestMe(this.classUnderTest);
+		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
 			generateFixturesForMethod(methode);
 		}
 		logger.debug("leave");
 	}
 
-	private void generateHeader() {
+	protected void generateHeader() {
 		logger.debug("enter");
-		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTestExpert { \n";
+		this.header += "public class " + this.classUnderTest.getSimpleName() + "Test extends AbstractTestExpert {\n";
 		logger.debug("leave");
 	}
 
-	private void generateFooter() {
+	protected void generateFooter() {
 		logger.debug("enter");
 		this.footer += "}";
 		logger.debug("leave");
 	}
 
-	private void generateAnnotationsForSpringTest() {
+	protected void generateAnnotationsForSpringTest() {
 		logger.debug("enter");
 
-		this.checkAndAddImport(org.junit.runner.RunWith.class);
-		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
-		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
-		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-		// ???? fixtures ??? wordt toch geinsert door klant ????
-		// this.addImport(classToImport)
-
 		this.annotionsBeforeTestClass.add("@RunWith(SpringJUnit4ClassRunner.class)");
-		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={Fixtures.class})");
+		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={" + this.contextClass.getSimpleName() + ".class})");
 
 		logger.debug("leave");
 
@@ -269,8 +317,10 @@ public class TestExpert {
 	 * call naar interface (dao)
 	 */
 	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-	private void generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
+	protected String generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 		logger.debug("enter");
+
+		String result = EMPTY_STRING;
 
 		String[] inputParametersViaAnnotations = methodeArgument.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
@@ -368,15 +418,12 @@ public class TestExpert {
 									parameter = Class.forName(param);
 								} catch (ClassNotFoundException e) {
 									logger.info("Class not found for " + param);
-									try {
+									if ((this.isPrimitive(param))) {
 										parameter = this.getPrimitiveType(param);
-									} catch (InvalidArgumentException iae) {
-										logger.error("zowel geen class alsook geen primitive " + param);
-										iae.printStackTrace();
-
-										throw iae;
+									} 
+									else {
+										assert false; // should never happen.
 									}
-
 								}
 								params.add(parameter);
 							}
@@ -400,22 +447,33 @@ public class TestExpert {
 							// MeldingDAO wordt:
 							// nl.belastingdienst.aig.dao.MeldingDao
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
+							// method = Class.forName(collab).getmet
 							if (collab.equals(this.classUnderTest.getName())) {
 								continue inner;
 							}
-
-							// method = Class.forName(collab).getmet
 						} catch (SecurityException e) {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
 							logger.error(e);
+							assert false;
 						} catch (ClassNotFoundException e) {
 							logger.error(e);
+							assert false;
 						}
 						logger.debug("methode to collab is:" + method);
 						logger.debug("methods return type:" + method.getReturnType());
 						logger.debug("methods generic return type:" + method.getGenericReturnType());
 						// tjakkaa: hier heb ik dus het generieke type.
+
+						// we are going to mock something so now include the
+						// imports
+						if (MockFramework.EASYMOCK.equals(currentFramework)) {
+							this.checkAndAddImport(org.easymock.EasyMock.class);
+						} else {
+							if (MockFramework.MOCKIT.equals(currentFramework)) {
+								this.checkAndAddImport(mockit.Mocked.class);
+							}
+						}
 
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
@@ -499,9 +557,9 @@ public class TestExpert {
 											} else {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
-													addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
-													addCode(generateConstructorForClass(parameterType));
-													addCodeLn(";");
+													result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
+													result += addCode(generateConstructorForClass(parameterType));
+													result += addCodeLn(";");
 												}
 
 											}
@@ -514,9 +572,9 @@ public class TestExpert {
 											try {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
-													addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
-													addCode(generateConstructorForClass(parameterType));
-													addCodeLn(";");
+													result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
+													result += addCode(generateConstructorForClass(parameterType));
+													result += addCodeLn(";");
 												}
 
 											} catch (IndexOutOfBoundsException iobe) {
@@ -543,10 +601,10 @@ public class TestExpert {
 										}
 									}
 								}
-								
+
 								String returnFromMethod = null;
-								if (method.getReturnType().toString().equals("void")) {
-									addCodeLn("\t\t" + construction + ";");
+								if ("void".equals(method.getReturnType().toString())) {
+									result += addCodeLn("\t\t" + construction + ";");
 								} else {
 									if (out != null) {
 										returnFromMethod = out;
@@ -561,56 +619,48 @@ public class TestExpert {
 									}
 									if (MockFramework.MOCKIT.equals(currentFramework)) {
 										this.checkAndAddImport(mockit.Expectations.class);
-										addCodeLn("\t\tnew Expectations() {");
-										addCodeLn("\t\t\t{");
-										addCodeLn("\t\t\t\t" + construction + ";");
-										addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
-										addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
+										result += addCodeLn("\t\tnew Expectations() {");
+										result += addCodeLn("\t\t\t{");
+										result += addCodeLn("\t\t\t\t" + construction + ";");
+										result += addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
+										result += addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
 										this.checkAndAddImport(method.getReturnType().getClass());
-										addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
-										addCode(" validate(");
-										addCode(this.getParameterTypesAndNameAsString(method));
-										addCodeLn("){");
+										result += addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
+										result += addCode(" validate(");
+										result += addCode(this.getParameterTypesAndNameAsString(method));
+										result += addCodeLn("){");
 
 									} else {
 										if (MockFramework.EASYMOCK.equals(currentFramework)) {
-											addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
+											result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 										}
 									}
 									if (MockFramework.EASYMOCK.equals(currentFramework)) {
-
-										if (returnFromMethod != null) {
-											String cloneString = EMPTY_STRING;
-											if (!this.isLiteral(returnFromMethod)) {
-												try {
-													this.getPrimitiveType(method.getReturnType().toString());
-													cloneString += returnFromMethod;
-
-												} catch (RuntimeException rte) { // rloman
-																					// :-((
-													cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
-
-												}
+										assert returnFromMethod != null;
+										String cloneString = EMPTY_STRING;
+										if (!this.isLiteral(returnFromMethod)) {
+											if (this.isPrimitive(method.getReturnType().toString())) {
+												cloneString += returnFromMethod;
 											} else {
-												cloneString = returnFromMethod;
+												cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
 											}
-
-											addCode(cloneString);
-
 										} else {
-											addCode(generateConstructorForClass(method.getReturnType()));
+											cloneString = returnFromMethod;
 										}
-										addCodeLn(");");
+
+										result += addCode(cloneString);
+
+										result += addCodeLn(");");
 
 									} else {
 										if (MockFramework.MOCKIT.equals(currentFramework)) {
 											// return the value.
-											addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
+											result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
 
-											addCodeLn("\t\t\t\t\t}");
-											addCodeLn("\t\t\t\t};");
-											addCodeLn("\t\t\t}");
-											addCodeLn("\t\t};");
+											result += addCodeLn("\t\t\t\t\t}");
+											result += addCodeLn("\t\t\t\t};");
+											result += addCodeLn("\t\t\t}");
+											result += addCodeLn("\t\t};");
 										}
 									}
 								}
@@ -626,21 +676,14 @@ public class TestExpert {
 
 		}
 		logger.debug("leave");
+
+		return result;
 	}
 
-	private boolean isCallerForCollab(String aCollabKandidate) {
+	protected boolean isCallerForCollab(String aCollabKandidate) {
 
 		for (String element : this.collabs) {
-			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) { // kandidate
-																						// is
-																						// a
-																						// get
-																						// or
-																						// set
-																						// for
-																						// the
-																						// real
-																						// collab.
+			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) {
 				return true;
 			}
 		}
@@ -649,21 +692,25 @@ public class TestExpert {
 
 	}
 
-	private void generateReplays() {
-		addCodeLn();
+	protected String generateReplays() {
+		String result = addCodeLn();
 		for (String collab : this.collabs) {
-			addCodeLn("\t\tEasyMock.replay(" + collab + ");");
+			result += addCodeLn("\t\tEasyMock.replay(" + collab + ");");
 		}
+
+		return result;
 	}
 
-	private void generateVerifies() {
-		addCodeLn();
+	protected String generateVerifies() {
+		String result = addCodeLn();
 		for (String collab : this.collabs) {
-			addCodeLn("\t\tEasyMock.verify(" + collab + ");");
+			result += addCodeLn("\t\tEasyMock.verify(" + collab + ");");
 		}
+
+		return result;
 	}
 
-	public String[] getInAnnotationsForMethod(Method method) {
+	protected String[] getInAnnotationsForMethod(Method method) {
 
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String[] in = null;
@@ -681,7 +728,7 @@ public class TestExpert {
 	}
 
 	// @CreateUnittest(in={"methode"},out="methodeOutAnnotations")
-	public String getOutAnnotationForMethod(Method method) {
+	protected String getOutAnnotationForMethod(Method method) {
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String out = null;
 		if (annotatie == null) {
@@ -697,7 +744,7 @@ public class TestExpert {
 		return out;
 	}
 
-	public boolean isLiteral(String literalOrVariablename) {
+	protected boolean isLiteral(String literalOrVariablename) {
 		logger.debug("enter");
 
 		if (literalOrVariablename == null || EMPTY_STRING.equals(literalOrVariablename.trim())) {
@@ -736,7 +783,7 @@ public class TestExpert {
 		return true;
 	}
 
-	public String generateConstructorForClass(Type t) {
+	protected String generateConstructorForClass(Type t) {
 		logger.debug("enter");
 		String result = "";
 		if ("byte".equals(t.toString())) {
@@ -761,7 +808,7 @@ public class TestExpert {
 		}
 
 		if ("char".equals(t.toString())) {
-			addCode("'a'");
+			result += "'a'";
 		}
 
 		if ("boolean".equals(t.toString())) {
@@ -791,7 +838,7 @@ public class TestExpert {
 				} catch (SecurityException e) {
 					logger.error(e);
 				} catch (NoSuchMethodException e) {
-					logger.info(e + ", default constructor failed so trying first (real) constructor");
+					//default constructor failed so trying first (real) constructor");
 					c = clazz.getConstructors()[0];
 				}
 				this.checkAndAddImport(c.getDeclaringClass());
@@ -816,7 +863,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public String generateSomethingForInterface(Class<?> eenInterface) {
+	protected String generateSomethingForInterface(Class<?> eenInterface) {
 		logger.debug("enter");
 
 		this.checkAndAddImport(eenInterface);
@@ -860,57 +907,64 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private void generateGeneric(ParameterizedType pType) {
-		addCode("<");
+	private String generateGeneric(ParameterizedType pType) {
+		String result = addCode("<");
 		for (Type t : pType.getActualTypeArguments()) {
 			if (t instanceof Class) {
 				Class<?> genericArgument = (Class<?>) t;
-				addCode(genericArgument.getSimpleName());
+				result += addCode(genericArgument.getSimpleName());
 				this.checkAndAddImport(genericArgument);
 			} else {
 				// ja wat eigenlijk ? :-))
 			}
 		}
-		addCode("> ");
+		result += addCode(">");
+
+		return result;
 	}
 
-	private void generateGettersForCollaborators() {
+	protected String generateGettersForCollaborators() {
 		logger.debug("enter");
 		Field[] fields = this.classUnderTest.getDeclaredFields();
-
+		String result = "";
 		for (Field field : fields) {
-			addCodeLn();
-			addCode("\tpublic " + field.getType().getSimpleName() + " ");
+			result += addCodeLn();
+			result += addCode("\tpublic " + field.getType().getSimpleName());
 			if (field.getGenericType() instanceof ParameterizedType) {
-				this.generateGeneric((ParameterizedType) field.getGenericType());
+				result += this.generateGeneric((ParameterizedType) field.getGenericType());
 			}
-			addCodeLn("get" + WordUtils.capitalize(field.getName()) + "(){");
-			addCodeLn("\t\treturn this." + WordUtils.uncapitalize(field.getName()) + ";");
-			addCodeLn("\t}");
+			result += addCodeLn(" get" + WordUtils.capitalize(field.getName()) + "(){");
+			result += addCodeLn("\t\treturn this." + WordUtils.uncapitalize(field.getName()) + ";");
+			result += addCodeLn("\t}");
 		}
-
 		logger.debug("leave");
+
+		return result;
 	}
 
-	private void generateSetup() {
+	protected String generateSetup() {
 		logger.debug("enter");
-		addCodeLn("\t@Before");
+
+		String result = EMPTY_STRING;
+
+		result += addCodeLn("\t@Before");
 		if (MockFramework.EASYMOCK.equals(currentFramework)) {
-			addCodeLn("\t@SuppressWarnings(\"unchecked\")");
+			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
-		// hoeft niet meer met JUNit 4 ? System.out.println("\t@Override");
-		addCodeLn("\tpublic void setUp() {");
+		
+		result += addCodeLn("\t@Override");
+		result += addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
-		addCode("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + " = ");
-		addCode(generateConstructorForClass(this.classUnderTest));
-		addCodeLn(";");
+		result += addCode("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + " = ");
+		result += addCode(generateConstructorForClass(this.classUnderTest));
+		result += addCodeLn(";");
 
 		// init the collaborating classes
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
-			addCodeLn();
+			result += addCodeLn();
 			if (!(this.isPrimitive(field.getType().getName()))) {
 				if (MockFramework.EASYMOCK.equals(currentFramework)) {
-					addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
+					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 				}
 
 				// probeer de setter te vinden. Indien dit niet kan dan niet ...
@@ -918,28 +972,29 @@ public class TestExpert {
 				try {
 					String fieldNameFirstLetterCap = WordUtils.capitalize(field.getName());
 					Method setter = this.classUnderTest.getMethod("set" + fieldNameFirstLetterCap, field.getType());
-					addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName() + "(" + "this." + WordUtils.uncapitalize(field.getName()) + ");");
+					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + setter.getName() + "(" + "this." + WordUtils.uncapitalize(field.getName())
+							+ ");");
 
 				} catch (SecurityException e) {
 					e.printStackTrace();
 				} catch (NoSuchMethodException e) { // rloman: refactoren. Houd
 													// niet van exceptions
-					addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
+					result += addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
 							+ WordUtils.uncapitalize(field.getName()) + ");");
 					// only in this case ... this exception is valid
 				}
 			}
 		}
-
-		addCodeLn("\t}");
+		result += addCodeLn("\t}");
 
 		logger.debug("leave");
 
+		return result;
 	}
 
-	public void generateMethodsWithAnnotationTestMe() {
+	protected void generateMethodsWithAnnotationTestMe() throws InvalidAnnotationException {
 		logger.debug("enter");
-		List<Method> methodes = getMethodsWithAnnotationTestMe(this.classUnderTest);
+		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
 
 			String testMethodName = EMPTY_STRING;
@@ -965,7 +1020,7 @@ public class TestExpert {
 			addCodeLn("){ ");
 
 			if (methode.getParameterTypes().length != 0) {
-				generateCreerParametersVoorTestmethode(methode);
+				generateCreateArgumentsForTestMethod(methode);
 			}
 
 			try {
@@ -992,19 +1047,20 @@ public class TestExpert {
 		logger.debug("leave");
 	}
 
-	private void generateCallToTestMethod(Method methode) {
+	protected String generateCallToTestMethod(Method methode) {
 		logger.debug("enter");
 
 		String parameterString = EMPTY_STRING;
+		String result = EMPTY_STRING;
 
-		addCodeLn();
-		addCode("\t\t");
+		result += addCodeLn();
+		result += addCode("\t\t");
 
 		if (!"void".equals(methode.getReturnType().toString())) {
 			this.checkAndAddImport(methode.getReturnType());
-			addCode(methode.getReturnType().getSimpleName() + " " + this.RESULTFROMMETHOD + " = ");
+			result += addCode(methode.getReturnType().getSimpleName() + " " + this.RESULTFROMMETHOD + " = ");
 		}
-		addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
+		result += addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
 
 		String[] parameterNames = methode.getAnnotation(CreateUnittest.class).in(); // this.getParameterNamesForMethod(methode);
 		String first = EMPTY_STRING;
@@ -1018,30 +1074,37 @@ public class TestExpert {
 
 		parameterString = first + tail;
 
-		addCode(parameterString);
-		addCode(");");
+		result += addCode(parameterString);
+		result += addCode(");");
 
-		addCodeLn();
+		result += addCodeLn();
 
 		logger.debug("leave");
+
+		return result;
 	}
 
-	private void generateAssertStatements(Method method) {
+	protected String generateAssertStatements(Method method) {
 		logger.debug("enter");
+		String result = EMPTY_STRING;
 		String expected = method.getAnnotation(CreateUnittest.class).out();
 		String actual = this.RESULTFROMMETHOD;
-		addCode("\n\t\t");
+		result += addCode("\n\t\t");
 		if (this.isPrimitive(method.getReturnType().toString())) {
-			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == " + actual + ");");
+			result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == " + actual + ");");
 		} else {
-			addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
+			result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
 		}
 
 		logger.debug("leave");
+
+		return result;
 	}
 
-	private void generateFixturesForMethod(Method methode) {
+	protected List<Class<?>> generateFixturesForMethod(Method methode) {
 		logger.debug("enter");
+
+		List<Class<?>> result = new ArrayList<Class<?>>();
 
 		CreateUnittest annotation = (CreateUnittest) methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class);
 		String[] inputFixtures = annotation.in();
@@ -1053,16 +1116,18 @@ public class TestExpert {
 		}
 
 		for (String fixture : fixturesAll) {
-			if (this.isLiteral(fixture) || QUESTION_MARK.equals(fixture) || ASTERISK.equals(fixture)) {
-				continue;
+			if (!(this.isLiteral(fixture) || QUESTION_MARK.equals(fixture) || ASTERISK.equals(fixture))) {
+				Class<?> fixtureClass = addFixture(fixture);
+				result.add(fixtureClass);
 			}
-			addFixture(fixture);
 		}
 
 		logger.debug("leave");
+
+		return result;
 	}
 
-	private void addFixture(String fixture) {
+	private Class<?> addFixture(String fixture) {
 		logger.debug("enter");
 
 		Object o = ctx.getBean(fixture);
@@ -1070,9 +1135,11 @@ public class TestExpert {
 		this.fixtures.put(fixture, o.getClass());
 
 		logger.debug("leave");
+
+		return o.getClass();
 	}
 
-	private String codeGenFixtures() {
+	protected String codeGenFixtures() {
 		logger.debug("enter");
 
 		String result = EMPTY_STRING;
@@ -1094,7 +1161,7 @@ public class TestExpert {
 		return result;
 	}
 
-	public static List<Method> getMethodsWithAnnotationTestMe(Class<?> clazz) {
+	protected static List<Method> getMethodsWithAnnotationCreateUnitTest(Class<?> clazz) {
 		logger.debug("enter");
 		List<Method> result = new ArrayList<Method>();
 		for (Method methode : clazz.getDeclaredMethods()) {
@@ -1108,36 +1175,45 @@ public class TestExpert {
 		return result;
 	}
 
-	public void generateCreerParametersVoorTestmethode(Method methode) {
+	protected String generateCreateArgumentsForTestMethod(Method methodeToBeTested) throws InvalidAnnotationException {
 		logger.debug("enter");
 
 		String[] parameterNames = null;
 
-		parameterNames = this.getParameterNamesForMethod(methode);
+		parameterNames = this.getParameterNamesForMethod(methodeToBeTested);
 
-		String[] inputParametersViaAnnotatie = methode.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
+		assert parameterNames != null;
+
+		String[] inputParametersViaAnnotatie = methodeToBeTested.getAnnotation(nl.carpago.unittestgenerator.annotation.CreateUnittest.class).in();
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
-			throw new RuntimeException("Annotation and parameters are ordinal not equal!");
+			logger.fatal(Arrays.asList(parameterNames));
+			logger.fatal(Arrays.asList(inputParametersViaAnnotatie));
+			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 
-		Class<?>[] parameterTypes = methode.getParameterTypes();
+		Class<?>[] parameterTypes = methodeToBeTested.getParameterTypes();
 
+		String result = EMPTY_STRING;
 		for (int i = 0; i < parameterNames.length; i++) {
 			// if ? than create via constructor. if * than try first via
 			// appcontext else via constructor through name of the variable.
 			if (QUESTION_MARK.equals(inputParametersViaAnnotatie[i]) || (ASTERISK.equals(inputParametersViaAnnotatie[i]) && !this.fixtures.containsKey(parameterNames[i]))) {
-				addCode("\t\t" + parameterTypes[i].getSimpleName() + " " + parameterNames[i] + " = ");
-				addCode(generateConstructorForClass(parameterTypes[i]));
-				addCodeLn(";");
+				result += addCode("\t\t" + parameterTypes[i].getSimpleName() + " " + parameterNames[i] + " = ");
+				result += addCode(generateConstructorForClass(parameterTypes[i]));
+				result += addCodeLn(";");
 			}
-
 		}
 		logger.debug("leave");
+
+		return result;
 	}
 
-	public String[] getParameterNamesForMethod(Method method) {
+	protected String[] getParameterNamesForMethod(Method method) {
+		if (method == null || method.getParameterTypes().length == 0) {
+			return new String[] {};
+		}
 		logger.debug("methode:" + method);
 
 		// ??Paranamer paranamer = new BytecodeReadingParanamer();
@@ -1164,22 +1240,22 @@ public class TestExpert {
 		return result;
 	}
 
-	public String[] getParameterTypesForMethod(Method m) {
+	protected String[] getParameterTypesForMethod(Method method) {
 
-		if (m.getParameterTypes().length == 0) {
-			return new String[0];
+		if (method == null || method.getParameterTypes().length == 0) {
+			return new String[] {};
 		}
 
 		List<String> result = new ArrayList<String>();
 
-		for (Class<?> clazz : m.getParameterTypes()) {
+		for (Class<?> clazz : method.getParameterTypes()) {
 			result.add(clazz.getSimpleName());
 		}
 
 		return result.toArray(new String[result.size()]);
 	}
 
-	public String getParameterTypesAndNameAsString(Method method) {
+	protected String getParameterTypesAndNameAsString(Method method) {
 
 		String result = "";
 
@@ -1201,7 +1277,7 @@ public class TestExpert {
 	}
 
 	// in: int, boolean, char ... out: Integer, Boolean Character
-	public Class<?> getPrimitiveType(String baseType) {
+	protected Class<?> getPrimitiveType(String baseType) {
 		logger.debug("enter");
 
 		if ("byte".equals(baseType))
@@ -1226,7 +1302,7 @@ public class TestExpert {
 		throw new InvalidArgumentException("Invalid Argument");
 	}
 
-	private boolean isPrimitive(String type) {
+	protected boolean isPrimitive(String type) {
 		logger.debug("enter");
 		try {
 			this.getPrimitiveType(type);
@@ -1242,7 +1318,7 @@ public class TestExpert {
 		}
 	}
 
-	private void checkAndAddImport(Class<?> classToImport) {
+	protected void checkAndAddImport(Class<?> classToImport) {
 		logger.debug("enter");
 		if (this.isPrimitive(classToImport.getName())) {
 			return;
@@ -1261,29 +1337,31 @@ public class TestExpert {
 		if ("java.lang".equals(classToImport.getPackage().getName()) || this.pakkage.getName().equals(classToImport.getPackage().getName())) {
 			return;
 		} else {
-			if(!this.imports.contains(classToImport.getName())) {
+			if (!this.imports.contains(classToImport.getName())) {
 				this.imports.add(classToImport.getName());
 			}
-			
+
 		}
 		logger.debug("leave");
 	}
 
-	private void addCode(String code) {
+	private String addCode(String code) {
 		logger.debug("enter");
 		logger.debug("Adding code " + code);
 
 		this.body += code;
 
 		logger.debug("leave");
+
+		return code;
 	}
 
-	private void addCodeLn(String code) {
-		this.addCode(code + "\n");
+	private String addCodeLn(String code) {
+		return this.addCode(code + "\n");
 	}
 
-	private void addCodeLn() {
-		this.addCode("\n");
+	private String addCodeLn() {
+		return this.addCode("\n");
 	}
 
 	public void printCode() {
@@ -1311,7 +1389,7 @@ public class TestExpert {
 		return result.trim();
 	}
 
-	private String codeGenHeader() {
+	protected String codeGenHeader() {
 		return this.header;
 	}
 
@@ -1319,11 +1397,11 @@ public class TestExpert {
 		return this.body;
 	}
 
-	private String codeGenFooter() {
+	protected String codeGenFooter() {
 		return this.footer;
 	}
 
-	private String codeGenAnnotationsForSpringTest() {
+	protected String codeGenAnnotationsForSpringTest() {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 
@@ -1336,7 +1414,7 @@ public class TestExpert {
 		return result;
 	}
 
-	private String codeGenPackage() {
+	protected String codeGenPackage() {
 
 		String result = EMPTY_STRING;
 		result += this.pakkage + ";\n\n";
@@ -1344,7 +1422,7 @@ public class TestExpert {
 		return result;
 	}
 
-	private String codeGenImports() {
+	protected String codeGenImports() {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 
@@ -1357,5 +1435,45 @@ public class TestExpert {
 		logger.debug("leave");
 
 		return result;
+	}
+
+	protected Class<?> getClassUnderTest() {
+		return classUnderTest;
+	}
+
+	protected Class<?> getContextClass() {
+		return contextClass;
+	}
+
+	protected Package getPakkage() {
+		return pakkage;
+	}
+
+	protected ApplicationContext getCtx() {
+		return ctx;
+	}
+
+	protected String getHeader() {
+		return header;
+	}
+
+	protected String getFooter() {
+		return footer;
+	}
+
+	protected Set<String> getImports() {
+		return imports;
+	}
+
+	protected List<String> getAnnotionsBeforeTestClass() {
+		return annotionsBeforeTestClass;
+	}
+
+	protected HashMap<String, Class<?>> getFixtures() {
+		return fixtures;
+	}
+
+	protected void setCurrentFramework(MockFramework currentFramework) {
+		this.currentFramework = currentFramework;
 	}
 }
