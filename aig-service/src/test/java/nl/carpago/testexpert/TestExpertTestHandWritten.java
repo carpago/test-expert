@@ -1150,7 +1150,7 @@ public class TestExpertTestHandWritten extends AbstractTestExpert {
 				counter++;
 				Assert.assertTrue(allCode.indexOf(line) > -1);
 			}
-			Assert.assertEquals("Line numbers incorrect in generatedCode!", 86, counter);
+			Assert.assertEquals("Line numbers incorrect in generatedCode!", 76, counter);
 			Assert.assertTrue(allCode.split("\n").length ==  counter);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
