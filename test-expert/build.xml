@@ -4,10 +4,22 @@
     </description>
 	<!-- set global properties for this build -->
 	<property name="src" location="src/main/java" />
-	<property name="test" location="src/test/java" />
+	<property name="test.dir" location="src/test/java" />
 	<property name="generated" location="src/test/generated-test" />
 	<property name="build" location="../build" />
 	<property name="dist" location="../dist" />
+	<property name="test.report.dir" location="testreport" />
+
+	<path id="junit.class.path">
+		<fileset dir="../3rdparty/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="../3rdparty/testlib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${build}" />
+	</path>
+
 
 	<path id="compile.classpath">
 		<fileset dir="../3rdparty/lib">
@@ -26,18 +38,38 @@
 		-->
 	</path>
 
+
+	<target name="clean" description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+		<delete dir="${test.report.dir}" />
+	</target>
+
 	<target name="init" depends="clean">
 		<!-- Create the time stamp -->
 		<tstamp />
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${build}" />
+		<mkdir dir="${test.report.dir}" />
+		<mkdir dir="${dist}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac includeantruntime="false" srcdir="${src};${test};${generated}" destdir="${build}">
-			<classpath refid="compile.classpath"/>
+		<javac includeantruntime="false" srcdir="${src};${test.dir};${generated}" destdir="${build}">
+			<classpath refid="compile.classpath" />
 		</javac>
+	</target>
+
+	<!-- Run the JUnit Tests -->
+	<!-- Output is XML, could also be plain-->
+	<target name="test" depends="compile">
+		<junit printsummary="yes">
+			<classpath refid="junit.class.path" />
+			<formatter type="plain" />
+			<test name="nl.carpago.testexpert.TestExpertTest" />
+		</junit>
 	</target>
 
 	<target name="build" depends="compile" description="generate the distribution">
@@ -46,11 +78,5 @@
 
 		<!-- Put everything in ${build} into the ${ant.project.name}-${DSTAMP}.jar file -->
 		<jar jarfile="${dist}/lib/${ant.project.name}-${DSTAMP}.jar" basedir="${build}" />
-	</target>
-
-	<target name="clean" description="clean up">
-		<!-- Delete the ${build} and ${dist} directory trees -->
-		<delete dir="${build}" />
-		<delete dir="${dist}" />
 	</target>
 </project>

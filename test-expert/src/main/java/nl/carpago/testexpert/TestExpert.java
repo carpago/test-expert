@@ -105,7 +105,7 @@ public class TestExpert {
 			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
-				TestExpert generator = new TestExpert(classUnderTest, FixturesForTest.class);
+				TestExpert generator = new TestExpert(classUnderTest, FixturesForTst.class);
 
 				try {
 					generator.generateTestClass();

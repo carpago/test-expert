@@ -5,6 +5,8 @@ import nl.carpago.testexpert.annotation.CreateUnittest;
 
 
 public class OnderhoudenVliegveldService {
+	
+	private OnderhoudenVliegveldDao onderhoudenVliegVelddao;
 
 	public OnderhoudenVliegveldService() {
 		// TODO Auto-generated constructor stub
@@ -14,6 +16,13 @@ public class OnderhoudenVliegveldService {
 		Person result = new Person("Jane Doe", 45);
 		
 		return result;
+	}
+	
+	@CreateUnittest(in="number", out="vier")
+	public String getStringForNumber(int eenGetal){
+		int resultFromDao = onderhoudenVliegVelddao.add(eenGetal);
+		
+		return Integer.toString(resultFromDao);
 	}
 
 }

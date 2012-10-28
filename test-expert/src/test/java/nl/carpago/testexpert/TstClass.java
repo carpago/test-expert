@@ -1,6 +1,6 @@
 package nl.carpago.testexpert;
 
-public class TestClass {
+public class TstClass {
 	
 	public int add(int first, int second) {
 		return first + second;

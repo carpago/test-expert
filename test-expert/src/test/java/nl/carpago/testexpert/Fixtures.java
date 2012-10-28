@@ -110,8 +110,8 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public MijnTestBean mijnTestBean() {
-		return new MijnTestBean();
+	public MijnTstBean mijnTestBean() {
+		return new MijnTstBean();
 	}
 	
 	@Bean

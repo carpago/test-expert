@@ -13,7 +13,7 @@ class ReflectionTrainer {
 	}
 }
 
-public class MainVoorTestDoeleinden {
+public class MainVoorTstDoeleinden {
 
 	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
 		

@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-	public class FixturesForTest {
+	public class FixturesForTst {
 
-		public FixturesForTest() {
+		public FixturesForTst() {
 
 		}
 
@@ -33,6 +33,11 @@ import org.springframework.context.annotation.Configuration;
 		@Bean
 		public String string() {
 			return "3";
+		}
+		
+		@Bean
+		public int vier() {
+			return 4;
 		}
 		
 		@Bean

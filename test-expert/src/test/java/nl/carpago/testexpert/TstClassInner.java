@@ -7,7 +7,7 @@ import nl.carpago.testexpert.annotation.Expect;
 
 
 
-public class TestClassInner {
+public class TstClassInner {
 
 	private List<String> lijst;
 	private String voornaam;
