@@ -65,10 +65,14 @@
 	<!-- Run the JUnit Tests -->
 	<!-- Output is XML, could also be plain-->
 	<target name="test" depends="compile">
-		<junit printsummary="yes">
+		<junit printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="junit.class.path" />
-			<formatter type="plain" />
-			<test name="nl.carpago.testexpert.TestExpertTest" />
+			<formatter type="xml" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
 		</junit>
 	</target>
 
