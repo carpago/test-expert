@@ -85,7 +85,7 @@ public class TestExpert {
 
 		try {
 			// TODO /src/main/java should be configured through a property file
-			lijstMetAlleJavaFilesUitProject = findAllJavaFiles("./src/main/java");
+			lijstMetAlleJavaFilesUitProject = findAllJavaFiles(getSourceFolder());
 		} catch (IOException e) {
 			logger.fatal(e.getMessage());
 		}
@@ -191,30 +191,37 @@ public class TestExpert {
 		}
 	}
 
-	protected static List<String> findAllJavaFiles(String folder) throws IOException {
+	protected static List<String> findAllJavaFiles(String a_folderOrFile) throws IOException {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
-		File directory = new File(folder);
+		File folderOrFile = new File(a_folderOrFile);
 	
-		for(File file : directory.listFiles()) {
-			if(file.isFile()){
-				String line = file.getPath();
-				line = line.replaceAll("./src/main/java/", "");
-				line = line.replaceAll("\\.\\\\src\\\\main\\\\java\\\\", "");
-				line = line.replaceAll("\\\\", "/");
-				line = line.replaceAll("/", "\\.");
-				line = line.replaceAll(".java", "");
-				lines.add(line);
+		for(File aFolderOrfile : folderOrFile.listFiles()) {
+			if(aFolderOrfile.isFile()){
+				String aFile = aFolderOrfile.getPath();
+				
+				String sourceFolder = (getSourceFolder()+"/").replaceAll("\\\\", "/");
+				
+				aFile = aFile.replaceAll("\\\\", "/");
+				aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
+				aFile = aFile.replaceAll("/", "\\.");
+				aFile = aFile.replaceAll(".java", "");
+				
+				lines.add(aFile);
 			}
 			else {
-				if(file.isDirectory()) {
-					lines.addAll(findAllJavaFiles(file.getPath()));
+				if(aFolderOrfile.isDirectory()) {
+					lines.addAll(findAllJavaFiles(aFolderOrfile.getPath()));
 				}
 			}
 		}
-		
+
 		return lines;
+	}
+	
+	public static String getSourceFolder() {
+		return "src/main/java";
 	}
 
 	public TestExpert(Class<?> classUnderTest, Class<?> context) {
