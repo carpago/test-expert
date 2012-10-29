@@ -1,0 +1,90 @@
+package nl.carpago.testexpert;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
+
+class ReflectionTrainer {
+	private List<String> lijst;
+	
+	public List<String> getLijst() {
+		return lijst;
+	}
+}
+
+public class MainVoorTstDoeleinden {
+
+	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+		
+		convertSlash();
+	}
+	
+	
+	public static Object converteer(Object o) {
+		return o;
+	}
+	
+	public static void convertSlash() {
+		String path = ".\\src\\main\\java";
+		
+		String line = path.replaceAll("\\\\", "/");
+		
+		System.out.println(line);
+		
+	}
+	
+	public void fileOpe() {
+		String path = ".";
+		String files;
+		
+		File folder = new File(path);
+		
+		File[] listOfFiles = folder.listFiles();
+		for(File file : listOfFiles) {
+			if(file.isFile()) {
+				System.out.println(file.getName());
+				if (file.getName().endsWith("java")) {
+					// do the stuff
+				}
+			}
+		}
+	}
+	
+	public static void tryReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		ReflectionTrainer t = new ReflectionTrainer();
+		Field f = t.getClass().getDeclaredField("lijst");
+
+		List<String> l = new ArrayList<String>();
+		l.add("first");
+		l.add("second");
+		
+		f.setAccessible(true);
+		f.set(t, l);
+		
+		List<String> lijstViaGetter = t.getLijst();
+		
+		for(String element : lijstViaGetter) {
+			System.out.println(element);
+		}
+		
+		
+		
+	}
+	
+	public static void setFieldThroughReflection(Object victim, String fieldName, Object what) throws SecurityException, NoSuchFieldException {
+		Field f = victim.getClass().getDeclaredField(fieldName);
+		f.setAccessible(true);
+		try {
+			f.set(victim, what);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}
