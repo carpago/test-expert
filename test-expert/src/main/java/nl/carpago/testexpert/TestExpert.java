@@ -195,27 +195,25 @@ public class TestExpert {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
-
-		// for Linux: ProcessBuilder builder = new ProcessBuilder("find",
-		// "./src/main/java", "-name", "*.java");
-		ProcessBuilder builder = new ProcessBuilder("c:/bin/find", folder, "-name", "*.java");
-		Process process = builder.start();
-
-		InputStream stream = process.getInputStream();
-		InputStreamReader reader = new InputStreamReader(stream);
-		BufferedReader bufferReader = new BufferedReader(reader);
-
-		String line = null;
-		while ((line = bufferReader.readLine()) != null) {
-			logger.debug("processing line " + line);
-			line = line.replaceAll(folder + "/", "");
-			line = line.replaceAll("/", ".");
-			line = line.replaceAll(".java", "");
-			lines.add(line);
+		File directory = new File(folder);
+	
+		for(File file : directory.listFiles()) {
+			if(file.isFile()){
+				String line = file.getPath();
+				line = line.replaceAll("./src/main/java/", "");
+				line = line.replaceAll("\\.\\\\src\\\\main\\\\java\\\\", "");
+				line = line.replaceAll("\\\\", "/");
+				line = line.replaceAll("/", "\\.");
+				line = line.replaceAll(".java", "");
+				lines.add(line);
+			}
+			else {
+				if(file.isDirectory()) {
+					lines.addAll(findAllJavaFiles(file.getPath()));
+				}
+			}
 		}
-
-		logger.debug("leaving");
-
+		
 		return lines;
 	}
 

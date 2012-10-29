@@ -18,21 +18,21 @@ public class MainVoorTstDoeleinden {
 
 	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
 		
-		
-		Class<?> clazz = null;
-		try {
-			clazz = Class.forName("java.lang.String");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(clazz);
-
+		convertSlash();
 	}
 	
 	
 	public static Object converteer(Object o) {
 		return o;
+	}
+	
+	public static void convertSlash() {
+		String path = ".\\src\\main\\java";
+		
+		String line = path.replaceAll("\\\\", "/");
+		
+		System.out.println(line);
+		
 	}
 	
 	public void fileOpe() {
