@@ -30,18 +30,18 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		this.testExpert = new TestExpert(OnderhoudenMeldingServiceImpl.class, FixturesForTst.class);
-	}
+		this.testExpert = new OurTestExpert(OnderhoudenMeldingServiceImpl.class, FixturesForTst.class);	}
 	
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.testExpert = null;
+		
 	}
 
 	@Test
 	public void testConstructor() {
-		TestExpert testExpertLocal = new TestExpert(AClassUnderTst.class, FixturesForTst.class);
+		TestExpert testExpertLocal = new OurTestExpert(AClassUnderTst.class, FixturesForTst.class);
 
 		Assert.assertEquals(AClassUnderTst.class, testExpertLocal.getClassUnderTest());
 		Assert.assertEquals(FixturesForTst.class, testExpertLocal.getContextClass());
@@ -410,8 +410,8 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testFindAllJavaFilesForFolder() {
 		try {
-			List<String> files = TestExpert.findAllJavaFiles("./src/test/java");
-			Assert.assertEquals("Expected:16, actual:"+files.size(), 16, files.size());
+			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
+			Assert.assertEquals("Expected:17, actual:"+files.size(), 17, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
@@ -420,7 +420,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateHeader() {
-		TestExpert t = new TestExpert(AClassUnderTst.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(AClassUnderTst.class, FixturesForTst.class);
 		t.generateHeader();
 		String header = t.getHeader();
 		String expected = "public class AClassUnderTstTest extends AbstractTestExpert {\n";
@@ -430,7 +430,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateFooter() {
-		TestExpert t = new TestExpert(AClassUnderTst.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(AClassUnderTst.class, FixturesForTst.class);
 		t.generateFooter();
 		String footer = t.getFooter();
 		String expected = "}";
@@ -459,7 +459,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		 * .add("@ContextConfiguration(classes={Fixtures.class})");
 		 */
 
-		TestExpert testExpert = new TestExpert(AClassUnderTst.class, FixturesForTst.class);
+		TestExpert testExpert = new OurTestExpert(AClassUnderTst.class, FixturesForTst.class);
 
 		testExpert.generateAnnotationsForSpringTest();
 		List<String> annotations = testExpert.getAnnotionsBeforeTestClass();
@@ -488,7 +488,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		// the work should already be done by the constructor
 
 		// same package
-		TestExpert testExpert = new TestExpert(AClassUnderTst.class, FixturesForTst.class);
+		TestExpert testExpert = new OurTestExpert(AClassUnderTst.class, FixturesForTst.class);
 
 		Set<String> imports = testExpert.getImports();
 		Assert.assertEquals(6, imports.size());
@@ -516,7 +516,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
 		
 		// other package
-		testExpert = new TestExpert(String.class, FixturesForTst.class);
+		testExpert = new OurTestExpert(String.class, FixturesForTst.class);
 		imports = testExpert.getImports();
 		Assert.assertEquals(8, imports.size());
 		Assert.assertTrue(imports.contains("org.junit.Before"));
@@ -549,7 +549,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateFixturesForMethod() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 
 		try {
 			List<Class<?>> fixtures = t.generateFixturesForMethod(TstClassInner.class.getMethod("testForGenerateFixturesForMethod", new Class<?>[] { Person.class }));
@@ -571,7 +571,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateFixturesForMethodWithLiteral() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 
 		try {
 			List<Class<?>> fixtures = t.generateFixturesForMethod(TstClassInner.class.getMethod("testIn", new Class<?>[] { int.class }));
@@ -591,7 +591,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testCodegenPackage() {
-		TestExpert testExpert = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert testExpert = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		
 		String code = testExpert.codeGenPackage();
 		
@@ -600,7 +600,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testCodegenFixtures() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 
 		try {
 			List<Class<?>> fixtures = t.generateFixturesForMethod(TstClassInner.class.getMethod("testForGenerateFixturesForMethod", new Class<?>[] { Person.class }));
@@ -641,7 +641,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGenerateCreateArgumentsForTestMethod() {
 
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		try {
 			Method method = TstClassInner.class.getMethod("methodForCreateArguments", new Class<?>[] { int.class, String.class, Person.class });
 			String code;
@@ -682,7 +682,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testIsCallerForCollab() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		try {
 			try {
 				t.generateTestClass();
@@ -701,7 +701,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateReplays() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		try {
 			t.generateTestClass();
 		} catch (RuntimeException rte) {
@@ -719,7 +719,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateVerifies() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		try {
 			t.generateTestClass();
 		} catch (RuntimeException rte) {
@@ -737,7 +737,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateGettersForCollaborators() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		try {
 			t.generateTestClass();
 		} catch (RuntimeException rte) {
@@ -755,7 +755,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateCallToTestMethod() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 
 		try {
 			Method method = TstClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
@@ -773,7 +773,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateAssertStatementsForMethod() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 
 		try {
 			Method method = TstClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
@@ -797,7 +797,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testCheckAndImport() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		int currentSize = t.getImports().size();
 
 		t.checkAndAddImport(int.class);
@@ -832,7 +832,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testGenerateSetup() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 
 		String setup = t.generateSetup();
@@ -859,7 +859,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethod() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
@@ -906,7 +906,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVar() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
@@ -939,7 +939,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVarWithHelp() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
@@ -971,7 +971,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testGenerateExpectAndReplayForMockit() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.MOCKIT);
 		try {
 			t.generateTestClass();
@@ -1020,7 +1020,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testWithQuestionMarkOrAsteriskInAnnotation(){
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
@@ -1059,7 +1059,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testMethodWithVoidReturn() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
@@ -1095,7 +1095,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	 */
 	@Test
 	public void testCallToCollabWithReturn() {
-		TestExpert t = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert t = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
@@ -1129,7 +1129,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testAllGeneratedCodeThroughInputstream() {
-		TestExpert testExpert = new TestExpert(TstClassInner.class, FixturesForTst.class);
+		TestExpert testExpert = new OurTestExpert(TstClassInner.class, FixturesForTst.class);
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			testExpert.generateTestClass();

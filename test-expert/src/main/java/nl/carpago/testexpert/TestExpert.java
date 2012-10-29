@@ -37,6 +37,7 @@ import nl.carpago.testexpert.annotation.Expect;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -44,7 +45,7 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
-public class TestExpert {
+public abstract class TestExpert {
 
 	protected enum MockFramework {
 		EASYMOCK, MOCKIT
@@ -56,17 +57,17 @@ public class TestExpert {
 
 	private Class<?> classUnderTest;
 	private Package pakkage;
-	private Set<String> imports = new TreeSet<String>();
+	private Set<String> imports;
 
-	private List<String> annotionsBeforeTestClass = new ArrayList<String>();
+	private List<String> annotionsBeforeTestClass;
 
-	private String header = "";
+	private String header;
 
-	private String body = "";
+	private String body;
 
-	private HashMap<String, Class<?>> fixtures = new HashMap<String, Class<?>>();
+	private HashMap<String, Class<?>> fixtures;
 
-	private Set<String> collabs = new HashSet<String>();
+	private Set<String> collabs;
 
 	private ApplicationContext ctx;
 	private Class<?> contextClass;
@@ -79,45 +80,19 @@ public class TestExpert {
 	private final String ASTERISK = "*";
 	private final String RESULTFROMMETHOD = "resultFromMethod";
 
-	public static void main(String args[]) throws IOException, ClassNotFoundException {
-		logger.debug("entering main");
-		List<String> lijstMetAlleJavaFilesUitProject = null;
-
-		try {
-			// TODO /src/main/java should be configured through a property file
-			lijstMetAlleJavaFilesUitProject = findAllJavaFiles(getSourceFolder());
-		} catch (IOException e) {
-			logger.fatal(e.getMessage());
-		}
-
-		// Class<?> classUnderTest =
-		// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
-		// rloman: hier nog ff uitzoeken of dit sneller en / of mooier kan. heb
-		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
-		Class<?> classUnderTest = null;
-		for (String classFile : lijstMetAlleJavaFilesUitProject) {
-			// logger.debug("processing class " + classFile);
-
-			// classUnderTest =
-			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
-			classUnderTest = Class.forName(classFile); //
-
-			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
-			if (methods != null && !methods.isEmpty()) {
-
-				TestExpert generator = new TestExpert(classUnderTest, FixturesForTst.class);
-
-				try {
-					generator.generateTestClass();
-				} catch (InvalidAnnotationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				generator.writeFile();
-			}
-		}
-		logger.debug("leaving main");
+	private void clean()  {
+		
+		this.classUnderTest = null;
+		this.pakkage = null;
+		this.imports = new TreeSet<String>();
+		this.annotionsBeforeTestClass = new ArrayList<String>();
+		this.header = "";
+		this.body = "";
+		this.fixtures = new HashMap<String, Class<?>>();
+		this.collabs  = new HashSet<String>();
+		this.ctx = null;
+		this.contextClass = null;
+		this.footer = "";
 	}
 
 	public void writeFile() throws FileNotFoundException {
@@ -191,7 +166,7 @@ public class TestExpert {
 		}
 	}
 
-	protected static List<String> findAllJavaFiles(String a_folderOrFile) throws IOException {
+	protected List<String> findAllJavaFiles(String a_folderOrFile) throws IOException {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
@@ -220,12 +195,17 @@ public class TestExpert {
 		return lines;
 	}
 	
-	public static String getSourceFolder() {
-		return "src/main/java";
+	protected TestExpert(Class<?> classUnderTest, Class<?> context) {
+		this.init(classUnderTest, context);
 	}
-
-	public TestExpert(Class<?> classUnderTest, Class<?> context) {
-		logger.debug("entering constructor");
+	
+	public TestExpert() {
+		
+	}
+	
+	private void init(Class<?> classUnderTest, Class<?> context) {
+		clean();
+		logger.debug("entering init");
 		this.classUnderTest = classUnderTest;
 		this.contextClass = context;
 
@@ -251,7 +231,7 @@ public class TestExpert {
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
 	}
 
-	public void generateTestClass() throws InvalidAnnotationException {
+	protected void generateTestClass() throws InvalidAnnotationException {
 		logger.debug("enter");
 
 		generateAnnotationsForSpringTest();
@@ -1481,4 +1461,53 @@ public class TestExpert {
 	protected void setCurrentFramework(MockFramework currentFramework) {
 		this.currentFramework = currentFramework;
 	}
+	
+	// e.g. "src/main/java
+	public abstract String getSourceFolder();
+	
+	public abstract Class<?> getFixture();
+	
+	@Test
+	public void testSetup() throws ClassNotFoundException, FileNotFoundException {
+		logger.debug("entering setup");
+		List<String> lijstMetAlleJavaFilesUitProject = null;
+
+		try {
+			lijstMetAlleJavaFilesUitProject = findAllJavaFiles(getSourceFolder());
+		} catch (IOException e) {
+			logger.fatal(e.getMessage());
+		}
+
+		// Class<?> classUnderTest =
+		// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
+		// rloman: hier nog ff uitzoeken of dit sneller en / of mooier kan. heb
+		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
+		Class<?> classUnderTest = null;
+		for (String classFile : lijstMetAlleJavaFilesUitProject) {
+			// logger.debug("processing class " + classFile);
+
+			// classUnderTest =
+			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
+			classUnderTest = Class.forName(classFile); //
+
+			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
+			if (methods != null && !methods.isEmpty()) {
+
+			// 	TestExpert generator = new TestExpert(classUnderTest, FixturesForTst.class);
+				this.init(classUnderTest, getFixture());
+
+				try {
+					this.generateTestClass();
+				} catch (InvalidAnnotationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				this.writeFile();
+			}
+		}
+		logger.debug("leaving main");
+		
+	}
+
 }
