@@ -1,5 +1,6 @@
 package nl.carpago.testexpert;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,23 @@ public class MainVoorTstDoeleinden {
 	
 	public static Object converteer(Object o) {
 		return o;
+	}
+	
+	public void fileOpe() {
+		String path = ".";
+		String files;
+		
+		File folder = new File(path);
+		
+		File[] listOfFiles = folder.listFiles();
+		for(File file : listOfFiles) {
+			if(file.isFile()) {
+				System.out.println(file.getName());
+				if (file.getName().endsWith("java")) {
+					// do the stuff
+				}
+			}
+		}
 	}
 	
 	public static void tryReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
