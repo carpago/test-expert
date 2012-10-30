@@ -31,6 +31,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 import nl.carpago.testexpert.annotation.CreateUnittest;
 import nl.carpago.testexpert.annotation.Expect;
 
@@ -45,7 +47,7 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
-public abstract class TestExpert {
+public abstract class TestExpert extends TestCase {
 
 	protected enum MockFramework {
 		EASYMOCK, MOCKIT
@@ -70,7 +72,6 @@ public abstract class TestExpert {
 	private Set<String> collabs;
 
 	private ApplicationContext ctx;
-	private Class<?> contextClass;
 
 	private String footer = "";
 
@@ -91,7 +92,6 @@ public abstract class TestExpert {
 		this.fixtures = new HashMap<String, Class<?>>();
 		this.collabs  = new HashSet<String>();
 		this.ctx = null;
-		this.contextClass = null;
 		this.footer = "";
 	}
 
@@ -195,24 +195,19 @@ public abstract class TestExpert {
 		return lines;
 	}
 	
-	protected TestExpert(Class<?> classUnderTest, Class<?> context) {
-		this.init(classUnderTest, context);
-	}
-	
 	public TestExpert() {
-		
+		super();
 	}
 	
-	private void init(Class<?> classUnderTest, Class<?> context) {
+	protected void init(Class<?> classUnderTest) {
 		clean();
 		logger.debug("entering init");
 		this.classUnderTest = classUnderTest;
-		this.contextClass = context;
 
 		this.addPackage();
 
 		logger.debug("setting ApplicationContext");
-		this.ctx = new AnnotationConfigApplicationContext(this.contextClass);
+		this.ctx = new AnnotationConfigApplicationContext(this.getFixture());
 
 		initializeTestFramework();
 
@@ -224,7 +219,7 @@ public abstract class TestExpert {
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
 		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
-		this.checkAndAddImport(this.contextClass);
+		this.checkAndAddImport(this.getFixture());
 		this.checkAndAddImport(org.junit.runner.RunWith.class);
 		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
 		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
@@ -280,7 +275,7 @@ public abstract class TestExpert {
 		logger.debug("enter");
 
 		this.annotionsBeforeTestClass.add("@RunWith(SpringJUnit4ClassRunner.class)");
-		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={" + this.contextClass.getSimpleName() + ".class})");
+		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={" + this.getFixture().getSimpleName() + ".class})");
 
 		logger.debug("leave");
 
@@ -1427,7 +1422,7 @@ public abstract class TestExpert {
 	}
 
 	protected Class<?> getContextClass() {
-		return contextClass;
+		return this.getFixture();
 	}
 
 	protected Package getPakkage() {
@@ -1494,7 +1489,7 @@ public abstract class TestExpert {
 			if (methods != null && !methods.isEmpty()) {
 
 			// 	TestExpert generator = new TestExpert(classUnderTest, FixturesForTst.class);
-				this.init(classUnderTest, getFixture());
+				this.init(classUnderTest);
 
 				try {
 					this.generateTestClass();
