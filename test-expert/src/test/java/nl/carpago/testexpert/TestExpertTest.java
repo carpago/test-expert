@@ -47,7 +47,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		testExpertLocal.init(AClassUnderTst.class);
 
 		Assert.assertEquals(AClassUnderTst.class, testExpertLocal.getClassUnderTest());
-		Assert.assertEquals(FixturesForTst.class, testExpertLocal.getContextClass());
+		Assert.assertEquals(FixturesForTst.class, testExpertLocal.getFixture());
 		Assert.assertEquals(AClassUnderTst.class.getPackage(), testExpertLocal.getPakkage());
 
 		ApplicationContext context = testExpertLocal.getCtx();
@@ -331,7 +331,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterNamesForMethod() {
 		Method method = null;
-		Assert.assertEquals(new String[] {}, this.testExpert.getParameterNamesForMethod(method));
+		Assert.assertTrue(Arrays.equals(new String[]{}, this.testExpert.getParameterNamesForMethod(method)));
 		try {
 			method = TstClassInner.class.getMethod("testForParameterNames", new Class<?>[] { String.class, String.class, String.class });
 		} catch (SecurityException e) {
@@ -354,7 +354,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterTypesForMethod() {
 		Method method = null;
-		Assert.assertEquals(new String[] {}, this.testExpert.getParameterTypesForMethod(method));
+		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterTypesForMethod(method)));
 		try {
 			method = TstClassInner.class.getMethod("testForParameterTypes", new Class<?>[] { int.class, String.class, Person.class });
 
@@ -465,9 +465,6 @@ public class TestExpertTest extends AbstractTestExpert {
 		 * .add("@ContextConfiguration(classes={Fixtures.class})");
 		 */
 
-		TestExpert t = new OurTestExpert();
-		t.init(AClassUnderTst.class);
-
 		testExpert.generateAnnotationsForSpringTest();
 		List<String> annotations = testExpert.getAnnotionsBeforeTestClass();
 
@@ -531,7 +528,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
 		Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
-		Assert.assertTrue(imports.contains(testExpert.getContextClass().getName()));
+		Assert.assertTrue(imports.contains(testExpert.getFixture().getName()));
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
@@ -544,16 +541,11 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
 		Assert.assertTrue(code.indexOf("nl.carpago.testexpert.AbstractTestExpert") > -1);
-		 Assert.assertTrue(code.indexOf(testExpert.getContextClass().getSimpleName()) > -1);
+		 Assert.assertTrue(code.indexOf(testExpert.getFixture().getSimpleName()) > -1);
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
-		
-		
-		
-		
-
 	}
 
 	@Test
@@ -829,28 +821,6 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(currentSize == newSize);
 	}
 
-	/**
-	 * 
-	 * @Before
-	@SuppressWarnings("unchecked")
-	public void setUp() {
-		this.TstClassInner = new TstClassInner();
-
-		this.lijst = EasyMock.createMock(List.class);
-		setFieldThroughReflection(TstClassInner, "lijst", this.lijst);
-
-		this.voornaam = EasyMock.createMock(String.class);
-		setFieldThroughReflection(TstClassInner, "voornaam", this.voornaam);
-
-
-		this.variableWithSetterForTest = EasyMock.createMock(String.class);
-		this.TstClassInner.setVariableWithSetterForTest(this.variableWithSetterForTest);
-
-		this.persoonDao = EasyMock.createMock(PersoonDAO.class);
-		setFieldThroughReflection(TstClassInner, "persoonDao", this.persoonDao);
-	}
-	 */
-	
 	@Test
 	public void testGenerateSetup() {
 		TestExpert t = new OurTestExpert();

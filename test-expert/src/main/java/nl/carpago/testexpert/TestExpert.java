@@ -1424,10 +1424,6 @@ public abstract class TestExpert extends TestCase {
 		return classUnderTest;
 	}
 
-	protected Class<?> getContextClass() {
-		return this.getFixture();
-	}
-
 	protected Package getPakkage() {
 		return pakkage;
 	}
