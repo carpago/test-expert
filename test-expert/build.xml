@@ -77,7 +77,7 @@
 		</junit>
 	</target>
 
-	<target name="build" depends="compile" description="generate the distribution">
+	<target name="build" depends="test" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}/lib" />
 

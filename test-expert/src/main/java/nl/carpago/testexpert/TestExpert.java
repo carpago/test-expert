@@ -81,8 +81,8 @@ public abstract class TestExpert extends TestCase {
 	private final String ASTERISK = "*";
 	private final String RESULTFROMMETHOD = "resultFromMethod";
 
-	private void clean()  {
-		
+	private void clean() {
+
 		this.classUnderTest = null;
 		this.pakkage = null;
 		this.imports = new TreeSet<String>();
@@ -90,7 +90,7 @@ public abstract class TestExpert extends TestCase {
 		this.header = "";
 		this.body = "";
 		this.fixtures = new HashMap<String, Class<?>>();
-		this.collabs  = new HashSet<String>();
+		this.collabs = new HashSet<String>();
 		this.ctx = null;
 		this.footer = "";
 	}
@@ -106,28 +106,31 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("finished creating directory " + directoryName);
 
 		File file = new File(fileName);
-		FileOutputStream stream = new FileOutputStream(file);
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			logger.error("Unable to create outputfile. System halted.");
-			System.exit(1);
+		if(!file.exists() || this.overwriteExistingFiles()) {
+			FileOutputStream stream = new FileOutputStream(file);
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				logger.error("Unable to create outputfile. System halted.");
+				System.exit(1);
+			}
+
+			PrintStream po = new PrintStream(stream);
+			po.print(this.codeGen());
+			po.close();
 		}
 		
-		PrintStream po = new PrintStream(stream);
-		po.print(this.codeGen());
-		po.close();
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
 	}
-	
+
 	public BufferedInputStream getInputStreamFromGeneratedCode() {
 
 		final PipedInputStream pipedInputStream = new PipedInputStream();
 		try {
-			final PipedOutputStream pipedOutputStream =  new PipedOutputStream(pipedInputStream);
-			Thread t = new Thread(new Runnable(){
+			final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
+			Thread t = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -147,17 +150,17 @@ public abstract class TestExpert extends TestCase {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}
-				
+
 			});
 			t.start();
-			
+
 			return new BufferedInputStream(pipedInputStream);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BufferedInputStream(pipedInputStream) {
-				
+
 				@Override
 				public int read() throws IOException {
 					return 0;
@@ -171,22 +174,22 @@ public abstract class TestExpert extends TestCase {
 
 		List<String> lines = new LinkedList<String>();
 		File folderOrFile = new File(a_folderOrFile);
-	
-		for(File aFolderOrfile : folderOrFile.listFiles()) {
-			if(aFolderOrfile.isFile()){
+
+		for (File aFolderOrfile : folderOrFile.listFiles()) {
+			if (aFolderOrfile.isFile()) {
 				String aFile = aFolderOrfile.getPath();
-				
-				String sourceFolder = (getSourceFolder()+"/").replaceAll("\\\\", "/");
-				
+
+				String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
+
 				aFile = aFile.replaceAll("\\\\", "/");
-				aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
+				aFile = aFile.replaceAll(sourceFolder, ""); // strip
+															// sourcefolder
 				aFile = aFile.replaceAll("/", "\\.");
 				aFile = aFile.replaceAll(".java", "");
-				
+
 				lines.add(aFile);
-			}
-			else {
-				if(aFolderOrfile.isDirectory()) {
+			} else {
+				if (aFolderOrfile.isDirectory()) {
 					lines.addAll(findAllJavaFiles(aFolderOrfile.getPath()));
 				}
 			}
@@ -194,11 +197,11 @@ public abstract class TestExpert extends TestCase {
 
 		return lines;
 	}
-	
+
 	public TestExpert() {
 		super();
 	}
-	
+
 	protected void init(Class<?> classUnderTest) {
 		clean();
 		logger.debug("entering init");
@@ -311,7 +314,7 @@ public abstract class TestExpert extends TestCase {
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 
 		// creer String path to .class file
-		String fileName = "bin/" + this.classUnderTest.getName().replaceAll("\\.", "/");
+		String fileName = this.getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/");
 
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
@@ -400,8 +403,7 @@ public abstract class TestExpert extends TestCase {
 									logger.info("Class not found for " + param);
 									if ((this.isPrimitive(param))) {
 										parameter = this.getPrimitiveType(param);
-									} 
-									else {
+									} else {
 										assert false; // should never happen.
 									}
 								}
@@ -818,7 +820,8 @@ public abstract class TestExpert extends TestCase {
 				} catch (SecurityException e) {
 					logger.error(e);
 				} catch (NoSuchMethodException e) {
-					//default constructor failed so trying first (real) constructor");
+					// default constructor failed so trying first (real)
+					// constructor");
 					c = clazz.getConstructors()[0];
 				}
 				this.checkAndAddImport(c.getDeclaringClass());
@@ -931,7 +934,7 @@ public abstract class TestExpert extends TestCase {
 		if (MockFramework.EASYMOCK.equals(currentFramework)) {
 			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
-		
+
 		result += addCodeLn("\t@Override");
 		result += addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
@@ -1170,7 +1173,7 @@ public abstract class TestExpert extends TestCase {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
 			logger.fatal(Arrays.asList(parameterNames));
 			logger.fatal(Arrays.asList(inputParametersViaAnnotatie));
-			 throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
+			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 
 		Class<?>[] parameterTypes = methodeToBeTested.getParameterTypes();
@@ -1456,12 +1459,7 @@ public abstract class TestExpert extends TestCase {
 	protected void setCurrentFramework(MockFramework currentFramework) {
 		this.currentFramework = currentFramework;
 	}
-	
-	// e.g. "src/main/java
-	public abstract String getSourceFolder();
-	
-	public abstract Class<?> getFixture();
-	
+
 	@Test
 	public void testSetup() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
@@ -1488,7 +1486,8 @@ public abstract class TestExpert extends TestCase {
 			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
-			// 	TestExpert generator = new TestExpert(classUnderTest, FixturesForTst.class);
+				// TestExpert generator = new TestExpert(classUnderTest,
+				// FixturesForTst.class);
 				this.init(classUnderTest);
 
 				try {
@@ -1502,7 +1501,16 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		logger.debug("leaving main");
-		
+
 	}
+
+	// e.g. "src/main/java
+	public abstract String getSourceFolder();
+
+	public abstract Class<?> getFixture();
+	
+	public abstract boolean overwriteExistingFiles();
+	
+	public abstract String getOutputFolder();
 
 }

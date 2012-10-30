@@ -15,4 +15,14 @@ public class OurTestExpert extends TestExpert {
 	
 	public OurTestExpert(){}
 
+	@Override
+	public boolean overwriteExistingFiles() {
+		return true;
+	}
+
+	@Override
+	public String getOutputFolder() {
+		return "bin";
+	}
+
 }
