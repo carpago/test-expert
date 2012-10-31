@@ -8,7 +8,7 @@
 	<property name="generated.dir" location="src/test/generated-test" />
 	<property name="build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
-	<property name="test.report.dir" location="testreport" />
+	<property name="test.report.dir" location="../reports" />
 
 	<path id="junit.class.path">
 		<fileset dir="../3rdparty/lib">
