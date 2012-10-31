@@ -115,6 +115,8 @@
 		</junit>
 	</target>
 
+	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated" />
+
 	<target name="build" depends="test" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}/lib" />
