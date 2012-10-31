@@ -3,11 +3,11 @@
        Build file for Carpago Software's TestExpert product (c) 2012
     </description>
 	<!-- set global properties for this build -->
-	<property name="src" location="src/main/java" />
+	<property name="src.dir" location="src/main/java" />
 	<property name="test.dir" location="src/test/java" />
-	<property name="generated" location="src/test/generated-test" />
-	<property name="build" location="../build" />
-	<property name="dist" location="../dist" />
+	<property name="generated.dir" location="src/test/generated-test" />
+	<property name="build.dir" location="../build" />
+	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="testreport" />
 
 	<path id="junit.class.path">
@@ -17,7 +17,7 @@
 		<fileset dir="../3rdparty/testlib">
 			<include name="*.jar" />
 		</fileset>
-		<pathelement location="${build}" />
+		<pathelement location="${build.dir}" />
 	</path>
 
 
@@ -28,62 +28,100 @@
 		<fileset dir="../3rdparty/testlib">
 			<include name="*.jar" />
 		</fileset>
-		<!--
-		<fileset dir="${test}">
-			<include name="*.java" />
-		</fileset>
-		<fileset dir="${generated}">
-			<include name="*.java" />
-		</fileset>
-		-->
 	</path>
 
+	<path id="test.classpath">
+		<fileset dir="../3rdparty/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="../3rdparty/testlib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${build.dir}" />
+	</path>
 
 	<target name="clean" description="clean up">
-		<!-- Delete the ${build} and ${dist} directory trees -->
-		<delete dir="${build}" />
-		<delete dir="${dist}" />
+		<!-- Delete some direcotry trees -->
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
 		<delete dir="${test.report.dir}" />
-		<delete dir="${generated}" />
+		<delete dir="${generated.dir}" />
 	</target>
 
 	<target name="init" depends="clean">
 		<!-- Create the time stamp -->
 		<tstamp />
 		<!-- Create the build directory structure used by compile -->
-		<mkdir dir="${build}" />
+		<mkdir dir="${build.dir}" />
 		<mkdir dir="${test.report.dir}" />
-		<mkdir dir="${dist}" />
-		<mkdir dir="${generated}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${generated.dir}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
-		<!-- Compile the java code from ${src} into ${build} -->
-		<javac includeantruntime="false" srcdir="${src};${test.dir};${generated}" destdir="${build}" debug="true" debuglevel="lines,vars,source" >
-			<!-- <compilerarg value="-g:true" /> -->
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="compile.classpath" />
 		</javac>
 	</target>
 
+	<target name="compile.test" depends="compile" description="compile the source ">
+		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+	<target name="compile.generated" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${build.dir} -->
+		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
 	<!-- Run the JUnit Tests -->
-	<!-- Output is XML, could also be plain-->
-	<target name="test" depends="compile">
+	<!-- Output is xml or plain -->
+	<target name="test" depends="compile.test">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="junit.class.path" />
 			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}">
-					<include name="**/TestExpertTest*.java" />
+					<include name="**/*TestExpertTest*.java" />
 				</fileset>
 			</batchtest>
 		</junit>
 	</target>
 
+	<target name="generate.all" depends="compile.test">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="junit.class.path" />
+			<formatter type="plain" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="test.generated" depends="compile.generated" >
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="junit.class.path" />
+			<formatter type="plain" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${generated.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+
+
 	<target name="build" depends="test" description="generate the distribution">
 		<!-- Create the distribution directory -->
-		<mkdir dir="${dist}/lib" />
+		<mkdir dir="${dist.dir}/lib" />
 
-		<!-- Put everything in ${build} into the ${ant.project.name}-${DSTAMP}.jar file -->
-		<jar jarfile="${dist}/lib/${ant.project.name}-${DSTAMP}.jar" basedir="${build}" />
+		<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
+		<jar jarfile="${dist.dir}/lib/${ant.project.name}-${DSTAMP}.jar" basedir="${build.dir}" />
 	</target>
 </project>
