@@ -31,12 +31,15 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 import nl.carpago.testexpert.annotation.CreateUnittest;
 import nl.carpago.testexpert.annotation.Expect;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -44,7 +47,7 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.thoughtworks.paranamer.Paranamer;
 
-public class TestExpert {
+public abstract class TestExpert extends TestCase {
 
 	protected enum MockFramework {
 		EASYMOCK, MOCKIT
@@ -56,20 +59,19 @@ public class TestExpert {
 
 	private Class<?> classUnderTest;
 	private Package pakkage;
-	private Set<String> imports = new TreeSet<String>();
+	private Set<String> imports;
 
-	private List<String> annotionsBeforeTestClass = new ArrayList<String>();
+	private List<String> annotionsBeforeTestClass;
 
-	private String header = "";
+	private String header;
 
-	private String body = "";
+	private String body;
 
-	private HashMap<String, Class<?>> fixtures = new HashMap<String, Class<?>>();
+	private HashMap<String, Class<?>> fixtures;
 
-	private Set<String> collabs = new HashSet<String>();
+	private Set<String> collabs;
 
 	private ApplicationContext ctx;
-	private Class<?> contextClass;
 
 	private String footer = "";
 
@@ -79,45 +81,18 @@ public class TestExpert {
 	private final String ASTERISK = "*";
 	private final String RESULTFROMMETHOD = "resultFromMethod";
 
-	public static void main(String args[]) throws IOException, ClassNotFoundException {
-		logger.debug("entering main");
-		List<String> lijstMetAlleJavaFilesUitProject = null;
+	private void clean() {
 
-		try {
-			// TODO /src/main/java should be configured through a property file
-			lijstMetAlleJavaFilesUitProject = findAllJavaFiles(getSourceFolder());
-		} catch (IOException e) {
-			logger.fatal(e.getMessage());
-		}
-
-		// Class<?> classUnderTest =
-		// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
-		// rloman: hier nog ff uitzoeken of dit sneller en / of mooier kan. heb
-		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
-		Class<?> classUnderTest = null;
-		for (String classFile : lijstMetAlleJavaFilesUitProject) {
-			// logger.debug("processing class " + classFile);
-
-			// classUnderTest =
-			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
-			classUnderTest = Class.forName(classFile); //
-
-			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
-			if (methods != null && !methods.isEmpty()) {
-
-				TestExpert generator = new TestExpert(classUnderTest, FixturesForTst.class);
-
-				try {
-					generator.generateTestClass();
-				} catch (InvalidAnnotationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				generator.writeFile();
-			}
-		}
-		logger.debug("leaving main");
+		this.classUnderTest = null;
+		this.pakkage = null;
+		this.imports = new TreeSet<String>();
+		this.annotionsBeforeTestClass = new ArrayList<String>();
+		this.header = "";
+		this.body = "";
+		this.fixtures = new HashMap<String, Class<?>>();
+		this.collabs = new HashSet<String>();
+		this.ctx = null;
+		this.footer = "";
 	}
 
 	public void writeFile() throws FileNotFoundException {
@@ -131,28 +106,31 @@ public class TestExpert {
 		logger.debug("finished creating directory " + directoryName);
 
 		File file = new File(fileName);
-		FileOutputStream stream = new FileOutputStream(file);
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			logger.error("Unable to create outputfile. System halted.");
-			System.exit(1);
+		if(!file.exists() || this.overwriteExistingFiles()) {
+			FileOutputStream stream = new FileOutputStream(file);
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				logger.error("Unable to create outputfile. System halted.");
+				System.exit(1);
+			}
+
+			PrintStream po = new PrintStream(stream);
+			po.print(this.codeGen());
+			po.close();
 		}
 		
-		PrintStream po = new PrintStream(stream);
-		po.print(this.codeGen());
-		po.close();
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
 	}
-	
+
 	public BufferedInputStream getInputStreamFromGeneratedCode() {
 
 		final PipedInputStream pipedInputStream = new PipedInputStream();
 		try {
-			final PipedOutputStream pipedOutputStream =  new PipedOutputStream(pipedInputStream);
-			Thread t = new Thread(new Runnable(){
+			final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
+			Thread t = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -172,17 +150,17 @@ public class TestExpert {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}
-				
+
 			});
 			t.start();
-			
+
 			return new BufferedInputStream(pipedInputStream);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BufferedInputStream(pipedInputStream) {
-				
+
 				@Override
 				public int read() throws IOException {
 					return 0;
@@ -191,27 +169,27 @@ public class TestExpert {
 		}
 	}
 
-	protected static List<String> findAllJavaFiles(String a_folderOrFile) throws IOException {
+	protected List<String> findAllJavaFiles(String a_folderOrFile) throws IOException {
 		logger.debug("entering");
 
 		List<String> lines = new LinkedList<String>();
 		File folderOrFile = new File(a_folderOrFile);
-	
-		for(File aFolderOrfile : folderOrFile.listFiles()) {
-			if(aFolderOrfile.isFile()){
+
+		for (File aFolderOrfile : folderOrFile.listFiles()) {
+			if (aFolderOrfile.isFile()) {
 				String aFile = aFolderOrfile.getPath();
-				
-				String sourceFolder = (getSourceFolder()+"/").replaceAll("\\\\", "/");
-				
+
+				String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
+
 				aFile = aFile.replaceAll("\\\\", "/");
-				aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
+				aFile = aFile.replaceAll(sourceFolder, ""); // strip
+															// sourcefolder
 				aFile = aFile.replaceAll("/", "\\.");
 				aFile = aFile.replaceAll(".java", "");
-				
+
 				lines.add(aFile);
-			}
-			else {
-				if(aFolderOrfile.isDirectory()) {
+			} else {
+				if (aFolderOrfile.isDirectory()) {
 					lines.addAll(findAllJavaFiles(aFolderOrfile.getPath()));
 				}
 			}
@@ -219,20 +197,20 @@ public class TestExpert {
 
 		return lines;
 	}
-	
-	public static String getSourceFolder() {
-		return "src/main/java";
+
+	public TestExpert() {
+		super();
 	}
 
-	public TestExpert(Class<?> classUnderTest, Class<?> context) {
-		logger.debug("entering constructor");
+	protected void init(Class<?> classUnderTest) {
+		clean();
+		logger.debug("entering init");
 		this.classUnderTest = classUnderTest;
-		this.contextClass = context;
 
 		this.addPackage();
 
 		logger.debug("setting ApplicationContext");
-		this.ctx = new AnnotationConfigApplicationContext(this.contextClass);
+		this.ctx = new AnnotationConfigApplicationContext(this.getFixture());
 
 		initializeTestFramework();
 
@@ -244,14 +222,23 @@ public class TestExpert {
 		this.checkAndAddImport(org.junit.Before.class);
 		this.checkAndAddImport(org.junit.Test.class);
 		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
-		this.checkAndAddImport(this.contextClass);
+		this.checkAndAddImport(this.getFixture());
 		this.checkAndAddImport(org.junit.runner.RunWith.class);
 		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
 		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
+		
+		//probably we are going to mock something so ...
+		if (MockFramework.EASYMOCK.equals(currentFramework)) {
+			this.checkAndAddImport(org.easymock.EasyMock.class);
+		} else {
+			if (MockFramework.MOCKIT.equals(currentFramework)) {
+				this.checkAndAddImport(mockit.Mocked.class);
+			}
+		}
 	}
 
-	public void generateTestClass() throws InvalidAnnotationException {
+	protected void generateTestClass() throws InvalidAnnotationException {
 		logger.debug("enter");
 
 		generateAnnotationsForSpringTest();
@@ -300,7 +287,7 @@ public class TestExpert {
 		logger.debug("enter");
 
 		this.annotionsBeforeTestClass.add("@RunWith(SpringJUnit4ClassRunner.class)");
-		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={" + this.contextClass.getSimpleName() + ".class})");
+		this.annotionsBeforeTestClass.add("@ContextConfiguration(classes={" + this.getFixture().getSimpleName() + ".class})");
 
 		logger.debug("leave");
 
@@ -336,7 +323,7 @@ public class TestExpert {
 		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
 
 		// creer String path to .class file
-		String fileName = "bin/" + this.classUnderTest.getName().replaceAll("\\.", "/");
+		String fileName = this.getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/");
 
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
@@ -425,8 +412,7 @@ public class TestExpert {
 									logger.info("Class not found for " + param);
 									if ((this.isPrimitive(param))) {
 										parameter = this.getPrimitiveType(param);
-									} 
-									else {
+									} else {
 										assert false; // should never happen.
 									}
 								}
@@ -843,7 +829,8 @@ public class TestExpert {
 				} catch (SecurityException e) {
 					logger.error(e);
 				} catch (NoSuchMethodException e) {
-					//default constructor failed so trying first (real) constructor");
+					// default constructor failed so trying first (real)
+					// constructor");
 					c = clazz.getConstructors()[0];
 				}
 				this.checkAndAddImport(c.getDeclaringClass());
@@ -956,7 +943,7 @@ public class TestExpert {
 		if (MockFramework.EASYMOCK.equals(currentFramework)) {
 			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
-		
+
 		result += addCodeLn("\t@Override");
 		result += addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
@@ -1195,7 +1182,7 @@ public class TestExpert {
 			logger.fatal("Annotation and parameters are ordinal not equal!");
 			logger.fatal(Arrays.asList(parameterNames));
 			logger.fatal(Arrays.asList(inputParametersViaAnnotatie));
-			 throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
+			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 
 		Class<?>[] parameterTypes = methodeToBeTested.getParameterTypes();
@@ -1446,10 +1433,6 @@ public class TestExpert {
 		return classUnderTest;
 	}
 
-	protected Class<?> getContextClass() {
-		return contextClass;
-	}
-
 	protected Package getPakkage() {
 		return pakkage;
 	}
@@ -1481,4 +1464,58 @@ public class TestExpert {
 	protected void setCurrentFramework(MockFramework currentFramework) {
 		this.currentFramework = currentFramework;
 	}
+
+	@Test
+	public void testSetup() throws ClassNotFoundException, FileNotFoundException {
+		logger.debug("entering setup");
+		List<String> lijstMetAlleJavaFilesUitProject = null;
+
+		try {
+			lijstMetAlleJavaFilesUitProject = findAllJavaFiles(getSourceFolder());
+		} catch (IOException e) {
+			logger.fatal(e.getMessage());
+		}
+
+		// Class<?> classUnderTest =
+		// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
+		// rloman: hier nog ff uitzoeken of dit sneller en / of mooier kan. heb
+		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
+		Class<?> classUnderTest = null;
+		for (String classFile : lijstMetAlleJavaFilesUitProject) {
+			// logger.debug("processing class " + classFile);
+
+			// classUnderTest =
+			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
+			classUnderTest = Class.forName(classFile); //
+
+			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
+			if (methods != null && !methods.isEmpty()) {
+
+				// TestExpert generator = new TestExpert(classUnderTest,
+				// FixturesForTst.class);
+				this.init(classUnderTest);
+
+				try {
+					this.generateTestClass();
+				} catch (InvalidAnnotationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				this.writeFile();
+			}
+		}
+		logger.debug("leaving main");
+
+	}
+
+	// e.g. "src/main/java
+	public abstract String getSourceFolder();
+
+	public abstract Class<?> getFixture();
+	
+	public abstract boolean overwriteExistingFiles();
+	
+	public abstract String getOutputFolder();
+
 }
