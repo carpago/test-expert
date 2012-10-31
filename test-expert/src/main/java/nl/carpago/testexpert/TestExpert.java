@@ -227,6 +227,15 @@ public abstract class TestExpert extends TestCase {
 		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
 		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
+		
+		//probably we are going to mock something so ...
+		if (MockFramework.EASYMOCK.equals(currentFramework)) {
+			this.checkAndAddImport(org.easymock.EasyMock.class);
+		} else {
+			if (MockFramework.MOCKIT.equals(currentFramework)) {
+				this.checkAndAddImport(mockit.Mocked.class);
+			}
+		}
 	}
 
 	protected void generateTestClass() throws InvalidAnnotationException {

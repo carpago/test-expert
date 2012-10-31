@@ -496,7 +496,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		testExpert.init(AClassUnderTst.class);
 
 		Set<String> imports = testExpert.getImports();
-		Assert.assertEquals(6, imports.size());
+		Assert.assertEquals(7, imports.size());
 
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
@@ -510,7 +510,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		// test the code that eventually is generated.
 		String code = testExpert.codeGenImports();
 		String[] lines = code.split("\n");
-		Assert.assertEquals(6, lines.length);
+		Assert.assertEquals(7, lines.length);
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
 		// not te be inserted: Assert.assertTrue(code.contains("nl.carpago.testexpert.AbstractTestExpert") > -1);
@@ -524,7 +524,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		testExpert = new OurTestExpert();
 		testExpert.init(String.class);
 		imports = testExpert.getImports();
-		Assert.assertEquals(8, imports.size());
+		Assert.assertEquals(9, imports.size());
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
 		Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
@@ -537,7 +537,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		code = testExpert.codeGenImports();
 		lines = code.split("\n");
 		
-		Assert.assertEquals(8, lines.length);
+		Assert.assertEquals(9, lines.length);
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
 		Assert.assertTrue(code.indexOf("nl.carpago.testexpert.AbstractTestExpert") > -1);

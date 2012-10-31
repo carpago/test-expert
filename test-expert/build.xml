@@ -44,6 +44,7 @@
 		<delete dir="${build}" />
 		<delete dir="${dist}" />
 		<delete dir="${test.report.dir}" />
+		<delete dir="${generated}" />
 	</target>
 
 	<target name="init" depends="clean">
@@ -53,6 +54,7 @@
 		<mkdir dir="${build}" />
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist}" />
+		<mkdir dir="${generated}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">

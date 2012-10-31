@@ -22,7 +22,7 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public String getOutputFolder() {
-		return "bin";
+		return "../build";
 	}
 
 }
