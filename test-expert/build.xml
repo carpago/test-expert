@@ -14,9 +14,6 @@
 		<fileset dir="../3rdparty/lib">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="../3rdparty/testlib">
-			<include name="*.jar" />
-		</fileset>
 		<pathelement location="${build.dir}" />
 	</path>
 
@@ -25,16 +22,10 @@
 		<fileset dir="../3rdparty/lib">
 			<include name="*.jar" />
 		</fileset>
-		<fileset dir="../3rdparty/testlib">
-			<include name="*.jar" />
-		</fileset>
 	</path>
 
 	<path id="test.classpath">
 		<fileset dir="../3rdparty/lib">
-			<include name="*.jar" />
-		</fileset>
-		<fileset dir="../3rdparty/testlib">
 			<include name="*.jar" />
 		</fileset>
 		<pathelement location="${build.dir}" />
@@ -114,6 +105,8 @@
 			</batchtest>
 		</junit>
 	</target>
+
+	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated" />
 
 	<target name="build" depends="test" description="generate the distribution">
 		<!-- Create the distribution directory -->
