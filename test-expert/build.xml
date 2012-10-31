@@ -70,6 +70,18 @@
 		</javac>
 	</target>
 
+	<target name="generate.all" depends="compile.test">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="junit.class.path" />
+			<formatter type="plain" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
 	<target name="compile.generated" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build.dir} -->
 		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
@@ -91,19 +103,7 @@
 		</junit>
 	</target>
 
-	<target name="generate.all" depends="compile.test">
-		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
-			<formatter type="plain" />
-			<batchtest todir="${test.report.dir}">
-				<fileset dir="${test.dir}">
-					<include name="**/*Test*.java" />
-				</fileset>
-			</batchtest>
-		</junit>
-	</target>
-
-	<target name="test.generated" depends="compile.generated" >
+	<target name="test.generated" depends="compile.generated">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="junit.class.path" />
 			<formatter type="plain" />
@@ -114,8 +114,6 @@
 			</batchtest>
 		</junit>
 	</target>
-
-
 
 	<target name="build" depends="test" description="generate the distribution">
 		<!-- Create the distribution directory -->
