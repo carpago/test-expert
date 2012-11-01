@@ -8,7 +8,6 @@
 	<property name="test.dir" location="src/test/java" />
 	<property name="generated.dir" location="src/test/generated-test" />
 	<property name="build.dir" location="../build" />
-	<property name="test.build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="../reports" />
 	<property name="thirdparty.dir" location="../3rdparty" />
@@ -24,7 +23,6 @@
 			<include name="*.jar" />
 		</fileset>
 		<pathelement location="${build.dir}" />
-		<pathelement location="${test.build.dir}" />
 	</path>
 
 	<target name="clean" description="clean up">
@@ -33,7 +31,6 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${test.report.dir}" />
 		<delete dir="${generated.dir}" />
-		<delete dir="${test.build.dir}" />
 	</target>
 
 	<target name="init" depends="clean">
@@ -44,7 +41,6 @@
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${generated.dir}" />
-		<mkdir dir="${test.build.dir}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
@@ -58,7 +54,7 @@
 	</target>
 
 	<target name="compile.test" depends="compile" description="compile the source ">
-		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${test.build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="test.classpath" />
 		</javac>
 	</target>
@@ -91,7 +87,7 @@
 
 	<target name="compile.generated" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build.dir} -->
-		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${test.build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="test.classpath" />
 		</javac>
 	</target>
