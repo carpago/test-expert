@@ -10,8 +10,11 @@ import nl.carpago.testexpert.annotation.Expect;
 public class TstClassInner {
 
 	private List<String> lijst;
+	@SuppressWarnings("unused")
 	private String voornaam;
+	@SuppressWarnings("unused")
 	private int leeftijd;
+	@SuppressWarnings("unused")
 	private String variableWithSetterForTest;
 	private PersoonDAO persoonDao;
 	
@@ -35,7 +38,7 @@ public class TstClassInner {
 		return a + 2;
 	}
 
-	@CreateUnittest
+	@CreateUnittest(in={"one", "two", "three"}, out="onetwothree")
 	public String testForParameterNames(String one, String two, String three) {
 		return "" + one + two + three;
 	}
@@ -62,11 +65,6 @@ public class TstClassInner {
 
 	@CreateUnittest(in = { "?", "?", "?" })
 	public void methodForCreateArguments(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
-
-	}
-
-	@CreateUnittest(in = { "?", "?" })
-	public void methodForCreateArgumentsError(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
 
 	}
 
