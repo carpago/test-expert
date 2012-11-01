@@ -11,15 +11,16 @@
 	<property name="test.build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="../reports" />
+	<property name="thirdparty.dir" location="../3rdparty" />
 
 	<path id="compile.classpath">
-		<fileset dir="../3rdparty/lib">
+		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
 	</path>
 
 	<path id="test.classpath">
-		<fileset dir="../3rdparty/lib">
+		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
 		<pathelement location="${build.dir}" />
@@ -120,7 +121,7 @@
 
 		<!-- Put the dependencies at same location -->
 		<copy todir="${dist.dir}/lib">
-			<fileset dir="..\3rdparty\lib" includes="**/*.jar" />
+			<fileset dir="${thirdparty.dir}\lib" includes="**/*.jar" />
 		</copy>
 
 
