@@ -12,6 +12,7 @@ import java.util.Set;
 
 import nl.carpago.testexpert.TestExpert.MockFramework;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,18 +28,20 @@ public class TestExpertTest extends AbstractTestExpert {
 	// class under test
 	private TestExpert testExpert;
 
+	private final Logger logger = Logger.getLogger(this.getClass());
+
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		this.testExpert = new OurTestExpert();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);	
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 	}
-	
+
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.testExpert = null;
-		
+
 	}
 
 	@Test
@@ -88,74 +91,48 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	/*
-	@Test
-	public void testGetInAnnotationsForMethod() {
-		Method method = null;
-		try {
-			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			fail();
-		} catch (NoSuchMethodException e) {
-			fail();
-			e.printStackTrace();
-		}
-
-		String[] expectedIn = { "andereBetrokkene", "anderBerichtkenmerkAig" };
-
-		String[] actualIn = this.testExpert.getInAnnotationsForMethod(method);
-
-		assertEquals(Arrays.asList(actualIn), Arrays.asList(expectedIn));
-
-		try {
-			method = TstClassInner.class.getMethod("test4", new Class<?>[] { int.class });
-			expectedIn = new String[] { "3" };
-			actualIn = this.testExpert.getInAnnotationsForMethod(method);
-			assertEquals(Arrays.asList(expectedIn), Arrays.asList(actualIn));
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			fail();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-			fail();
-		}
-	}
-	
-
-	@Test
-	public void testGetOutAnnotationForMethod() {
-		Method method = null;
-		try {
-			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		String expectedOut = "melding";
-
-		String actualOut = this.testExpert.getOutAnnotationForMethod(method);
-
-		assertEquals(expectedOut, actualOut);
-
-		try {
-			method = TstClassInner.class.getMethod("test4", new Class<?>[] { int.class });
-			expectedOut = "5";
-			actualOut = this.testExpert.getOutAnnotationForMethod(method);
-			assertEquals(expectedOut, actualOut);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			fail();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-			fail();
-		}
-	}
-
- */
+	 * @Test public void testGetInAnnotationsForMethod() { Method method = null;
+	 * try { method =
+	 * OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding",
+	 * Betrokkene.class, String.class); } catch (SecurityException e) {
+	 * e.printStackTrace(); fail(); } catch (NoSuchMethodException e) { fail();
+	 * e.printStackTrace(); }
+	 * 
+	 * String[] expectedIn = { "andereBetrokkene", "anderBerichtkenmerkAig" };
+	 * 
+	 * String[] actualIn = this.testExpert.getInAnnotationsForMethod(method);
+	 * 
+	 * assertEquals(Arrays.asList(actualIn), Arrays.asList(expectedIn));
+	 * 
+	 * try { method = TstClassInner.class.getMethod("test4", new Class<?>[] {
+	 * int.class }); expectedIn = new String[] { "3" }; actualIn =
+	 * this.testExpert.getInAnnotationsForMethod(method);
+	 * assertEquals(Arrays.asList(expectedIn), Arrays.asList(actualIn)); } catch
+	 * (SecurityException e) { e.printStackTrace(); fail(); } catch
+	 * (NoSuchMethodException e) { e.printStackTrace(); fail(); } }
+	 * 
+	 * 
+	 * @Test public void testGetOutAnnotationForMethod() { Method method = null;
+	 * try { method =
+	 * OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding",
+	 * Betrokkene.class, String.class); } catch (SecurityException e) { // TODO
+	 * Auto-generated catch block e.printStackTrace(); } catch
+	 * (NoSuchMethodException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); }
+	 * 
+	 * String expectedOut = "melding";
+	 * 
+	 * String actualOut = this.testExpert.getOutAnnotationForMethod(method);
+	 * 
+	 * assertEquals(expectedOut, actualOut);
+	 * 
+	 * try { method = TstClassInner.class.getMethod("test4", new Class<?>[] {
+	 * int.class }); expectedOut = "5"; actualOut =
+	 * this.testExpert.getOutAnnotationForMethod(method);
+	 * assertEquals(expectedOut, actualOut); } catch (SecurityException e) {
+	 * e.printStackTrace(); fail(); } catch (NoSuchMethodException e) {
+	 * e.printStackTrace(); fail(); } }
+	 */
 	@Test
 	public void testGenerateConstructorForClass() {
 		Class c = OnderhoudenMeldingServiceImpl.class;
@@ -331,7 +308,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterNamesForMethod() {
 		Method method = null;
-		Assert.assertTrue(Arrays.equals(new String[]{}, this.testExpert.getParameterNamesForMethod(method)));
+		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterNamesForMethod(method)));
 		try {
 			method = TstClassInner.class.getMethod("testForParameterNames", new Class<?>[] { String.class, String.class, String.class });
 		} catch (SecurityException e) {
@@ -414,7 +391,8 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testFindAllJavaFilesForFolder() {
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
-			Assert.assertEquals("Expected:17, actual:"+files.size(), 17, files.size());
+			final int expected = 18;
+			Assert.assertEquals("Expected:"+expected+", actual:" + files.size(), expected, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
@@ -423,7 +401,6 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateHeader() {
-	//	TestExpert t = new OurTestExpert(AClassUnderTst.class, FixturesForTst.class);
 		TestExpert t = new OurTestExpert();
 		t.init(AClassUnderTst.class);
 		t.generateHeader();
@@ -471,7 +448,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertEquals(2, annotations.size());
 		Assert.assertTrue(annotations.contains("@RunWith(SpringJUnit4ClassRunner.class)"));
 		Assert.assertTrue(annotations.contains("@ContextConfiguration(classes={FixturesForTst.class})"));
-		
+
 		String codeGenAnnotations = testExpert.codeGenAnnotationsForSpringTest();
 		Assert.assertTrue(codeGenAnnotations.indexOf("@RunWith(SpringJUnit4ClassRunner.class)") > -1);
 		Assert.assertTrue(codeGenAnnotations.indexOf("@ContextConfiguration(classes={FixturesForTst.class})") > -1);
@@ -500,8 +477,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
-		// not te be inserted: Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
-		// not to be inserted: Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
+		// not te be inserted:
+		// Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
+		// not to be inserted:
+		// Assert.assertTrue(imports.contains(t.getContextClass().getSimpleName()));
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
@@ -513,13 +492,16 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertEquals(7, lines.length);
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
-		// not te be inserted: Assert.assertTrue(code.contains("nl.carpago.testexpert.AbstractTestExpert") > -1);
-		// not to be inserted: Assert.assertTrue(code.contains(t.getContextClass().getSimpleName()));
+		// not te be inserted:
+		// Assert.assertTrue(code.contains("nl.carpago.testexpert.AbstractTestExpert")
+		// > -1);
+		// not to be inserted:
+		// Assert.assertTrue(code.contains(t.getContextClass().getSimpleName()));
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
-		
+
 		// other package
 		testExpert = new OurTestExpert();
 		testExpert.init(String.class);
@@ -533,15 +515,15 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
 		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
-		
+
 		code = testExpert.codeGenImports();
 		lines = code.split("\n");
-		
+
 		Assert.assertEquals(9, lines.length);
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
 		Assert.assertTrue(code.indexOf("nl.carpago.testexpert.AbstractTestExpert") > -1);
-		 Assert.assertTrue(code.indexOf(testExpert.getFixture().getSimpleName()) > -1);
+		Assert.assertTrue(code.indexOf(testExpert.getFixture().getSimpleName()) > -1);
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
@@ -591,17 +573,17 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		Assert.assertFalse(fixturesFromTestExpert.containsKey("3"));
 	}
-	
+
 	@Test
 	public void testCodegenPackage() {
 		TestExpert testExpert = new OurTestExpert();
 		testExpert.init(TstClassInner.class);
-		
+
 		String code = testExpert.codeGenPackage();
-		
-		Assert.assertTrue(code+" is not equal to 'nl.carpago.testexpert<crlf><crlf>'", "package nl.carpago.testexpert;\n\n".equals(code));
+
+		Assert.assertTrue(code + " is not equal to 'nl.carpago.testexpert<crlf><crlf>'", "package nl.carpago.testexpert;\n\n".equals(code));
 	}
-	
+
 	@Test
 	public void testCodegenFixtures() {
 		TestExpert t = new OurTestExpert();
@@ -659,8 +641,7 @@ public class TestExpertTest extends AbstractTestExpert {
 					Assert.assertTrue(expected.indexOf(line.trim()) > -1);
 				}
 			} catch (InvalidAnnotationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Invalid annotations.");
 			}
 
 		} catch (SecurityException e) {
@@ -671,7 +652,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			fail();
 		}
 		try {
-			Method method = TstClassInner.class.getMethod("methodForCreateArgumentsError", new Class<?>[] { int.class, String.class, Person.class });
+			Method method = TstClassInnerWithError.class.getMethod("methodForCreateArgumentsError", new Class<?>[] { int.class, String.class, Person.class });
 			try {
 				t.generateCreateArgumentsForTestMethod(method);
 			} catch (InvalidAnnotationException e) {
@@ -691,17 +672,10 @@ public class TestExpertTest extends AbstractTestExpert {
 		TestExpert t = new OurTestExpert();
 		t.init(TstClassInner.class);
 		try {
-			try {
-				t.generateTestClass();
-			} catch (InvalidAnnotationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (RuntimeException rte) {
-			// ok for now since the generateCreateArgumentsFormethod should
-			// throw since there a intentional error in this class...
+			t.generateTestClass();
+		} catch (InvalidAnnotationException e) {
+			// ok
 		}
-
 		Assert.assertTrue("lijst should be a collab InnerclassTest", t.isCallerForCollab("lijst"));
 		Assert.assertFalse("klasdfjalk;sdfjkads should not be a ..", t.isCallerForCollab("alksdfjkasdf"));
 	}
@@ -712,12 +686,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.init(TstClassInner.class);
 		try {
 			t.generateTestClass();
-		} catch (RuntimeException rte) {
-			// ok for now since the generateCreateArgumentsFormethod should
-			// throw since there a intentional error in this class...
-		} catch (InvalidAnnotationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
@@ -735,8 +705,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			// ok for now since the generateCreateArgumentsFormethod should
 			// throw since there a intentional error in this class...
 		} catch (InvalidAnnotationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
@@ -754,8 +723,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			// ok for now since the generateCreateArgumentsFormethod should
 			// throw since there a intentional error in this class...
 		} catch (InvalidAnnotationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		String collabString = t.generateGettersForCollaborators();
@@ -856,9 +824,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -868,21 +835,21 @@ public class TestExpertTest extends AbstractTestExpert {
 			try {
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));") > -1);
-				method = TstClassInner.class.getMethod("getPersoon", new Class<?>[]{int.class});
+				method = TstClassInner.class.getMethod("getPersoon", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));") > -1);
-			
-				method = TstClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[]{int.class, Person.class});
+
+				method = TstClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[] { int.class, Person.class });
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") >-1);
-			
-				
-				method = TstClassInner.class.getMethod("testWithCallToSelf", new Class<?>[]{int.class});
+				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") > -1);
+
+				method = TstClassInner.class.getMethod("testWithCallToSelf", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
-				//System.out.println(">"+expectAndReplays+"<");
-				// rloman: to be implemented in the next release. .Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(inner.inc(number)).andReturn(4);") >-1);
-			
-			
+				// System.out.println(">"+expectAndReplays+"<");
+				// rloman: to be implemented in the next release.
+				// .Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(inner.inc(number)).andReturn(4);")
+				// >-1);
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -896,7 +863,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVar() {
 		TestExpert t = new OurTestExpert();
@@ -904,9 +871,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -930,7 +896,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVarWithHelp() {
 		TestExpert t = new OurTestExpert();
@@ -938,9 +904,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -963,7 +928,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testGenerateExpectAndReplayForMockit() {
 		TestExpert t = new OurTestExpert();
@@ -971,9 +936,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.MOCKIT);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -982,22 +946,22 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
-				
+
 				String[] expectedLines = new String[6];
 				expectedLines[0] = "new Expectations() {";
 				expectedLines[1] = "persoonDao.getSofi(number);";
 				expectedLines[2] = "forEachInvocation = new Object() {";
 				expectedLines[3] = "@SuppressWarnings(\"unused\")";
-				expectedLines[4] ="String validate(int number){";
+				expectedLines[4] = "String validate(int number){";
 				expectedLines[5] = "return string;";
-				
-				for(String anExpectedLine : expectedLines) {
-					Assert.assertTrue("Line:"+anExpectedLine+" not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
+
+				for (String anExpectedLine : expectedLines) {
+					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
 				}
-				
+
 				// asssert that mockit is imported
 				Assert.assertTrue(t.getImports().contains("mockit.Mocked"));
-			
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1011,19 +975,16 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
 	@Test
-	public void testWithQuestionMarkOrAsteriskInAnnotation(){
+	public void testWithQuestionMarkOrAsteriskInAnnotation() {
 		TestExpert t = new OurTestExpert();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -1032,13 +993,13 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
-				
+
 				String[] expectedLines = new String[2];
 				expectedLines[0] = "int aNumber = 17;";
 				expectedLines[1] = "EasyMock.expect(persoonDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
-				
-				for(String anExpectedLine : expectedLines) {
-					Assert.assertTrue("Line:"+anExpectedLine+" not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
+
+				for (String anExpectedLine : expectedLines) {
+					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1053,7 +1014,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testMethodWithVoidReturn() {
 		TestExpert t = new OurTestExpert();
@@ -1061,9 +1022,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -1087,9 +1047,10 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * This methods tests - and tests only - if a non-literal return from a collab is correctly used.
+	 * This methods tests - and tests only - if a non-literal return from a
+	 * collab is correctly used.
 	 */
 	@Test
 	public void testCallToCollabWithReturn() {
@@ -1098,9 +1059,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			t.generateTestClass();
-		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
 		Method method;
@@ -1124,8 +1084,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	@Test
 	public void testAllGeneratedCodeThroughInputstream() {
 		TestExpert testExpert = new OurTestExpert();
@@ -1133,31 +1092,28 @@ public class TestExpertTest extends AbstractTestExpert {
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
 			testExpert.generateTestClass();
+		} catch (InvalidAnnotationException e) {
+			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
-		catch (InvalidAnnotationException e) {
-			e.printStackTrace();
-		}
-		
+
 		String allCode = testExpert.codeGen();
-		
+
 		BufferedInputStream in = testExpert.getInputStreamFromGeneratedCode();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		
+
 		String line = null;
 		int counter = 0;
 		try {
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null) {
 				counter++;
 				Assert.assertTrue(allCode.indexOf(line) > -1);
 			}
 			Assert.assertTrue(counter > 25);
-			Assert.assertTrue(allCode.split("\n").length ==  counter);
+			Assert.assertTrue(allCode.split("\n").length == counter);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-		
 	}
 }

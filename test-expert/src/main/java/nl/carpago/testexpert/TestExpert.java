@@ -1179,9 +1179,9 @@ public abstract class TestExpert extends TestCase {
 		String[] inputParametersViaAnnotatie = methodeToBeTested.getAnnotation(nl.carpago.testexpert.annotation.CreateUnittest.class).in();
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
-			logger.fatal("Annotation and parameters are ordinal not equal!");
-			logger.fatal(Arrays.asList(parameterNames));
-			logger.fatal(Arrays.asList(inputParametersViaAnnotatie));
+			logger.warn("Annotation and parameters are ordinal not equal!");
+			logger.warn(Arrays.asList(parameterNames));
+			logger.warn(Arrays.asList(inputParametersViaAnnotatie));
 			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 

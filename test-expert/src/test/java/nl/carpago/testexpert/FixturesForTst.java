@@ -31,6 +31,26 @@ import org.springframework.context.annotation.Configuration;
 		}
 		
 		@Bean
+		public String one() {
+			return "1";
+		}
+		
+		@Bean
+		public String two() {
+			return "2";
+		}
+		
+		@Bean
+		public String three() {
+			return "3";
+		}
+		
+		@Bean
+		public String onetwothree() {
+			return "123";
+		}
+		
+		@Bean
 		public String string() {
 			return "3";
 		}

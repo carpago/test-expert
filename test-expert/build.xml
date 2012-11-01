@@ -4,6 +4,7 @@
     </description>
 	<!-- set global properties for this build -->
 	<property name="src.dir" location="src/main/java" />
+	<property name="resources.dir" location="src/main/resources" />
 	<property name="test.dir" location="src/test/java" />
 	<property name="generated.dir" location="src/test/generated-test" />
 	<property name="build.dir" location="../build" />
@@ -50,9 +51,13 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
-		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${src.dir};${resources.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="compile.classpath" />
 		</javac>
+
+		<copy todir="${build.dir}">
+			<fileset dir="${resources.dir}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
 	</target>
 
 	<target name="compile.test" depends="compile" description="compile the source ">
