@@ -123,7 +123,13 @@
 		<copy todir="${dist.dir}/lib">
 			<fileset dir="${thirdparty.dir}\lib" includes="**/*.jar" />
 		</copy>
+	</target>
 
-
+	<target name="zip" depends="build" description="generate a zipfile for deployment">
+		<zip destfile="${dist.dir}/${ant.project.name}-${DSTAMP}.zip">
+			<zipfileset dir="${dist.dir}/lib">
+				<include name="*.jar" />
+			</zipfileset>
+		</zip>
 	</target>
 </project>
