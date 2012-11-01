@@ -1180,8 +1180,8 @@ public abstract class TestExpert extends TestCase {
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.warn("Annotation and parameters are ordinal not equal!");
-			logger.warn(Arrays.asList(parameterNames));
-			logger.warn(Arrays.asList(inputParametersViaAnnotatie));
+			logger.warn("parameternames:"+Arrays.asList(parameterNames));
+			logger.warn("InputParameters through annotation:"+Arrays.asList(inputParametersViaAnnotatie));
 			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 

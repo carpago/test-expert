@@ -69,7 +69,7 @@
 	<target name="generate.all" depends="compile.test">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="junit.class.path" />
-			<formatter type="plain" />
+			<formatter type="xml" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}">
 					<include name="**/*Test*.java" />
@@ -90,7 +90,7 @@
 	<target name="test" depends="compile.test">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="junit.class.path" />
-			<formatter type="plain" />
+			<formatter type="xml" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}">
 					<include name="**/*TestExpertTest*.java" />

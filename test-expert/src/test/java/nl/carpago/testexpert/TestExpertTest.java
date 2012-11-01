@@ -656,7 +656,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			try {
 				t.generateCreateArgumentsForTestMethod(method);
 			} catch (InvalidAnnotationException e) {
-				// ok
+				logger.error("in this case the error messsage is correct!");
 			}
 		} catch (SecurityException e) {
 			e.printStackTrace();
