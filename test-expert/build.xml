@@ -8,16 +8,9 @@
 	<property name="test.dir" location="src/test/java" />
 	<property name="generated.dir" location="src/test/generated-test" />
 	<property name="build.dir" location="../build" />
+	<property name="test.build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="../reports" />
-
-	<path id="junit.class.path">
-		<fileset dir="../3rdparty/lib">
-			<include name="*.jar" />
-		</fileset>
-		<pathelement location="${build.dir}" />
-	</path>
-
 
 	<path id="compile.classpath">
 		<fileset dir="../3rdparty/lib">
@@ -30,6 +23,7 @@
 			<include name="*.jar" />
 		</fileset>
 		<pathelement location="${build.dir}" />
+		<pathelement location="${test.build.dir}" />
 	</path>
 
 	<target name="clean" description="clean up">
@@ -38,6 +32,7 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${test.report.dir}" />
 		<delete dir="${generated.dir}" />
+		<delete dir="${test.build.dir}" />
 	</target>
 
 	<target name="init" depends="clean">
@@ -48,10 +43,11 @@
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${generated.dir}" />
+		<mkdir dir="${test.build.dir}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
-		<javac includeantruntime="false" srcdir="${src.dir};${resources.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="compile.classpath" />
 		</javac>
 
@@ -61,14 +57,28 @@
 	</target>
 
 	<target name="compile.test" depends="compile" description="compile the source ">
-		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${test.build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="test.classpath" />
 		</javac>
 	</target>
 
+	<!-- Run the JUnit Tests -->
+	<!-- Output is xml or plain -->
+	<target name="test" depends="compile.test">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="test.classpath" />
+			<formatter type="xml" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/*TestExpertTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
 	<target name="generate.all" depends="compile.test">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
+			<classpath refid="test.classpath" />
 			<formatter type="xml" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}">
@@ -80,28 +90,16 @@
 
 	<target name="compile.generated" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build.dir} -->
-		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${test.build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="test.classpath" />
 		</javac>
 	</target>
 
-	<!-- Run the JUnit Tests -->
-	<!-- Output is xml or plain -->
-	<target name="test" depends="compile.test">
-		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
-			<formatter type="xml" />
-			<batchtest todir="${test.report.dir}">
-				<fileset dir="${test.dir}">
-					<include name="**/*TestExpertTest*.java" />
-				</fileset>
-			</batchtest>
-		</junit>
-	</target>
+
 
 	<target name="test.generated" depends="compile.generated">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
+			<classpath refid="test.classpath" />
 			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${generated.dir}">
@@ -111,9 +109,9 @@
 		</junit>
 	</target>
 
-	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated" />
+	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
 
-	<target name="build" depends="test" description="generate the distribution">
+	<target name="build" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}/lib" />
 
