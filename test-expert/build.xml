@@ -5,15 +5,30 @@
 	<!-- set global properties for this build -->
 	<property name="src.dir" location="src/main/java" />
 	<property name="resources.dir" location="src/main/resources" />
-	<property name="test.dir" location="src/test/java" />
-	<property name="generated.dir" location="src/test/generated-test" />
+	<property name="test.src.dir" location="src/test/java" />
+	<property name="generated.test.source.dir" location="src/test/generated-test" />
 	<property name="build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="../reports" />
 	<property name="thirdparty.dir" location="../3rdparty" />
 
+	<!-- Emma stuff -->
+	<property name="coverage.output.dir" value="../emma" />
+	<property name="emma.binaries.dir" value="${thirdparty.dir}/emma-code-coverage" />
+	<property name="instrumented.output.dir" value="../instrumented" />
+
+	<path id="emma.lib">
+		<fileset dir="${emma.binaries.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+
 	<path id="compile.classpath">
 		<fileset dir="${thirdparty.dir}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${emma.binaries.dir}">
 			<include name="*.jar" />
 		</fileset>
 	</path>
@@ -22,6 +37,10 @@
 		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${emma.binaries.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${instrumented.output.dir}" />
 		<pathelement location="${build.dir}" />
 	</path>
 
@@ -30,7 +49,9 @@
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
 		<delete dir="${test.report.dir}" />
-		<delete dir="${generated.dir}" />
+		<delete dir="${generated.test.source.dir}" />
+		<delete dir="${instrumented.output.dir}" />
+		<delete dir="${coverage.output.dir}" />
 	</target>
 
 	<target name="init" depends="clean">
@@ -40,7 +61,9 @@
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${generated.dir}" />
+		<mkdir dir="${generated.test.source.dir}" />
+		<mkdir dir="${coverage.output.dir}" />
+		<mkdir dir="${instrumented.output.dir}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
@@ -54,23 +77,45 @@
 	</target>
 
 	<target name="compile.test" depends="compile" description="compile the source ">
-		<javac includeantruntime="false" srcdir="${test.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${test.src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="test.classpath" />
 		</javac>
 	</target>
 
+	<!-- Analyzes the compiled code and adds instrumentation details for testing -->
+	<target name="emma-instrument" depends="compile.test">
+		<emma enabled="true">
+			<instr instrpath="${build.dir}" destdir="${instrumented.output.dir}" metadatafile="${coverage.output.dir}/coverage.emma" merge="true" />
+		</emma>
+	</target>
+
 	<!-- Run the JUnit Tests -->
 	<!-- Output is xml or plain -->
-	<target name="test" depends="compile.test">
+	<target name="test" depends="emma-instrument">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="test.classpath" />
 			<formatter type="xml" />
+			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}">
-				<fileset dir="${test.dir}">
+				<fileset dir="${test.src.dir}">
 					<include name="**/*TestExpertTest*.java" />
 				</fileset>
 			</batchtest>
+			<jvmarg value="-Demma.coverage.out.file=${coverage.output.dir}/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
 		</junit>
+	</target>
+
+	<!-- Create XML reports from the coverage information -->
+	<target name="emma-report" depends="test">
+		<emma enabled="true">
+			<report sourcepath="${src}">
+				<fileset dir="${coverage.output.dir}">
+					<include name="*.emma" />
+				</fileset>
+				<xml outfile="${coverage.output.dir}/coverage.xml" />
+			</report>
+		</emma>
 	</target>
 
 	<target name="generate.all" depends="compile.test">
@@ -78,7 +123,7 @@
 			<classpath refid="test.classpath" />
 			<formatter type="xml" />
 			<batchtest todir="${test.report.dir}">
-				<fileset dir="${test.dir}">
+				<fileset dir="${test.src.dir}">
 					<include name="**/*Test*.java" />
 				</fileset>
 			</batchtest>
@@ -87,7 +132,7 @@
 
 	<target name="compile.generated" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${build.dir} -->
-		<javac includeantruntime="false" srcdir="${generated.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${generated.test.source.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="test.classpath" />
 		</javac>
 	</target>
@@ -99,7 +144,7 @@
 			<classpath refid="test.classpath" />
 			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}">
-				<fileset dir="${generated.dir}">
+				<fileset dir="${generated.test.source.dir}">
 					<include name="**/*Test*.java" />
 				</fileset>
 			</batchtest>
@@ -107,6 +152,8 @@
 	</target>
 
 	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
+	
+	<target name="ci" depends="emma-report" />
 
 	<target name="build" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
@@ -117,7 +164,7 @@
 
 		<!-- Put the dependencies at same location -->
 		<copy todir="${dist.dir}/lib">
-			<fileset dir="${thirdparty.dir}\lib" includes="**/*.jar" />
+			<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
 		</copy>
 	</target>
 

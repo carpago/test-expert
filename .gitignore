@@ -10,3 +10,6 @@ generated-test
 build
 dist
 reports
+instrumented
+coverage
+emma
