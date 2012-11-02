@@ -14,7 +14,7 @@
 
 	<!-- Emma stuff -->
 	<property name="coverage.dir" value="../emma" />
-	<property name="emma.dir" value="${thirdparty.dir}/emma" />
+	<property name="emma.dir" value="${thirdparty.dir}/emma-code-coverage" />
 	<property name="instrumented.dir" value="../instrumented" />
 
 	<path id="emma.lib">
