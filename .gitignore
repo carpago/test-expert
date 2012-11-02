@@ -9,5 +9,5 @@ generated-java
 generated-test
 build
 dist
-report
+reports
 coverage
