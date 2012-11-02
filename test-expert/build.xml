@@ -13,9 +13,9 @@
 	<property name="thirdparty.dir" location="../3rdparty" />
 
 	<!-- Emma stuff -->
-	<property name="coverage.dir" value="..\coverage" />
+	<property name="coverage.dir" value="../emma" />
 	<property name="emma.dir" value="${thirdparty.dir}/emma" />
-	<property name="instrumented.dir" value="..\instrumented" />
+	<property name="instrumented.dir" value="../instrumented" />
 
 	<path id="emma.lib">
 		<fileset dir="${emma.dir}">
@@ -164,7 +164,7 @@
 
 		<!-- Put the dependencies at same location -->
 		<copy todir="${dist.dir}/lib">
-			<fileset dir="${thirdparty.dir}\lib" includes="**/*.jar" />
+			<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
 		</copy>
 	</target>
 
