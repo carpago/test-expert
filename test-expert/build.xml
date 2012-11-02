@@ -15,8 +15,8 @@
 	<!-- Emma stuff -->
 	<property name="coverage.dir" value="..\coverage" />
 	<property name="emma.dir" value="${thirdparty.dir}/emma" />
-	<property name="instrumented.dir" value="..\inst" />
-	
+	<property name="instrumented.dir" value="..\instrumented" />
+
 	<path id="emma.lib">
 		<fileset dir="${emma.dir}">
 			<include name="*.jar" />
@@ -44,12 +44,19 @@
 		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${emma.dir}">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	<path id="test.classpath">
 		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${emma.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${instrumented.dir}" />
 		<pathelement location="${build.dir}" />
 	</path>
 
@@ -59,6 +66,8 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${test.report.dir}" />
 		<delete dir="${generated.dir}" />
+		<delete dir="${instrumented.dir}" />
+		<delete dir="${coverage.dir}" />
 	</target>
 
 	<target name="init" depends="clean">
@@ -89,9 +98,16 @@
 		</javac>
 	</target>
 
+	<!-- Analyzes the compiled code and adds instrumentation details for testing -->
+	<target name="emma-instrument" depends="compile.test">
+		<emma enabled="true">
+			<instr instrpath="${build.dir}" destdir="${instrumented.dir}" metadatafile="${coverage.dir}/coverage.emma" merge="true" />
+		</emma>
+	</target>
+
 	<!-- Run the JUnit Tests -->
 	<!-- Output is xml or plain -->
-	<target name="test" depends="compile.test">
+	<target name="test" depends="emma-instrument">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="test.classpath" />
 			<formatter type="xml" />
@@ -101,7 +117,21 @@
 					<include name="**/*TestExpertTest*.java" />
 				</fileset>
 			</batchtest>
+			<jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
 		</junit>
+	</target>
+
+	<!-- Create XML reports from the coverage information -->
+	<target name="emma-report" depends="test">
+		<emma enabled="true">
+			<report sourcepath="${src}">
+				<fileset dir="${coverage.dir}">
+					<include name="*.emma" />
+				</fileset>
+				<xml outfile="${coverage.dir}/coverage.xml" />
+			</report>
+		</emma>
 	</target>
 
 	<target name="generate.all" depends="compile.test">
