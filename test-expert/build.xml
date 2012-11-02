@@ -10,23 +10,16 @@
 	<property name="build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="../reports" />
-
-	<path id="junit.class.path">
-		<fileset dir="../3rdparty/lib">
-			<include name="*.jar" />
-		</fileset>
-		<pathelement location="${build.dir}" />
-	</path>
-
+	<property name="thirdparty.dir" location="../3rdparty" />
 
 	<path id="compile.classpath">
-		<fileset dir="../3rdparty/lib">
+		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
 	</path>
 
 	<path id="test.classpath">
-		<fileset dir="../3rdparty/lib">
+		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
 		</fileset>
 		<pathelement location="${build.dir}" />
@@ -51,7 +44,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
-		<javac includeantruntime="false" srcdir="${src.dir};${resources.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="compile.classpath" />
 		</javac>
 
@@ -66,9 +59,23 @@
 		</javac>
 	</target>
 
+	<!-- Run the JUnit Tests -->
+	<!-- Output is xml or plain -->
+	<target name="test" depends="compile.test">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="test.classpath" />
+			<formatter type="xml" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/*TestExpertTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
 	<target name="generate.all" depends="compile.test">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
+			<classpath refid="test.classpath" />
 			<formatter type="xml" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${test.dir}">
@@ -85,23 +92,11 @@
 		</javac>
 	</target>
 
-	<!-- Run the JUnit Tests -->
-	<!-- Output is xml or plain -->
-	<target name="test" depends="compile.test">
-		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
-			<formatter type="xml" />
-			<batchtest todir="${test.report.dir}">
-				<fileset dir="${test.dir}">
-					<include name="**/*TestExpertTest*.java" />
-				</fileset>
-			</batchtest>
-		</junit>
-	</target>
+
 
 	<target name="test.generated" depends="compile.generated">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
-			<classpath refid="junit.class.path" />
+			<classpath refid="test.classpath" />
 			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${generated.dir}">
@@ -111,13 +106,26 @@
 		</junit>
 	</target>
 
-	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated" />
+	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
 
-	<target name="build" depends="test" description="generate the distribution">
+	<target name="build" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}/lib" />
 
 		<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
 		<jar jarfile="${dist.dir}/lib/${ant.project.name}-${DSTAMP}.jar" basedir="${build.dir}" />
+
+		<!-- Put the dependencies at same location -->
+		<copy todir="${dist.dir}/lib">
+			<fileset dir="${thirdparty.dir}\lib" includes="**/*.jar" />
+		</copy>
+	</target>
+
+	<target name="zip" depends="build" description="generate a zipfile for deployment">
+		<zip destfile="${dist.dir}/zip/${ant.project.name}-${DSTAMP}.zip">
+			<zipfileset dir="${dist.dir}/lib">
+				<include name="*.jar" />
+			</zipfileset>
+		</zip>
 	</target>
 </project>
