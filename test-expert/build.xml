@@ -68,6 +68,8 @@
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${generated.dir}" />
+		<mkdir dir="${coverage.dir}" />
+		<mkdir dir="${instrumented.dir}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
