@@ -24,22 +24,6 @@
 	</path>
 	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
 
-	<emma enabled="true">
-		<instr instrpath="${build.dir}" destdir="${instrumented.dir}" metadatafile="${coverage.dir}/metadata.emma" merge="true">
-			<filter excludes="au.com.jenisys.view.*" />
-		</instr>
-	</emma>
-
-	<emma enabled="true">
-		<report sourcepath="${src.dir}">
-			<fileset dir="${coverage.dir}">
-				<include name="*.emma" />
-			</fileset>
-
-			<xml outfile="${coverage.dir}/coverage.xml" depth="method" />
-		</report>
-	</emma>
-
 	<path id="compile.classpath">
 		<fileset dir="${thirdparty.dir}/lib">
 			<include name="*.jar" />
@@ -168,6 +152,8 @@
 	</target>
 
 	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
+	
+	<target name="ci" depends="emma-report" />
 
 	<target name="build" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
