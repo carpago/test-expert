@@ -168,7 +168,7 @@
 		</findbugs>
 	</target>
 
-	<target name="ci" depends="emma-report" />
+	<target name="ci" depends="clean, init, build, findbugs, emma-report" />
 
 	<target name="build" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
