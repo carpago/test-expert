@@ -11,13 +11,14 @@
 	<property name="dist.dir" location="../dist" />
 	<property name="test.report.dir" location="../reports" />
 	<property name="thirdparty.dir" location="../3rdparty" />
+	<property name="findbugs.home" value="${thirdparty.dir}/findbugs-2.0.0" />
+
 
 	<!-- Emma stuff -->
-	<property name="coverage.output.dir" value="../emma" />
+	<property name="coverage.output.dir" value="${test.report.dir}/emma" />
 	<property name="emma.binaries.dir" value="${thirdparty.dir}/emma-code-coverage" />
 	<property name="instrumented.output.dir" value="../instrumented" />
-	
-	<property name="findbugs.home" value="${thirdparty.dir}/findbugs-2.0.0" />
+
 
 	<path id="emma.lib">
 		<fileset dir="${emma.binaries.dir}">
@@ -25,9 +26,9 @@
 		</fileset>
 	</path>
 	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
-	
+
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
-		<classpath  location="${thirdparty.dir}/findbugs-2.0.0/findbugs-ant.jar" />
+		<classpath location="${thirdparty.dir}/findbugs-2.0.0/findbugs-ant.jar" />
 	</taskdef>
 
 	<path id="compile.classpath">
@@ -71,6 +72,7 @@
 		<mkdir dir="${coverage.output.dir}" />
 		<mkdir dir="${instrumented.output.dir}" />
 		<mkdir dir="${test.report.dir}/findbugs" />
+		<mkdir dir="${test.report.dir}/junit" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source ">
@@ -103,7 +105,7 @@
 			<classpath refid="test.classpath" />
 			<formatter type="xml" />
 			<formatter type="plain" />
-			<batchtest todir="${test.report.dir}">
+			<batchtest todir="${test.report.dir}/junit">
 				<fileset dir="${test.src.dir}">
 					<include name="**/*TestExpertTest*.java" />
 				</fileset>
@@ -161,10 +163,10 @@
 	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
 
 	<target name="findbugs" depends="build">
-		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/testexpert-findbugs.xml">
+		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/findbugs.xml">
 			<sourcePath path="${src.dir}" />
 			<class location="${dist.dir}/lib/${ant.project.name}-${DSTAMP}.jar" />
-			<auxclasspath refid="test.classpath"/>
+			<auxclasspath refid="test.classpath" />
 		</findbugs>
 	</target>
 
