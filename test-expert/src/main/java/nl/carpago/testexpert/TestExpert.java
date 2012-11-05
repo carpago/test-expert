@@ -226,9 +226,8 @@ public abstract class TestExpert extends TestCase {
 		this.checkAndAddImport(org.junit.runner.RunWith.class);
 		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
 		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
-		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-		
 		//probably we are going to mock something so ...
+		/*
 		if (MockFramework.EASYMOCK.equals(currentFramework)) {
 			this.checkAndAddImport(org.easymock.EasyMock.class);
 		} else {
@@ -236,6 +235,7 @@ public abstract class TestExpert extends TestCase {
 				this.checkAndAddImport(mockit.Mocked.class);
 			}
 		}
+		*/
 	}
 
 	protected void generateTestClass() throws InvalidAnnotationException {
@@ -456,16 +456,6 @@ public abstract class TestExpert extends TestCase {
 						logger.debug("methods generic return type:" + method.getGenericReturnType());
 						// tjakkaa: hier heb ik dus het generieke type.
 
-						// we are going to mock something so now include the
-						// imports
-						if (MockFramework.EASYMOCK.equals(currentFramework)) {
-							this.checkAndAddImport(org.easymock.EasyMock.class);
-						} else {
-							if (MockFramework.MOCKIT.equals(currentFramework)) {
-								this.checkAndAddImport(mockit.Mocked.class);
-							}
-						}
-
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
 
@@ -608,7 +598,9 @@ public abstract class TestExpert extends TestCase {
 										// method.getGenericReturnType().getClass().getCanonicalName();
 										returnFromMethod = generateConstructorForClass(method.getReturnType());
 									}
+									
 									if (MockFramework.MOCKIT.equals(currentFramework)) {
+										this.checkAndAddImport(mockit.Mocked.class);
 										this.checkAndAddImport(mockit.Expectations.class);
 										result += addCodeLn("\t\tnew Expectations() {");
 										result += addCodeLn("\t\t\t{");
@@ -623,6 +615,7 @@ public abstract class TestExpert extends TestCase {
 
 									} else {
 										if (MockFramework.EASYMOCK.equals(currentFramework)) {
+											this.checkAndAddImport(org.easymock.EasyMock.class);
 											result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 										}
 									}
@@ -1118,6 +1111,8 @@ public abstract class TestExpert extends TestCase {
 	private Class<?> addFixture(String fixture) {
 		logger.debug("enter");
 
+		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
+		
 		Object o = ctx.getBean(fixture);
 		this.checkAndAddImport(o.getClass());
 		this.fixtures.put(fixture, o.getClass());
