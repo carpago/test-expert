@@ -160,10 +160,11 @@
 
 	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
 
-	<target name="findbugs" depends="compile, compile.test">
-		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/testexpert-fb.xml">
+	<target name="findbugs" depends="build">
+		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/testexpert-findbugs.xml">
 			<sourcePath path="${src.dir}" />
-			<class location="${build.dir}" />
+			<class location="${dist.dir}/lib/${ant.project.name}-${DSTAMP}.jar" />
+			<auxclasspath refid="test.classpath"/>
 		</findbugs>
 	</target>
 
