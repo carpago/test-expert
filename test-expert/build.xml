@@ -116,7 +116,7 @@
 	<!-- Create XML reports from the coverage information -->
 	<target name="emma-report" depends="test">
 		<emma enabled="true">
-			<report sourcepath="${src}">
+			<report sourcepath="${src.dir}">
 				<fileset dir="${coverage.output.dir}">
 					<include name="*.emma" />
 				</fileset>
