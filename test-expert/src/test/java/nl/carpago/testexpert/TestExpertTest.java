@@ -763,8 +763,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 			method = TstClassInner.class.getMethod("inc", new Class<?>[] { int.class });
 			assertStatement = t.generateAssertStatements(method);
-			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be equal!\", 4 == resultFromMethod);";
+			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(4, resultFromMethod));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();

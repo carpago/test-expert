@@ -28,13 +28,28 @@ public  class AbstractTestExpert extends TestCase {
 	public boolean checkForDeepEquality(Object expected, Object actual) {
 		XStream xstream = new XStream();
 		String expectedAsString = xstream.toXML(expected);
+		expectedAsString = treatAllLiteralsEqual(expectedAsString);
 		String actualAsString = xstream.toXML(actual);
+		actualAsString = treatAllLiteralsEqual(actualAsString);
+		
 		
 		boolean result = expectedAsString.equals(actualAsString); //= EqualsBuilder.reflectionEquals(expected, actual); werkt namelijk niet.
 
 		return result;
 	}
 	
+	private String treatAllLiteralsEqual(String expectedAsString) {
+		
+		String[] basicTypes = new String[]{"byte", "short", "int", "long", "float", "double","char", "boolean","string"};
+		String result = expectedAsString;
+		
+		for(String basicType : basicTypes) {
+			result = result.replaceAll("</?"+basicType+">", "");
+		}
+		
+		return result;
+	}
+
 	public void setFieldThroughReflection(Object victim, String fieldName, Object what) {
 		Field f = null;
 		try {
@@ -60,7 +75,4 @@ public  class AbstractTestExpert extends TestCase {
 		}
 	}
 	
-	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		
-	}
 }

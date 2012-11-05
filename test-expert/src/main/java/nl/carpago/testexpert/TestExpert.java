@@ -1082,11 +1082,7 @@ public abstract class TestExpert extends TestCase {
 		String expected = method.getAnnotation(CreateUnittest.class).out();
 		String actual = this.RESULTFROMMETHOD;
 		result += addCode("\n\t\t");
-		if (this.isPrimitive(method.getReturnType().toString())) {
-			result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be equal!\", " + expected + " == " + actual + ");");
-		} else {
-			result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
-		}
+		result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
 
 		logger.debug("leave");
 
