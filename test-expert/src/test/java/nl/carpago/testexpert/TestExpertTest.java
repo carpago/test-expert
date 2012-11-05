@@ -473,7 +473,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		testExpert.init(AClassUnderTst.class);
 
 		Set<String> imports = testExpert.getImports();
-		Assert.assertEquals(7, imports.size());
+		Assert.assertEquals(5, imports.size());
 
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
@@ -484,12 +484,12 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
-		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+		// correct: is now done when necessary!  Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
 
 		// test the code that eventually is generated.
 		String code = testExpert.codeGenImports();
 		String[] lines = code.split("\n");
-		Assert.assertEquals(7, lines.length);
+		Assert.assertEquals(5, lines.length);
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
 		// not te be inserted:
@@ -500,13 +500,13 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
-		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
+		 // correct: should be inserted when necessary ... Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
 
 		// other package
 		testExpert = new OurTestExpert();
 		testExpert.init(String.class);
 		imports = testExpert.getImports();
-		Assert.assertEquals(9, imports.size());
+		Assert.assertEquals(7, imports.size());
 		Assert.assertTrue(imports.contains("org.junit.Before"));
 		Assert.assertTrue(imports.contains("org.junit.Test"));
 		Assert.assertTrue(imports.contains("nl.carpago.testexpert.AbstractTestExpert"));
@@ -514,12 +514,12 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
-		Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+		// Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
 
 		code = testExpert.codeGenImports();
 		lines = code.split("\n");
 
-		Assert.assertEquals(9, lines.length);
+		Assert.assertEquals(7, lines.length);
 		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
 		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
 		Assert.assertTrue(code.indexOf("nl.carpago.testexpert.AbstractTestExpert") > -1);
@@ -527,7 +527,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
-		Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
+	// 	Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
 	}
 
 	@Test
