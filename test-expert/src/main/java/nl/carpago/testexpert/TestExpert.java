@@ -81,6 +81,9 @@ public abstract class TestExpert extends TestCase {
 	private final String ASTERISK = "*";
 	private final String RESULTFROMMETHOD = "resultFromMethod";
 
+	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " " };
+
+
 	private void clean() {
 
 		this.classUnderTest = null;
@@ -97,8 +100,8 @@ public abstract class TestExpert extends TestCase {
 
 	public void writeFile() throws FileNotFoundException {
 		logger.debug("entering writeFile");
-		String fileName = "src/test/generated-test/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
-		String directoryName = "src/test/generated-test/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");// +
+		String fileName = getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
+		String directoryName = getOutputFolder()+"/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");// +
 
 		logger.debug("creating directory " + directoryName);
 		File directory = new File(directoryName);
@@ -141,13 +144,11 @@ public abstract class TestExpert extends TestCase {
 					try {
 						pipedOutputStream.flush();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					try {
 						pipedOutputStream.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
@@ -182,8 +183,7 @@ public abstract class TestExpert extends TestCase {
 				String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
 
 				aFile = aFile.replaceAll("\\\\", "/");
-				aFile = aFile.replaceAll(sourceFolder, ""); // strip
-															// sourcefolder
+				aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
 				aFile = aFile.replaceAll("/", "\\.");
 				aFile = aFile.replaceAll(".java", "");
 
@@ -226,16 +226,6 @@ public abstract class TestExpert extends TestCase {
 		this.checkAndAddImport(org.junit.runner.RunWith.class);
 		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
 		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
-		//probably we are going to mock something so ...
-		/*
-		if (MockFramework.EASYMOCK.equals(currentFramework)) {
-			this.checkAndAddImport(org.easymock.EasyMock.class);
-		} else {
-			if (MockFramework.MOCKIT.equals(currentFramework)) {
-				this.checkAndAddImport(mockit.Mocked.class);
-			}
-		}
-		*/
 	}
 
 	protected void generateTestClass() throws InvalidAnnotationException {
@@ -318,12 +308,9 @@ public abstract class TestExpert extends TestCase {
 		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
 
 		Set<String> localVars = new HashSet<String>();
-		// via javap
-		// ProcessBuilder builder = new ProcessBuilder("javap", "-c",
-		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
-
+		
 		// creer String path to .class file
-		String fileName = this.getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/");
+		String fileName = this.getBinaryFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/");
 
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
@@ -374,8 +361,8 @@ public abstract class TestExpert extends TestCase {
 						logger.debug("breaking:" + linesLocal);
 						break outer;
 					}
-					// x gaat ergens een Object newObject aanmaken in
-					// Unittestgeneratormetcollabstest en dat gaat niet goed.
+					
+
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
 						logger.debug("found:" + linesLocal);
 						Pattern patterntje = Pattern.compile("\\(|,|\\)>");
@@ -461,8 +448,6 @@ public abstract class TestExpert extends TestCase {
 
 							if (regelHoger.indexOf(invokee) > -1) {
 
-								// if (regelHoger.indexOf(invokee) > -1) {
-
 								if (gemockteRegelsUitSource.contains(k)) {
 									continue inner; // already done ...
 								} else {
@@ -520,21 +505,8 @@ public abstract class TestExpert extends TestCase {
 												if (!this.isLiteral(annotatieElement)) {
 													addFixture(annotatieElement);
 												}
-												// moet "aap" in
-												// call naar list niet vervangen
-												// door annotatie.
-												// System.out.println("Regel 1: vervang "+
-												// element
-												// +" door "+annotatieElement);
-												construction = construction.replaceAll(element, annotatieElement); // rloman
-
-												// rloman dit lijkt te moeten!
-												// construction =
-												// construction.replaceAll("[(,]"+element+"[,)]",
-												// annotatieElement);
-												// beter gezegd: dit lijkt te
-												// kunnen door hierboven in
-												// paramsVanCollab te tweaken!
+												construction = construction.replaceAll(element, annotatieElement);
+												
 											} else {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
@@ -564,15 +536,7 @@ public abstract class TestExpert extends TestCase {
 
 										}
 									} else {
-										try { // rloman refactoren.
-
-											// hieronder lijkt het te kloppen
-											// dat indien ik de collab aanroep
-											// met een literal (bijv.
-											// list.add("aap")
-											// dat hij dan de variabele niet
-											// gebruikt.
-											// rloman: nog testen ...!!!
+										try { 
 											if (!this.isLiteral(collabZijnParams.get(n))) {
 												construction = construction.replaceAll(element, inputParametersViaAnnotations[n]);
 											}
@@ -590,12 +554,6 @@ public abstract class TestExpert extends TestCase {
 									if (out != null) {
 										returnFromMethod = out;
 									} else {
-										// refactoren ... generateConstructor...
-										// moet String returnen returnFromMethod
-										// =
-										// temp
-										// returnFromMethod =
-										// method.getGenericReturnType().getClass().getCanonicalName();
 										returnFromMethod = generateConstructorForClass(method.getReturnType());
 									}
 									
@@ -711,7 +669,6 @@ public abstract class TestExpert extends TestCase {
 		return in;
 	}
 
-	// @CreateUnittest(in={"methode"},out="methodeOutAnnotations")
 	protected String getOutAnnotationForMethod(Method method) {
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String out = null;
@@ -735,13 +692,7 @@ public abstract class TestExpert extends TestCase {
 			logger.info("String " + literalOrVariablename + " is considered as a literal!");
 			return true;
 		}
-
-		// en deze moet als instance var om overbodige GC te voorkomen
-		// zou ook kunnen met eventuele char waarden ??? En anders uitbreiden
-		// met alle andere toetenbordkeys die illegaal zijn.
-		String[] illegalForVariable = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " " };
-
-		for (String element : illegalForVariable) {
+		for (String element : this.illegalForVariables) {
 			if (literalOrVariablename.indexOf(element) > -1) {
 				logger.info("String " + literalOrVariablename + " is considered as a literal!");
 				return true;
@@ -873,12 +824,7 @@ public abstract class TestExpert extends TestCase {
 				this.checkAndAddImport(mockit.Mocked.class);
 				addCodeLn("\t@Mocked");
 			}
-			addCode("\tprivate " + field.getType().getSimpleName() + " ");// +
-																			// " "
-																			// +
-																			// field.getGenericType().getClass().getSimpleName()+" "+WordUtils.uncapitalize(field.getName())
-																			// +
-																			// ";");
+			addCode("\tprivate " + field.getType().getSimpleName() + " ");
 			if (field.getGenericType() instanceof ParameterizedType) {
 				ParameterizedType pType = (ParameterizedType) field.getGenericType();
 				this.generateGeneric(pType);
@@ -962,11 +908,9 @@ public abstract class TestExpert extends TestCase {
 
 				} catch (SecurityException e) {
 					e.printStackTrace();
-				} catch (NoSuchMethodException e) { // rloman: refactoren. Houd
-													// niet van exceptions
+				} catch (NoSuchMethodException e) {
 					result += addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
 							+ WordUtils.uncapitalize(field.getName()) + ");");
-					// only in this case ... this exception is valid
 				}
 			}
 		}
@@ -1199,7 +1143,6 @@ public abstract class TestExpert extends TestCase {
 		}
 		logger.debug("methode:" + method);
 
-		// ??Paranamer paranamer = new BytecodeReadingParanamer();
 		Paranamer paranamer = new AdaptiveParanamer();
 		String[] result = null;
 		String parameter = null;
@@ -1467,30 +1410,19 @@ public abstract class TestExpert extends TestCase {
 			logger.fatal(e.getMessage());
 		}
 
-		// Class<?> classUnderTest =
-		// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
-		// rloman: hier nog ff uitzoeken of dit sneller en / of mooier kan. heb
-		// dit gisterenavond ff snel in elkaar geklust. nog ff over nadenken.
 		Class<?> classUnderTest = null;
 		for (String classFile : lijstMetAlleJavaFilesUitProject) {
-			// logger.debug("processing class " + classFile);
-
-			// classUnderTest =
-			// nl.belastingdienst.aig.melding.OnderhoudenMeldingServiceImpl.class;
 			classUnderTest = Class.forName(classFile); //
 
 			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
 			if (methods != null && !methods.isEmpty()) {
 
-				// TestExpert generator = new TestExpert(classUnderTest,
-				// FixturesForTst.class);
 				this.init(classUnderTest);
 
 				try {
 					this.generateTestClass();
 				} catch (InvalidAnnotationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn(e);
 				}
 
 				this.writeFile();
@@ -1507,6 +1439,9 @@ public abstract class TestExpert extends TestCase {
 	
 	public abstract boolean overwriteExistingFiles();
 	
+	public abstract String getBinaryFolder();
+	
 	public abstract String getOutputFolder();
+	
 
 }
