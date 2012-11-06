@@ -1,5 +1,6 @@
 package nl.carpago.testexpert;
 
+
 public class OurTestExpert extends TestExpert {
 
 
@@ -21,8 +22,14 @@ public class OurTestExpert extends TestExpert {
 	}
 
 	@Override
-	public String getOutputFolder() {
+	public String getBinaryFolder() {
 		return "../build";
+	}
+
+	@Override
+	public String getOutputFolder() {
+		
+		return "src/test/generated-test";
 	}
 
 }
