@@ -23,7 +23,7 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public String getBinaryFolder() {
-		return "../build";
+		return "bin";
 	}
 
 	@Override

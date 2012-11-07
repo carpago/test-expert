@@ -131,7 +131,7 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("leaving writeFile");
 	}
 	
-	private void writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
+	protected File writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
 		File directory = new File(directoryName);
 		directory.mkdirs();
 		
@@ -147,6 +147,7 @@ public abstract class TestExpert extends TestCase {
 			System.exit(1);
 		}
 		
+		return file;
 	}
 	
 	protected void addTestToAllTests(String testClassName) {
@@ -1460,7 +1461,7 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	@Test
-	public void testGenerateAllFilesWhichAreAnnotated() throws ClassNotFoundException, FileNotFoundException {
+	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 

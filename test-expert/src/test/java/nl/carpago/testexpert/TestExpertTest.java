@@ -1134,4 +1134,10 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue("Alltest does not contain the just added test:"+testClassName, result.contains(testClassName));
 		Assert.assertTrue("Alltest does not contain the just added test:"+anotherTestClassName, result.contains(anotherTestClassName));
 	}
+	
+	@Test
+	public void testWriteFileForFileDirContent() {
+		// hier verder met unittest
+		x
+	}
 }
