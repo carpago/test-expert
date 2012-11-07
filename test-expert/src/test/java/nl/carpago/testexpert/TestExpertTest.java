@@ -1117,4 +1117,21 @@ public class TestExpertTest extends AbstractTestExpert {
 		}
 
 	}
+	
+	@Test
+	public void testAddTestToAllTests() {
+		TestExpert testExpert = new OurTestExpert();
+		testExpert.init(TstClassInner.class);
+		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
+		final String testClassName = "nl.carpago.testexpert.OurTest.class";
+		final String anotherTestClassName = "nl.carpago.testexpert.Another.class";
+		
+		testExpert.addTestToAllTests(testClassName);
+		testExpert.addTestToAllTests(anotherTestClassName);
+		
+		List<String> result = testExpert.getAllTests();
+		
+		Assert.assertTrue("Alltest does not contain the just added test:"+testClassName, result.contains(testClassName));
+		Assert.assertTrue("Alltest does not contain the just added test:"+anotherTestClassName, result.contains(anotherTestClassName));
+	}
 }

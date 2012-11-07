@@ -32,4 +32,9 @@ public class OurTestExpert extends TestExpert {
 		return "src/test/generated-test";
 	}
 
+	@Override
+	public String getNameOfTestsuite() {
+		return "AllNewTests";
+	}
+
 }

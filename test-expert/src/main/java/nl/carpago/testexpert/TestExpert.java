@@ -32,7 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
-
 import nl.carpago.testexpert.annotation.CreateUnittest;
 import nl.carpago.testexpert.annotation.Expect;
 
@@ -74,6 +73,8 @@ public abstract class TestExpert extends TestCase {
 	private ApplicationContext ctx;
 
 	private String footer = "";
+	
+	private final List<String> generatedTestClasses = new ArrayList<String>();
 
 	// constants
 	private final String EMPTY_STRING = "";
@@ -100,8 +101,8 @@ public abstract class TestExpert extends TestCase {
 
 	public void writeFile() throws FileNotFoundException {
 		logger.debug("entering writeFile");
-		String fileName = getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
-		String directoryName = getOutputFolder()+"/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");// +
+		final String fileName = getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
+		final String directoryName = getOutputFolder()+"/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");
 
 		logger.debug("creating directory " + directoryName);
 		File directory = new File(directoryName);
@@ -121,11 +122,35 @@ public abstract class TestExpert extends TestCase {
 			PrintStream po = new PrintStream(stream);
 			po.print(this.codeGen());
 			po.close();
+			
+			addTestToAllTests(this.classUnderTest.getName()+"Test.class");
 		}
 		
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
+	}
+	
+	private void writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
+		File directory = new File(directoryName);
+		directory.mkdirs();
+		
+		File file = new File(directoryName+"/"+fileName);
+		FileOutputStream stream = new FileOutputStream(file);
+		try {
+			file.createNewFile();
+			PrintStream po = new PrintStream(stream);
+			po.print(content);
+			po.close();
+		} catch (IOException e) {
+			logger.error("Unable to create outputfile. System halted.");
+			System.exit(1);
+		}
+		
+	}
+	
+	protected void addTestToAllTests(String testClassName) {
+		this.generatedTestClasses.add(testClassName);
 	}
 
 	public BufferedInputStream getInputStreamFromGeneratedCode() {
@@ -1314,6 +1339,41 @@ public abstract class TestExpert extends TestCase {
 
 		return result.trim();
 	}
+	
+	protected String codeGenAllTests() {
+		String result = EMPTY_STRING;
+		result += "import junit.framework.JUnit4TestAdapter;\n";
+		result += "import junit.framework.TestCase;\n" +
+				"import junit.framework.TestSuite;\n";
+		result += "\n";
+		result += "import org.junit.runner.RunWith;\n"+
+				"import org.junit.runners.AllTests;\n";
+		
+		result += "\n";
+		
+		result += "@RunWith(AllTests.class)\n";
+		result += "public final class "+this.getNameOfTestsuite()+" extends TestCase {\n";
+		result += "\n";
+		
+		result += "\tpublic static TestSuite suite() {\n";
+		result += "\t\tTestSuite suite = new TestSuite();\n";
+		result += "\n";
+		
+		for(String testClassName : this.getAllTests()) {
+			result += "\t\tsuite.addTest(new JUnit4TestAdapter(";
+			result += testClassName;
+			result += "));\n";
+		}
+		
+		result += "\n";
+		
+		result += "\t\treturn suite;\n";
+		
+		result += "\t}\n";
+		result += "}";
+		
+		return result;
+	}
 
 	protected String codeGenHeader() {
 		return this.header;
@@ -1400,7 +1460,7 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	@Test
-	public void testSetup() throws ClassNotFoundException, FileNotFoundException {
+	public void testGenerateAllFilesWhichAreAnnotated() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 
@@ -1428,9 +1488,23 @@ public abstract class TestExpert extends TestCase {
 				this.writeFile();
 			}
 		}
+		
+		if(this.getAllTests() != null && !this.getAllTests().isEmpty()) {
+			String fileName = getNameOfTestsuite();
+			if(fileName.indexOf(".java") <= -1) {
+				fileName += ".java"; 
+			}
+			this.writeFile(fileName, this.getOutputFolder(), this.codeGenAllTests());
+		}
+		
 		logger.debug("leaving main");
 
 	}
+	
+	protected List<String> getAllTests() {
+		return this.generatedTestClasses;
+	}
+	
 
 	// e.g. "src/main/java
 	public abstract String getSourceFolder();
@@ -1442,6 +1516,9 @@ public abstract class TestExpert extends TestCase {
 	public abstract String getBinaryFolder();
 	
 	public abstract String getOutputFolder();
+	
+	public abstract String getNameOfTestsuite();
+
 	
 
 }
