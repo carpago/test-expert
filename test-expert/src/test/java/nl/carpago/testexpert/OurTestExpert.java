@@ -23,7 +23,7 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public String getBinaryFolder() {
-		return "bin";
+		return "../build";
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class OurTestExpert extends TestExpert {
 	}
 
 	@Override
-	public String getNameOfTestsuite() {
+	public String getTestsuiteName() {
 		return "AllNewTests";
 	}
 

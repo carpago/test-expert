@@ -1352,7 +1352,7 @@ public abstract class TestExpert extends TestCase {
 		result += "\n";
 		
 		result += "@RunWith(AllTests.class)\n";
-		result += "public final class "+this.getNameOfTestsuite()+" extends TestCase {\n";
+		result += "public final class "+this.getTestsuiteName()+" extends TestCase {\n";
 		result += "\n";
 		
 		result += "\tpublic static TestSuite suite() {\n";
@@ -1490,7 +1490,7 @@ public abstract class TestExpert extends TestCase {
 		}
 		
 		if(this.getAllTests() != null && !this.getAllTests().isEmpty()) {
-			String fileName = getNameOfTestsuite();
+			String fileName = getTestsuiteName();
 			if(fileName.indexOf(".java") <= -1) {
 				fileName += ".java"; 
 			}
@@ -1517,7 +1517,7 @@ public abstract class TestExpert extends TestCase {
 	
 	public abstract String getOutputFolder();
 	
-	public abstract String getNameOfTestsuite();
+	public abstract String getTestsuiteName();
 
 	
 
