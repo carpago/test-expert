@@ -1,14 +1,17 @@
 package nl.carpago.testexpert;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+
+import org.apache.log4j.Logger;
 
 import junit.framework.TestCase;
 
 import com.thoughtworks.xstream.XStream;
 
 
-public  class AbstractTestExpert extends TestCase {
+public class AbstractTestExpert extends TestCase {
+	
+	private final Logger logger = Logger.getLogger(AbstractTestExpert.class);
 
 	public Object cloneMe(Object obj) {
 		XStream xstream = new XStream();
@@ -19,26 +22,21 @@ public  class AbstractTestExpert extends TestCase {
 		assertTrue(obj != result);
 		
 		return result;
-		
-		// byte[] bytesArray = SerializationUtils.serialize(o);
-		// Object result = SerializationUtils.deserialize(bytesArray);
-		//Serializable result = (Serializable) org.apache.commons.lang.SerializationUtils.clone(serializable);
 	}
 
 	public boolean checkForDeepEquality(Object expected, Object actual) {
 		XStream xstream = new XStream();
 		String expectedAsString = xstream.toXML(expected);
-		expectedAsString = treatAllLiteralsEqual(expectedAsString);
+		expectedAsString = removeAllTagsAroundLiterals(expectedAsString);
 		String actualAsString = xstream.toXML(actual);
-		actualAsString = treatAllLiteralsEqual(actualAsString);
+		actualAsString = removeAllTagsAroundLiterals(actualAsString);
 		
-		
-		boolean result = expectedAsString.equals(actualAsString); //= EqualsBuilder.reflectionEquals(expected, actual); werkt namelijk niet.
+		boolean result = expectedAsString.equals(actualAsString); 
 
 		return result;
 	}
 	
-	private String treatAllLiteralsEqual(String expectedAsString) {
+	protected String removeAllTagsAroundLiterals(String expectedAsString) {
 		
 		String[] basicTypes = new String[]{"byte", "short", "int", "long", "float", "double","char", "boolean","string"};
 		String result = expectedAsString;
@@ -50,29 +48,26 @@ public  class AbstractTestExpert extends TestCase {
 		return result;
 	}
 
-	public void setFieldThroughReflection(Object victim, String fieldName, Object what) {
-		Field f = null;
+	public Field setFieldThroughReflection(Object victim, String fieldName, Object what) {
+		Field field = null;
 		try {
-			f = victim.getClass().getDeclaredField(fieldName);
+			field = victim.getClass().getDeclaredField(fieldName);
 		} catch (SecurityException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(e1);
 		} catch (NoSuchFieldException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(e1);
 		}
-		if(f != null) {
-			f.setAccessible(true);
+		if(field != null) {
+			field.setAccessible(true);
 			try {
-				f.set(victim, what);
+				field.set(victim, what);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
+		
+		return field;
 	}
-	
 }
