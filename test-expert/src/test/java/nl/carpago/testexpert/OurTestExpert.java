@@ -40,7 +40,7 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public MockFramework getMockFramework() {
-		return MockFramework.EASYMOCK;
+		return this.framework;
 	}
 
 	@Override

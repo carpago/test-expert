@@ -17,6 +17,15 @@ public class OnderhoudenVliegveldService {
 		
 		return Integer.toString(resultFromDao);
 	}
+	
+	
+	@CreateUnittest(in="three", out="vier")
+	public int getAddInt(int aNumber) {
+		int result = aNumber ++;
+		
+		return result;
+	}
+	
 
 }
  
