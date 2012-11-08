@@ -48,7 +48,7 @@ public class AbstractTestExpert extends TestCase {
 		return result;
 	}
 
-	public Field setFieldThroughReflection(Object victim, String fieldName, Object what) {
+	public Object setFieldThroughReflection(Object victim, String fieldName, Object what) {
 		Field field = null;
 		try {
 			field = victim.getClass().getDeclaredField(fieldName);
@@ -68,6 +68,6 @@ public class AbstractTestExpert extends TestCase {
 			}
 		}
 		
-		return field;
+		return victim;
 	}
 }

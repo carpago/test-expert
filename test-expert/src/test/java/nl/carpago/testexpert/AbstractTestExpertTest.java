@@ -47,17 +47,42 @@ public class AbstractTestExpertTest extends TestCase {
 	
 	@Test
 	public void testRemoveAllTagsAroundLiterals() {
-		String[] basicTypes = new String[]{"byte", "short", "int", "long", "float", "double","char", "boolean","string"};
-		final String in = "1<byte>2</byte>3<short>4</short>5<int>6</int>7<long>8</long>9<float>10</float>11<double>12</double>"+
+		String in = "1<byte>2</byte>3<short>4</short>5<int>6</int>7<long>8</long>9<float>10</float>11<double>12</double>"+
 				"13<char>14</char>15<boolean>16</boolean>17<string>18</string>";
 		
 		String expected = "123456789101112131415161718";
 		String actual = this.testExpertTools.removeAllTagsAroundLiterals(in);
-		System.out.println(actual);
 		
 		Assert.assertTrue(expected.equals(actual));
 		
+		in = new String("the quick brown fox jumps over the lazy dog.");
 		
+		expected =  new String("the quick brown fox jumps over the lazy dog.");
+		
+		Assert.assertTrue(expected.equals(this.testExpertTools.removeAllTagsAroundLiterals(in)));
+		
+		in = "7527502457203458720345704";
+		
+		expected = "7527502457203458720345704";
+		
+		Assert.assertTrue(expected.equals(this.testExpertTools.removeAllTagsAroundLiterals(in)));
+		
+		
+		in = new String("the <int>quick</int> brown fox jumps over <string>the lazy dog.");
+		
+		expected =  new String("the quick brown fox jumps over the lazy dog.");
+		
+		Assert.assertTrue(expected.equals(this.testExpertTools.removeAllTagsAroundLiterals(in)));
+		
+	}
+	
+	@Test
+	public void testSetFieldThroughReflection() {
+		Person p1 = new Person("John Doe", 45);
+		
+		Person p2 = (Person) this.testExpertTools.setFieldThroughReflection(p1, "name", "Jane Doe");
+		
+		Assert.assertEquals("Jane Doe", p2.getName());
 	}
 	
 
