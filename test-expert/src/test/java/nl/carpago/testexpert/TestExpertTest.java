@@ -2,10 +2,15 @@ package nl.carpago.testexpert;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +29,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { FixturesForTst.class })
 public class TestExpertTest extends AbstractTestExpert {
+
+	private static final String EMPTY_STRING = "";
 
 	// class under test
 	private TestExpert testExpert;
@@ -1115,6 +1122,99 @@ public class TestExpertTest extends AbstractTestExpert {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
+	
+	@Test
+	public void testAddTestToTestsuiteAndTestCodegenTestsuite() {
+		TestExpert testExpert = new OurTestExpert();
+		testExpert.init(TstClassInner.class);
+		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
+		final String testClassName = "nl.carpago.testexpert.OurTest.class";
+		final String anotherTestClassName = "nl.carpago.testexpert.Another.class";
+		
+		final List <String> mockTestsuite = new ArrayList<String>();
+		mockTestsuite.add(testClassName);
+		mockTestsuite.add(anotherTestClassName);
+		
+		testExpert.addTestToTestsuite(testClassName);
+		testExpert.addTestToTestsuite(anotherTestClassName);
+		
+		List<String> result = testExpert.getAllTests();
+		
+		Assert.assertTrue("Alltest does not contain the just added test:"+testClassName, result.contains(testClassName));
+		Assert.assertTrue("Alltest does not contain the just added test:"+anotherTestClassName, result.contains(anotherTestClassName));
+		
+		
+		String codeGenExpected = EMPTY_STRING;
+		codeGenExpected += "import junit.framework.JUnit4TestAdapter;\n";
+		codeGenExpected += "import junit.framework.TestCase;\n" + "import junit.framework.TestSuite;\n";
+		codeGenExpected += "\n";
+		codeGenExpected += "import org.junit.runner.RunWith;\n" + "import org.junit.runners.AllTests;\n";
+
+		codeGenExpected += "\n";
+
+		codeGenExpected += "@RunWith(AllTests.class)\n";
+		codeGenExpected += "public final class " + testExpert.getTestsuiteName() + " extends TestCase {\n";
+		codeGenExpected += "\n";
+
+		codeGenExpected += "\tpublic static TestSuite suite() {\n";
+		codeGenExpected += "\t\tTestSuite suite = new TestSuite();\n";
+		codeGenExpected += "\n";
+
+		for (String testClassNameLocal : mockTestsuite) {
+			codeGenExpected += "\t\tsuite.addTest(new JUnit4TestAdapter(";
+			codeGenExpected += testClassNameLocal;
+			codeGenExpected += "));\n";
+		}
+
+		codeGenExpected += "\n";
+
+		codeGenExpected += "\t\treturn suite;\n";
+
+		codeGenExpected += "\t}\n";
+		codeGenExpected += "}";
+
+		String codeGenActual = testExpert.codeGenTestsuite();
+		
+		for(String line : codeGenExpected.split("\n")) {
+			Assert.assertTrue("Line '"+line+"' is not found in generated code!", codeGenActual.indexOf(line) > -1);
+		}
+	}
+	
+	@Test
+	public void testWriteFileForFileDirContent() {
+		TestExpert testExpert = new OurTestExpert();
+		final String fileName = "writefile-unittest.txt";
+		final String directoryName = "src/test/java/nl/carpago/testexpert";
+		final String content = "This should be in the file "+new Date();
+		try {
+			File file = testExpert.writeFile(fileName, directoryName, content);
+			assertNotNull(file);
+		} catch (FileNotFoundException e) {
+			fail("File "+directoryName+"/"+fileName+" could not be written!");
+		}
+		
+		File testFile = new File("src/test/java/nl/carpago/testexpert/writefile-unittest.txt");
+		FileInputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(testFile);
+			InputStreamReader inputstreamReader = new InputStreamReader(inputStream);
+			BufferedReader reader = new BufferedReader(inputstreamReader);
+			String line = null;
+			try {
+				while((line = reader.readLine()) != null){
+					if(content.equals(line)) {
+						reader.close();
+						return;
+					}
+				}
+			} catch (IOException e) {
+				fail(e.getMessage());
+			}
+			fail("Testline of file not found back in file.");
+		} catch (FileNotFoundException e) {
+			fail("There was an error with reading the testfile back.");
+		}
+	}
+	
 }

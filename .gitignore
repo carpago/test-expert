@@ -13,3 +13,4 @@ reports
 instrumented
 coverage
 emma
+writefile-unittest.txt
