@@ -40,7 +40,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		this.testExpert = new OurTestExpert();
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 	}
 
@@ -53,7 +53,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testConstructor() {
-		TestExpert testExpertLocal = new OurTestExpert();
+		TestExpert testExpertLocal = new TestExpertImplForUnittestingPurposes();
 		testExpertLocal.init(AClassUnderTst.class);
 
 		Assert.assertEquals(AClassUnderTst.class, testExpertLocal.getClassUnderTest());
@@ -408,7 +408,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateHeader() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(AClassUnderTst.class);
 		t.generateHeader();
 		String header = t.getHeader();
@@ -419,7 +419,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateFooter() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(AClassUnderTst.class);
 		t.generateFooter();
 		String footer = t.getFooter();
@@ -476,7 +476,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		// the work should already be done by the constructor
 
 		// same package
-		TestExpert testExpert = new OurTestExpert();
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(AClassUnderTst.class);
 
 		Set<String> imports = testExpert.getImports();
@@ -510,7 +510,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		 // correct: should be inserted when necessary ... Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
 
 		// other package
-		testExpert = new OurTestExpert();
+		testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(String.class);
 		imports = testExpert.getImports();
 		Assert.assertEquals(7, imports.size());
@@ -539,7 +539,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateFixturesForMethod() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
 		try {
@@ -562,7 +562,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateFixturesForMethodWithLiteral() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
 		try {
@@ -583,7 +583,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testCodegenPackage() {
-		TestExpert testExpert = new OurTestExpert();
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(TstClassInner.class);
 
 		String code = testExpert.codeGenPackage();
@@ -593,7 +593,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testCodegenFixtures() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
 		try {
@@ -635,7 +635,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGenerateCreateArgumentsForTestMethod() {
 
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		try {
 			Method method = TstClassInner.class.getMethod("methodForCreateArguments", new Class<?>[] { int.class, String.class, Person.class });
@@ -676,7 +676,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testIsCallerForCollab() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		try {
 			t.generateTestClass();
@@ -689,7 +689,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateReplays() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		try {
 			t.generateTestClass();
@@ -704,7 +704,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateVerifies() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		try {
 			t.generateTestClass();
@@ -722,7 +722,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateGettersForCollaborators() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		try {
 			t.generateTestClass();
@@ -740,7 +740,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateCallToTestMethod() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
 		try {
@@ -759,7 +759,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateAssertStatementsForMethod() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
 		try {
@@ -785,7 +785,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testCheckAndImport() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		int currentSize = t.getImports().size();
 
@@ -799,7 +799,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateSetup() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 
@@ -827,7 +827,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethod() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -874,7 +874,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVar() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -907,7 +907,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethodWithALocalVarWithHelp() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -939,7 +939,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateExpectAndReplayForMockit() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.MOCKIT);
 		try {
@@ -986,7 +986,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testWithQuestionMarkOrAsteriskInAnnotation() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -1025,7 +1025,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testMethodWithVoidReturn() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -1062,7 +1062,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	 */
 	@Test
 	public void testCallToCollabWithReturn() {
-		TestExpert t = new OurTestExpert();
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -1095,7 +1095,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testAllGeneratedCodeThroughInputstream() {
-		TestExpert testExpert = new OurTestExpert();
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(TstClassInner.class);
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		try {
@@ -1126,7 +1126,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testAddTestToTestsuiteAndTestCodegenTestsuite() {
-		TestExpert testExpert = new OurTestExpert();
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(TstClassInner.class);
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		final String testClassName = "nl.carpago.testexpert.OurTest.class";
@@ -1183,7 +1183,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	
 	@Test
 	public void testWriteFileForFileDirContent() {
-		TestExpert testExpert = new OurTestExpert();
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		final String fileName = "writefile-unittest.txt";
 		final String directoryName = "src/test/java/nl/carpago/testexpert";
 		final String content = "This should be in the file "+new Date();

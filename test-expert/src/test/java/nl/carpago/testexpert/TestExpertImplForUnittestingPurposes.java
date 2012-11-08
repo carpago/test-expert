@@ -1,9 +1,7 @@
 package nl.carpago.testexpert;
 
 
-public class OurTestExpert extends TestExpert {
-
-	private MockFramework framework;
+public class TestExpertImplForUnittestingPurposes extends TestExpert {
 
 	@Override
 	public String getSourceFolder() {
@@ -15,7 +13,7 @@ public class OurTestExpert extends TestExpert {
 		return FixturesForTst.class;
 	}
 	
-	public OurTestExpert(){}
+	public TestExpertImplForUnittestingPurposes(){}
 
 	@Override
 	public boolean overwriteExistingFiles() {
@@ -24,7 +22,7 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public String getBinaryFolder() {
-		return "../build";
+		return "bin";
 	}
 
 	@Override
@@ -40,14 +38,6 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public MockFramework getMockFramework() {
-		return this.framework;
+		return this.mockFramework;
 	}
-
-	@Override
-	protected void setCurrentFramework(MockFramework currentFramework) {
-		this.framework = currentFramework;
-	}
-	
-	
-
 }

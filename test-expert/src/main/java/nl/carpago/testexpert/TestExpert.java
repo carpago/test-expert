@@ -52,7 +52,7 @@ public abstract class TestExpert extends TestCase {
 		EASYMOCK, MOCKIT
 	}
 
-	private MockFramework mockFramework; // = MockFramework.EASYMOCK;
+	protected MockFramework mockFramework;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
