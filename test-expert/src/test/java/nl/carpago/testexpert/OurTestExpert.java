@@ -3,6 +3,7 @@ package nl.carpago.testexpert;
 
 public class OurTestExpert extends TestExpert {
 
+	private MockFramework framework;
 
 	@Override
 	public String getSourceFolder() {
@@ -23,7 +24,7 @@ public class OurTestExpert extends TestExpert {
 
 	@Override
 	public String getBinaryFolder() {
-		return "../build";
+		return "bin";
 	}
 
 	@Override
@@ -36,5 +37,17 @@ public class OurTestExpert extends TestExpert {
 	public String getTestsuiteName() {
 		return "AllGeneratedTests";
 	}
+
+	@Override
+	public MockFramework getMockFramework() {
+		return MockFramework.EASYMOCK;
+	}
+
+	@Override
+	protected void setCurrentFramework(MockFramework currentFramework) {
+		this.framework = currentFramework;
+	}
+	
+	
 
 }
