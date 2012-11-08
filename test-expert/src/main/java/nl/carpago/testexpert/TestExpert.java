@@ -1330,7 +1330,7 @@ public abstract class TestExpert extends TestCase {
 		return result.trim();
 	}
 
-	protected String codeGenAllTests() {
+	protected String codeGenTestsuite() {
 		String result = EMPTY_STRING;
 		result += "import junit.framework.JUnit4TestAdapter;\n";
 		result += "import junit.framework.TestCase;\n" + "import junit.framework.TestSuite;\n";
@@ -1490,7 +1490,7 @@ public abstract class TestExpert extends TestCase {
 			if (fileName.indexOf(".java") <= -1) {
 				fileName += ".java";
 			}
-			this.writeFile(fileName, this.getOutputFolder(), this.codeGenAllTests());
+			this.writeFile(fileName, this.getOutputFolder(), this.codeGenTestsuite());
 		}
 
 		logger.debug("leaving main");

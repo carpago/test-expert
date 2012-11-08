@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { FixturesForTst.class })
 public class TestExpertTest extends AbstractTestExpert {
+
+	private static final String EMPTY_STRING = "";
 
 	// class under test
 	private TestExpert testExpert;
@@ -1119,16 +1122,19 @@ public class TestExpertTest extends AbstractTestExpert {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	
 	@Test
-	public void testAddTestToTestsuite() {
+	public void testAddTestToTestsuiteAndTestCodegenTestsuite() {
 		TestExpert testExpert = new OurTestExpert();
 		testExpert.init(TstClassInner.class);
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		final String testClassName = "nl.carpago.testexpert.OurTest.class";
 		final String anotherTestClassName = "nl.carpago.testexpert.Another.class";
+		
+		final List <String> mockTestsuite = new ArrayList<String>();
+		mockTestsuite.add(testClassName);
+		mockTestsuite.add(anotherTestClassName);
 		
 		testExpert.addTestToTestsuite(testClassName);
 		testExpert.addTestToTestsuite(anotherTestClassName);
@@ -1137,11 +1143,42 @@ public class TestExpertTest extends AbstractTestExpert {
 		
 		Assert.assertTrue("Alltest does not contain the just added test:"+testClassName, result.contains(testClassName));
 		Assert.assertTrue("Alltest does not contain the just added test:"+anotherTestClassName, result.contains(anotherTestClassName));
-	}
-	
-	@Test
-	public void testCodeGenTestSuite() {
 		
+		
+		String codeGenExpected = EMPTY_STRING;
+		codeGenExpected += "import junit.framework.JUnit4TestAdapter;\n";
+		codeGenExpected += "import junit.framework.TestCase;\n" + "import junit.framework.TestSuite;\n";
+		codeGenExpected += "\n";
+		codeGenExpected += "import org.junit.runner.RunWith;\n" + "import org.junit.runners.AllTests;\n";
+
+		codeGenExpected += "\n";
+
+		codeGenExpected += "@RunWith(AllTests.class)\n";
+		codeGenExpected += "public final class " + testExpert.getTestsuiteName() + " extends TestCase {\n";
+		codeGenExpected += "\n";
+
+		codeGenExpected += "\tpublic static TestSuite suite() {\n";
+		codeGenExpected += "\t\tTestSuite suite = new TestSuite();\n";
+		codeGenExpected += "\n";
+
+		for (String testClassNameLocal : mockTestsuite) {
+			codeGenExpected += "\t\tsuite.addTest(new JUnit4TestAdapter(";
+			codeGenExpected += testClassNameLocal;
+			codeGenExpected += "));\n";
+		}
+
+		codeGenExpected += "\n";
+
+		codeGenExpected += "\t\treturn suite;\n";
+
+		codeGenExpected += "\t}\n";
+		codeGenExpected += "}";
+
+		String codeGenActual = testExpert.codeGenTestsuite();
+		
+		for(String line : codeGenExpected.split("\n")) {
+			Assert.assertTrue("Line '"+line+"' is not found in generated code!", codeGenActual.indexOf(line) > -1);
+		}
 	}
 	
 	@Test
