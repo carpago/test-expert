@@ -1487,7 +1487,7 @@ public abstract class TestExpert extends TestCase {
 
 		if (this.getAllTests() != null && !this.getAllTests().isEmpty()) {
 			String fileName = getTestsuiteName();
-			if (fileName.indexOf(".java") <= -1) {
+			if (!fileName.endsWith(".java")) {
 				fileName += ".java";
 			}
 			this.writeFile(fileName, this.getOutputFolder(), this.codeGenTestsuite());

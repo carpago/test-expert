@@ -1184,7 +1184,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testWriteFileForFileDirContent() {
 		TestExpert testExpert = new OurTestExpert();
-		final String fileName = "carpago.txt";
+		final String fileName = "writefile-unittest.txt";
 		final String directoryName = "src/test/java/nl/carpago/testexpert";
 		final String content = "This should be in the file "+new Date();
 		try {
@@ -1194,7 +1194,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			fail("File "+directoryName+"/"+fileName+" could not be written!");
 		}
 		
-		File testFile = new File("src/test/java/nl/carpago/testexpert/carpago.txt");
+		File testFile = new File("src/test/java/nl/carpago/testexpert/writefile-unittest.txt");
 		FileInputStream inputStream = null;
 		try {
 			inputStream = new FileInputStream(testFile);
@@ -1213,7 +1213,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			}
 			fail("Testline of file not found back in file.");
 		} catch (FileNotFoundException e) {
-			fail("There was an error with reading the tesfile back.");
+			fail("There was an error with reading the testfile back.");
 		}
 	}
 	
