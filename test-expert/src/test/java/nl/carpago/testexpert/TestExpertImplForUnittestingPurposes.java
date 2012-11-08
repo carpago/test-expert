@@ -1,8 +1,7 @@
 package nl.carpago.testexpert;
 
 
-public class OurTestExpert extends TestExpert {
-
+public class TestExpertImplForUnittestingPurposes extends TestExpert {
 
 	@Override
 	public String getSourceFolder() {
@@ -14,7 +13,7 @@ public class OurTestExpert extends TestExpert {
 		return FixturesForTst.class;
 	}
 	
-	public OurTestExpert(){}
+	public TestExpertImplForUnittestingPurposes(){}
 
 	@Override
 	public boolean overwriteExistingFiles() {
@@ -37,4 +36,8 @@ public class OurTestExpert extends TestExpert {
 		return "AllGeneratedTests";
 	}
 
+	@Override
+	public MockFramework getMockFramework() {
+		return this.mockFramework;
+	}
 }
