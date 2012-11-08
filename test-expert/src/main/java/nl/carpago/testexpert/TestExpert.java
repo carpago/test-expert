@@ -73,7 +73,7 @@ public abstract class TestExpert extends TestCase {
 	private ApplicationContext ctx;
 
 	private String footer = "";
-	
+
 	private final List<String> generatedTestClasses = new ArrayList<String>();
 
 	// constants
@@ -83,7 +83,6 @@ public abstract class TestExpert extends TestCase {
 	private final String RESULTFROMMETHOD = "resultFromMethod";
 
 	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " " };
-
 
 	private void clean() {
 
@@ -101,8 +100,8 @@ public abstract class TestExpert extends TestCase {
 
 	public void writeFile() throws FileNotFoundException {
 		logger.debug("entering writeFile");
-		final String fileName = getOutputFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
-		final String directoryName = getOutputFolder()+"/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");
+		final String fileName = getOutputFolder() + "/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
+		final String directoryName = getOutputFolder() + "/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");
 
 		logger.debug("creating directory " + directoryName);
 		File directory = new File(directoryName);
@@ -110,7 +109,7 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("finished creating directory " + directoryName);
 
 		File file = new File(fileName);
-		if(!file.exists() || this.overwriteExistingFiles()) {
+		if (!file.exists() || this.overwriteExistingFiles()) {
 			FileOutputStream stream = new FileOutputStream(file);
 			try {
 				file.createNewFile();
@@ -122,20 +121,19 @@ public abstract class TestExpert extends TestCase {
 			PrintStream po = new PrintStream(stream);
 			po.print(this.codeGen());
 			po.close();
-			
-			addTestToAllTests(this.classUnderTest.getName()+"Test.class");
+
+			addTestToTestsuite(this.classUnderTest.getName() + "Test.class");
 		}
-		
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
 	}
-	
+
 	protected File writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
 		File directory = new File(directoryName);
 		directory.mkdirs();
-		
-		File file = new File(directoryName+"/"+fileName);
+
+		File file = new File(directoryName + "/" + fileName);
 		FileOutputStream stream = new FileOutputStream(file);
 		try {
 			file.createNewFile();
@@ -146,11 +144,11 @@ public abstract class TestExpert extends TestCase {
 			logger.error("Unable to create outputfile. System halted.");
 			System.exit(1);
 		}
-		
+
 		return file;
 	}
-	
-	protected void addTestToAllTests(String testClassName) {
+
+	protected void addTestToTestsuite(String testClassName) {
 		this.generatedTestClasses.add(testClassName);
 	}
 
@@ -205,15 +203,15 @@ public abstract class TestExpert extends TestCase {
 		for (File aFolderOrfile : folderOrFile.listFiles()) {
 			if (aFolderOrfile.isFile()) {
 				String aFile = aFolderOrfile.getPath();
+				if (aFile.endsWith(".java")) {
+					String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
+					aFile = aFile.replaceAll("\\\\", "/");
+					aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
+					aFile = aFile.replaceAll("/", "\\.");
+					aFile = aFile.replaceAll(".java", "");
 
-				String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
-
-				aFile = aFile.replaceAll("\\\\", "/");
-				aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
-				aFile = aFile.replaceAll("/", "\\.");
-				aFile = aFile.replaceAll(".java", "");
-
-				lines.add(aFile);
+					lines.add(aFile);
+				}
 			} else {
 				if (aFolderOrfile.isDirectory()) {
 					lines.addAll(findAllJavaFiles(aFolderOrfile.getPath()));
@@ -222,10 +220,6 @@ public abstract class TestExpert extends TestCase {
 		}
 
 		return lines;
-	}
-
-	public TestExpert() {
-		super();
 	}
 
 	protected void init(Class<?> classUnderTest) {
@@ -334,9 +328,9 @@ public abstract class TestExpert extends TestCase {
 		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
 
 		Set<String> localVars = new HashSet<String>();
-		
+
 		// creer String path to .class file
-		String fileName = this.getBinaryFolder()+"/" + this.classUnderTest.getName().replaceAll("\\.", "/");
+		String fileName = this.getBinaryFolder() + "/" + this.classUnderTest.getName().replaceAll("\\.", "/");
 
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
@@ -387,7 +381,6 @@ public abstract class TestExpert extends TestCase {
 						logger.debug("breaking:" + linesLocal);
 						break outer;
 					}
-					
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
 						logger.debug("found:" + linesLocal);
@@ -532,7 +525,7 @@ public abstract class TestExpert extends TestCase {
 													addFixture(annotatieElement);
 												}
 												construction = construction.replaceAll(element, annotatieElement);
-												
+
 											} else {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
@@ -562,7 +555,7 @@ public abstract class TestExpert extends TestCase {
 
 										}
 									} else {
-										try { 
+										try {
 											if (!this.isLiteral(collabZijnParams.get(n))) {
 												construction = construction.replaceAll(element, inputParametersViaAnnotations[n]);
 											}
@@ -582,7 +575,7 @@ public abstract class TestExpert extends TestCase {
 									} else {
 										returnFromMethod = generateConstructorForClass(method.getReturnType());
 									}
-									
+
 									if (MockFramework.MOCKIT.equals(currentFramework)) {
 										this.checkAndAddImport(mockit.Mocked.class);
 										this.checkAndAddImport(mockit.Expectations.class);
@@ -1082,7 +1075,7 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-		
+
 		Object o = ctx.getBean(fixture);
 		this.checkAndAddImport(o.getClass());
 		this.fixtures.put(fixture, o.getClass());
@@ -1141,8 +1134,8 @@ public abstract class TestExpert extends TestCase {
 
 		if (parameterNames.length != inputParametersViaAnnotatie.length) {
 			logger.warn("Annotation and parameters are ordinal not equal!");
-			logger.warn("parameternames:"+Arrays.asList(parameterNames));
-			logger.warn("InputParameters through annotation:"+Arrays.asList(inputParametersViaAnnotatie));
+			logger.warn("parameternames:" + Arrays.asList(parameterNames));
+			logger.warn("InputParameters through annotation:" + Arrays.asList(inputParametersViaAnnotatie));
 			throw new InvalidAnnotationException("Annotation and parameters are ordinal invalid.");
 		}
 
@@ -1316,10 +1309,6 @@ public abstract class TestExpert extends TestCase {
 		return this.addCode("\n");
 	}
 
-	public void printCode() {
-		System.out.println(this.codeGen());
-	}
-
 	public String codeGen() {
 		logger.debug("enter");
 
@@ -1340,39 +1329,37 @@ public abstract class TestExpert extends TestCase {
 
 		return result.trim();
 	}
-	
+
 	protected String codeGenAllTests() {
 		String result = EMPTY_STRING;
 		result += "import junit.framework.JUnit4TestAdapter;\n";
-		result += "import junit.framework.TestCase;\n" +
-				"import junit.framework.TestSuite;\n";
+		result += "import junit.framework.TestCase;\n" + "import junit.framework.TestSuite;\n";
 		result += "\n";
-		result += "import org.junit.runner.RunWith;\n"+
-				"import org.junit.runners.AllTests;\n";
-		
+		result += "import org.junit.runner.RunWith;\n" + "import org.junit.runners.AllTests;\n";
+
 		result += "\n";
-		
+
 		result += "@RunWith(AllTests.class)\n";
-		result += "public final class "+this.getTestsuiteName()+" extends TestCase {\n";
+		result += "public final class " + this.getTestsuiteName() + " extends TestCase {\n";
 		result += "\n";
-		
+
 		result += "\tpublic static TestSuite suite() {\n";
 		result += "\t\tTestSuite suite = new TestSuite();\n";
 		result += "\n";
-		
-		for(String testClassName : this.getAllTests()) {
+
+		for (String testClassName : this.getAllTests()) {
 			result += "\t\tsuite.addTest(new JUnit4TestAdapter(";
 			result += testClassName;
 			result += "));\n";
 		}
-		
+
 		result += "\n";
-		
+
 		result += "\t\treturn suite;\n";
-		
+
 		result += "\t}\n";
 		result += "}";
-		
+
 		return result;
 	}
 
@@ -1460,6 +1447,14 @@ public abstract class TestExpert extends TestCase {
 		this.currentFramework = currentFramework;
 	}
 
+	
+	/**
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws FileNotFoundException
+	 * 
+	 * this is the entryPoint / mainmethod of the TestExpert application
+	 */
 	@Test
 	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
@@ -1489,37 +1484,34 @@ public abstract class TestExpert extends TestCase {
 				this.writeFile();
 			}
 		}
-		
-		if(this.getAllTests() != null && !this.getAllTests().isEmpty()) {
+
+		if (this.getAllTests() != null && !this.getAllTests().isEmpty()) {
 			String fileName = getTestsuiteName();
-			if(fileName.indexOf(".java") <= -1) {
-				fileName += ".java"; 
+			if (fileName.indexOf(".java") <= -1) {
+				fileName += ".java";
 			}
 			this.writeFile(fileName, this.getOutputFolder(), this.codeGenAllTests());
 		}
-		
+
 		logger.debug("leaving main");
 
 	}
-	
+
 	protected List<String> getAllTests() {
 		return this.generatedTestClasses;
 	}
-	
 
 	// e.g. "src/main/java
 	public abstract String getSourceFolder();
 
 	public abstract Class<?> getFixture();
-	
-	public abstract boolean overwriteExistingFiles();
-	
-	public abstract String getBinaryFolder();
-	
-	public abstract String getOutputFolder();
-	
-	public abstract String getTestsuiteName();
 
-	
+	public abstract boolean overwriteExistingFiles();
+
+	public abstract String getBinaryFolder();
+
+	public abstract String getOutputFolder();
+
+	public abstract String getTestsuiteName();
 
 }

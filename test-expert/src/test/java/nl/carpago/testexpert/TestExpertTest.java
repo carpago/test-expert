@@ -2,10 +2,14 @@ package nl.carpago.testexpert;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1119,15 +1123,15 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 	
 	@Test
-	public void testAddTestToAllTests() {
+	public void testAddTestToTestsuite() {
 		TestExpert testExpert = new OurTestExpert();
 		testExpert.init(TstClassInner.class);
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		final String testClassName = "nl.carpago.testexpert.OurTest.class";
 		final String anotherTestClassName = "nl.carpago.testexpert.Another.class";
 		
-		testExpert.addTestToAllTests(testClassName);
-		testExpert.addTestToAllTests(anotherTestClassName);
+		testExpert.addTestToTestsuite(testClassName);
+		testExpert.addTestToTestsuite(anotherTestClassName);
 		
 		List<String> result = testExpert.getAllTests();
 		
@@ -1136,8 +1140,44 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 	
 	@Test
-	public void testWriteFileForFileDirContent() {
-		// hier verder met unittest
-		x
+	public void testCodeGenTestSuite() {
+		
 	}
+	
+	@Test
+	public void testWriteFileForFileDirContent() {
+		TestExpert testExpert = new OurTestExpert();
+		final String fileName = "carpago.txt";
+		final String directoryName = "src/test/java/nl/carpago/testexpert";
+		final String content = "This should be in the file "+new Date();
+		try {
+			File file = testExpert.writeFile(fileName, directoryName, content);
+			assertNotNull(file);
+		} catch (FileNotFoundException e) {
+			fail("File "+directoryName+"/"+fileName+" could not be written!");
+		}
+		
+		File testFile = new File("src/test/java/nl/carpago/testexpert/carpago.txt");
+		FileInputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(testFile);
+			InputStreamReader inputstreamReader = new InputStreamReader(inputStream);
+			BufferedReader reader = new BufferedReader(inputstreamReader);
+			String line = null;
+			try {
+				while((line = reader.readLine()) != null){
+					if(content.equals(line)) {
+						reader.close();
+						return;
+					}
+				}
+			} catch (IOException e) {
+				fail(e.getMessage());
+			}
+			fail("Testline of file not found back in file.");
+		} catch (FileNotFoundException e) {
+			fail("There was an error with reading the tesfile back.");
+		}
+	}
+	
 }
