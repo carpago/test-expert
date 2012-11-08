@@ -52,7 +52,7 @@ public abstract class TestExpert extends TestCase {
 		EASYMOCK, MOCKIT
 	}
 
-	private MockFramework currentFramework = MockFramework.EASYMOCK;
+	private MockFramework mockFramework; // = MockFramework.EASYMOCK;
 
 	private static Logger logger = Logger.getLogger(TestExpert.class);
 
@@ -576,7 +576,7 @@ public abstract class TestExpert extends TestCase {
 										returnFromMethod = generateConstructorForClass(method.getReturnType());
 									}
 
-									if (MockFramework.MOCKIT.equals(currentFramework)) {
+									if (MockFramework.MOCKIT.equals(getMockFramework())) {
 										this.checkAndAddImport(mockit.Mocked.class);
 										this.checkAndAddImport(mockit.Expectations.class);
 										result += addCodeLn("\t\tnew Expectations() {");
@@ -591,12 +591,12 @@ public abstract class TestExpert extends TestCase {
 										result += addCodeLn("){");
 
 									} else {
-										if (MockFramework.EASYMOCK.equals(currentFramework)) {
+										if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 											this.checkAndAddImport(org.easymock.EasyMock.class);
 											result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 										}
 									}
-									if (MockFramework.EASYMOCK.equals(currentFramework)) {
+									if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 										assert returnFromMethod != null;
 										String cloneString = EMPTY_STRING;
 										if (!this.isLiteral(returnFromMethod)) {
@@ -614,7 +614,7 @@ public abstract class TestExpert extends TestCase {
 										result += addCodeLn(");");
 
 									} else {
-										if (MockFramework.MOCKIT.equals(currentFramework)) {
+										if (MockFramework.MOCKIT.equals(getMockFramework())) {
 											// return the value.
 											result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
 
@@ -839,7 +839,7 @@ public abstract class TestExpert extends TestCase {
 			if (!(this.isPrimitive(field.getType().toString()))) {
 				this.checkAndAddImport(field.getType());
 			}
-			if (MockFramework.MOCKIT.equals(this.currentFramework)) {
+			if (MockFramework.MOCKIT.equals(this.getMockFramework())) {
 				this.checkAndAddImport(mockit.Mocked.class);
 				addCodeLn("\t@Mocked");
 			}
@@ -898,7 +898,7 @@ public abstract class TestExpert extends TestCase {
 		String result = EMPTY_STRING;
 
 		result += addCodeLn("\t@Before");
-		if (MockFramework.EASYMOCK.equals(currentFramework)) {
+		if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
 
@@ -913,7 +913,7 @@ public abstract class TestExpert extends TestCase {
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
 			result += addCodeLn();
 			if (!(this.isPrimitive(field.getType().getName()))) {
-				if (MockFramework.EASYMOCK.equals(currentFramework)) {
+				if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 				}
 
@@ -977,13 +977,13 @@ public abstract class TestExpert extends TestCase {
 				logger.error(e);
 			}
 
-			if (MockFramework.EASYMOCK.equals(currentFramework)) {
+			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 				generateReplays();
 			}
 
 			generateCallToTestMethod(methode);
 
-			if (MockFramework.EASYMOCK.equals(currentFramework)) {
+			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 				generateVerifies();
 			}
 
@@ -1443,8 +1443,9 @@ public abstract class TestExpert extends TestCase {
 		return fixtures;
 	}
 
+	
 	protected void setCurrentFramework(MockFramework currentFramework) {
-		this.currentFramework = currentFramework;
+		this.mockFramework = currentFramework;
 	}
 
 	
@@ -1513,5 +1514,7 @@ public abstract class TestExpert extends TestCase {
 	public abstract String getOutputFolder();
 
 	public abstract String getTestsuiteName();
+	
+	public abstract MockFramework getMockFramework();
 
 }
