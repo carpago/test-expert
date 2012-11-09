@@ -21,10 +21,10 @@ public class InvokeDTO {
 	private String collab;
 	private String method;
 	private List<String> params = new ArrayList<String>();
-	//private String paramsVanCollab ="";
 	
 	public InvokeDTO(String regel){
 		this.regel = regel;
+		System.out.println("regel:>"+regel+"<");
 		process();
 	}
 
@@ -36,7 +36,7 @@ public class InvokeDTO {
 		String construction = null;
 
 		if (regel.indexOf(" return ") > -1) {
-			regel = regel.replaceFirst("return", EMPTY_STRING);
+			regel = regel.replaceFirst("return", EMPTY_STRING).trim();
 		}
 		if (regel.indexOf("=") > -1) {
 			scanner = new Scanner(regel).useDelimiter("=");

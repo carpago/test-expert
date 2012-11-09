@@ -473,7 +473,7 @@ public abstract class TestExpert extends TestCase {
 									gemockteRegelsUitSource.add(k);
 								}
 
-								InvokeDTO invokeDTO = new InvokeDTO(regelHoger);
+								InvokeDTO invokeDTO = new InvokeDTO(regelHoger.trim());
 								if (this.collabs.contains(invokeDTO.getCollab()) || this.isCallerForCollab(invokeDTO.getCollab())) {
 									// continue processing this collab below ...
 								} else {
