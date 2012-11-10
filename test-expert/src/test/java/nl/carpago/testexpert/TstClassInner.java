@@ -64,7 +64,12 @@ public class TstClassInner {
 	}
 	
 	@CreateUnittest(in={"two", "three"}, out="vier")
-	public int testMethodeForGetIn(int getal, int getal2) {
+	public int testMethodeForGetInAndOutForCreateUnitTest(int getal, int getal2) {
+		return getal++;
+	}
+	
+	@Expect(in={"two","three"}, out="vier")
+	public int testMethodeForGetInAndOutForExpect(int getal, int getal2) {
 		return getal++;
 	}
 

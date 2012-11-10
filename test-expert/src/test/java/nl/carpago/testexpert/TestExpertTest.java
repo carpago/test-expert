@@ -832,7 +832,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		Method method;
 		try {
-			method = TstClassInner.class.getMethod("testMethodeForGetIn", new Class<?>[]{int.class, int.class});
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[]{int.class, int.class});
 			String[] ins = t.getInAnnotationsForMethod(method);
 			
 			Assert.assertFalse(ins.length == 0);
@@ -855,7 +855,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		Method method;
 		try {
-			method = TstClassInner.class.getMethod("testMethodeForGetIn", new Class<?>[]{int.class, int.class});
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[]{int.class, int.class});
 			String out = t.getOutAnnotationForMethod(method);
 			
 			Assert.assertFalse(out == null);
