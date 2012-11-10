@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -21,10 +22,12 @@ public class InvokeDTO {
 	private String collab;
 	private String method;
 	private List<String> params = new ArrayList<String>();
+	private Set<String> collabs;
 	
-	public InvokeDTO(String regel){
+	public InvokeDTO(String regel, Set<String> collabs){
 		this.regel = regel;
 		System.out.println("regel:>"+regel+"<");
+		this.collabs = collabs;
 		process();
 	}
 
@@ -35,6 +38,20 @@ public class InvokeDTO {
 		String declaration = null;
 		String construction = null;
 
+		regel = regel.replaceAll("this.", "");
+		
+		for(String aCollab : collabs) {
+			int positionOfCollab = regel.indexOf(aCollab);
+			
+			if(positionOfCollab > -1) {
+				regel = regel.substring(positionOfCollab);
+				break;
+			}
+		}
+		
+		
+		
+		
 		if (regel.indexOf(" return ") > -1) {
 			regel = regel.replaceFirst("return", EMPTY_STRING).trim();
 		}

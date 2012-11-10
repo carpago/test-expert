@@ -473,13 +473,17 @@ public abstract class TestExpert extends TestCase {
 									gemockteRegelsUitSource.add(k);
 								}
 
-								InvokeDTO invokeDTO = new InvokeDTO(regelHoger.trim());
-								if (this.collabs.contains(invokeDTO.getCollab()) || this.isCallerForCollab(invokeDTO.getCollab())) {
-									// continue processing this collab below ...
-								} else {
-									continue inner;
-								}
+								InvokeDTO invokeDTO = null;
+								if(this.isCallerForCollab(regelHoger.trim())) {
+									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
+									if (this.collabs.contains(invokeDTO.getCollab())) {
+										// continue processing this collab below ...
+									} else {
+										continue inner;
+									}
 
+								}
+								
 								String construction = invokeDTO.getCollabMethodParams();
 								if (mocked.contains(construction)) {
 									// continue inner;
@@ -829,7 +833,7 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	private void generateCollaboratingClasses() {
-		logger.debug("enter");
+		logger.debug("enter generateCollaboratingClasses");
 		Field[] fields = this.classUnderTest.getDeclaredFields();
 		if (fields.length > 0) {
 			addCodeLn();
@@ -854,7 +858,7 @@ public abstract class TestExpert extends TestCase {
 		}
 		addCodeLn();
 
-		logger.debug("leave");
+		logger.debug("leave generateCollaboratingClasses");
 	}
 
 	private String generateGeneric(ParameterizedType pType) {
