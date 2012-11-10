@@ -7,25 +7,25 @@ import org.junit.Test;
 
 public class AbstractTestExpertTest extends TestCase {
 	
-	private AbstractTestExpert testExpertTools;
+	private AbstractTestExpert testExpert;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.testExpertTools = new AbstractTestExpert();
+		this.testExpert = new AbstractTestExpert();
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		this.testExpertTools = null;
+		this.testExpert = null;
 	}
 	
 	@Test
 	public void testCloneMeAndCheckForDeepEquality() {
 		Person p1 = new Person("John Doe", 45);
 		
-		Person p2 = (Person) testExpertTools.cloneMe(p1);
+		Person p2 = (Person) testExpert.cloneMe(p1);
 		
 		
 		Assert.assertTrue(p1.getName().equals(p2.getName()));
@@ -42,7 +42,7 @@ public class AbstractTestExpertTest extends TestCase {
 		Assert.assertFalse(bike1.getMake() == bike2.getMake());
 		Assert.assertFalse(bike1 == bike2);
 		
-		Assert.assertTrue(testExpertTools.checkForDeepEquality(p1, p2));
+		Assert.assertTrue(testExpert.checkForDeepEquality(p1, p2));
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ public class AbstractTestExpertTest extends TestCase {
 				"13<char>14</char>15<boolean>16</boolean>17<string>18</string>";
 		
 		String expected = "123456789101112131415161718";
-		String actual = this.testExpertTools.removeAllTagsAroundLiterals(in);
+		String actual = this.testExpert.removeAllTagsAroundLiterals(in);
 		
 		Assert.assertTrue(expected.equals(actual));
 		
@@ -59,20 +59,20 @@ public class AbstractTestExpertTest extends TestCase {
 		
 		expected =  new String("the quick brown fox jumps over the lazy dog.");
 		
-		Assert.assertTrue(expected.equals(this.testExpertTools.removeAllTagsAroundLiterals(in)));
+		Assert.assertTrue(expected.equals(this.testExpert.removeAllTagsAroundLiterals(in)));
 		
 		in = "7527502457203458720345704";
 		
 		expected = "7527502457203458720345704";
 		
-		Assert.assertTrue(expected.equals(this.testExpertTools.removeAllTagsAroundLiterals(in)));
+		Assert.assertTrue(expected.equals(this.testExpert.removeAllTagsAroundLiterals(in)));
 		
 		
 		in = new String("the <int>quick</int> brown fox jumps over <string>the lazy dog.");
 		
 		expected =  new String("the quick brown fox jumps over the lazy dog.");
 		
-		Assert.assertTrue(expected.equals(this.testExpertTools.removeAllTagsAroundLiterals(in)));
+		Assert.assertTrue(expected.equals(this.testExpert.removeAllTagsAroundLiterals(in)));
 		
 	}
 	
@@ -80,7 +80,7 @@ public class AbstractTestExpertTest extends TestCase {
 	public void testSetFieldThroughReflection() {
 		Person p1 = new Person("John Doe", 45);
 		
-		Person p2 = (Person) this.testExpertTools.setFieldThroughReflection(p1, "name", "Jane Doe");
+		Person p2 = (Person) this.testExpert.setFieldThroughReflection(p1, "name", "Jane Doe");
 		
 		Assert.assertEquals("Jane Doe", p2.getName());
 	}
