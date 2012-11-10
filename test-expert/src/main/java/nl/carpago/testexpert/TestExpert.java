@@ -206,7 +206,8 @@ public abstract class TestExpert extends TestCase {
 				if (aFile.endsWith(".java")) {
 					String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
 					aFile = aFile.replaceAll("\\\\", "/");
-					aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
+					aFile = aFile.replaceAll(sourceFolder, ""); // strip
+																// sourcefolder
 					aFile = aFile.replaceAll("/", "\\.");
 					aFile = aFile.replaceAll(".java", "");
 
@@ -473,17 +474,14 @@ public abstract class TestExpert extends TestCase {
 									gemockteRegelsUitSource.add(k);
 								}
 
-								InvokeDTO invokeDTO = new InvokeDTO(regelHoger);
-								if (this.collabs.contains(invokeDTO.getCollab()) || this.isCallerForCollab(invokeDTO.getCollab())) {
-									// continue processing this collab below ...
+								InvokeDTO invokeDTO = null;
+								if (this.isCallerForCollab(regelHoger.trim())) {
+									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
 								} else {
 									continue inner;
 								}
 
 								String construction = invokeDTO.getCollabMethodParams();
-								if (mocked.contains(construction)) {
-									// continue inner;
-								}
 								mocked.add(construction);
 
 								// maak nu een lijst van beiden.
@@ -829,7 +827,7 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	private void generateCollaboratingClasses() {
-		logger.debug("enter");
+		logger.debug("enter generateCollaboratingClasses");
 		Field[] fields = this.classUnderTest.getDeclaredFields();
 		if (fields.length > 0) {
 			addCodeLn();
@@ -854,7 +852,7 @@ public abstract class TestExpert extends TestCase {
 		}
 		addCodeLn();
 
-		logger.debug("leave");
+		logger.debug("leave generateCollaboratingClasses");
 	}
 
 	private String generateGeneric(ParameterizedType pType) {
@@ -1443,18 +1441,17 @@ public abstract class TestExpert extends TestCase {
 		return fixtures;
 	}
 
-	
 	protected void setCurrentFramework(MockFramework currentFramework) {
 		this.mockFramework = currentFramework;
 	}
 
-	
 	/**
 	 * 
 	 * @throws ClassNotFoundException
 	 * @throws FileNotFoundException
 	 * 
-	 * this is the entryPoint / mainmethod of the TestExpert application
+	 *             this is the entryPoint / mainmethod of the TestExpert
+	 *             application
 	 */
 	@Test
 	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
@@ -1514,7 +1511,7 @@ public abstract class TestExpert extends TestCase {
 	public abstract String getOutputFolder();
 
 	public abstract String getTestsuiteName();
-	
+
 	public abstract MockFramework getMockFramework();
 
 }

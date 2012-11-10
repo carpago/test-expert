@@ -107,7 +107,7 @@
 			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}/junit">
 				<fileset dir="${test.src.dir}">
-					<include name="**/*TestExpertTest*.java" />
+					<include name="**/*AllTestsForTestExpert*.java" />
 				</fileset>
 			</batchtest>
 			<jvmarg value="-Demma.coverage.out.file=${coverage.output.dir}/coverage.emma" />

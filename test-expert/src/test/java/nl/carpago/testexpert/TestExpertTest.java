@@ -398,7 +398,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testFindAllJavaFilesForFolder() {
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
-			final int expected = 21;
+			final int expected = 24;
 			Assert.assertEquals("Expected:"+expected+", actual:" + files.size(), expected, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -824,7 +824,97 @@ public class TestExpertTest extends AbstractTestExpert {
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"persoonDao\", this.persoonDao);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 	}
-
+	
+	@Test
+	public void testGetInAnnotationsForMethodForAnnotationCreateUnitTest() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[]{int.class, int.class});
+			String[] ins = t.getInAnnotationsForMethod(method);
+			
+			Assert.assertFalse(ins.length == 0);
+			Assert.assertTrue("two".equals(ins[0]));
+			Assert.assertTrue("three".equals(ins[1]));
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+	
+	}
+	
+	@Test
+	public void testGetOutAnnotationsForMethodForCreateUnitTest() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[]{int.class, int.class});
+			String out = t.getOutAnnotationForMethod(method);
+			
+			Assert.assertFalse(out == null);
+			Assert.assertTrue("vier".equals(out));
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+		
+	}
+	
+	@Test
+	public void testGetOutAnnotationsForMethodForExpect() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[]{int.class, int.class});
+			String out = t.getOutAnnotationForMethod(method);
+			
+			Assert.assertFalse(out == null);
+			Assert.assertTrue("vier".equals(out));
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+		
+	}
+	
+	@Test
+	public void testGetInAnnotationsForMethodForAnnotationExpect() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[]{int.class, int.class});
+			String[] ins = t.getInAnnotationsForMethod(method);
+			
+			Assert.assertFalse(ins.length == 0);
+			Assert.assertTrue("two".equals(ins[0]));
+			Assert.assertTrue("three".equals(ins[1]));
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+	
+	}
+	
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethod() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
@@ -1216,5 +1306,4 @@ public class TestExpertTest extends AbstractTestExpert {
 			fail("There was an error with reading the testfile back.");
 		}
 	}
-	
 }
