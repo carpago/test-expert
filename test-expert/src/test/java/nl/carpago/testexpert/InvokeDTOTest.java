@@ -31,29 +31,22 @@ public class InvokeDTOTest extends TestCase {
 	@Test
 	public void testConstructorAndProcess() {
 		
-		String line = "String result = persoonDao.getSofi(aNumber);";
+		String line = null;
+		
+		
+		line = "String result = persoonDao.getSofi(aNumber);";
 		String expectedCollab = "persoonDao";
 		String expectedCollabMethodParams = "persoonDao.getSofi(aNumber)";
-		String expectedConstruction = expectedCollabMethodParams;
+		String expectedConstruction = expectedCollabMethodParams +";";
 		List <String> expectedParams = new ArrayList<String>();
 		expectedParams.add("aNumber");
 		String expectedMethod = "getSofi";
 		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
 		
-		line = "int result = this.persoonDao.getSofi(aNumber, aSecondNumber);";
-		expectedCollab = "persoonDao";
-		expectedCollabMethodParams = "persoonDao.getSofi(aNumber, aSecondNumber)";
-		expectedConstruction = "persoonDao.getSofi(aNumber, aSecondNumber)";
-		expectedParams = new ArrayList<String>();
-		expectedParams.add("aNumber");
-		expectedParams.add("aSecondNumber");
-		expectedMethod = "getSofi";
-		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
-		
 		line = "if(onderhoudenVliegveldDao.add(aNumber) == 3)";
 		expectedCollab = "onderhoudenVliegveldDao";
 		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(aNumber)";
-		expectedConstruction = "onderhoudenVliegveldDao.add(aNumber)";
+		expectedConstruction = "onderhoudenVliegveldDao.add(aNumber);";
 		expectedParams = new ArrayList<String>();
 		expectedParams.add("aNumber");
 		expectedMethod = "add";
@@ -97,7 +90,6 @@ public class InvokeDTOTest extends TestCase {
 		invoke = new InvokeDTO(line, collabs);
 		Assert.assertEquals(expectedCollab, invoke.getCollab());
 		Assert.assertEquals(expectedCollabMethodParams, invoke.getCollabMethodParams());
-		Assert.assertEquals(expectedConstruction, invoke.getConstruction());
 		Assert.assertEquals(expectedParams, invoke.getParams());
 		Assert.assertEquals(expectedMethod, invoke.getMethod());
 	}

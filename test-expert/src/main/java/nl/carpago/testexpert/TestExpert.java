@@ -206,7 +206,8 @@ public abstract class TestExpert extends TestCase {
 				if (aFile.endsWith(".java")) {
 					String sourceFolder = (getSourceFolder() + "/").replaceAll("\\\\", "/");
 					aFile = aFile.replaceAll("\\\\", "/");
-					aFile = aFile.replaceAll(sourceFolder, ""); // strip sourcefolder
+					aFile = aFile.replaceAll(sourceFolder, ""); // strip
+																// sourcefolder
 					aFile = aFile.replaceAll("/", "\\.");
 					aFile = aFile.replaceAll(".java", "");
 
@@ -474,16 +475,17 @@ public abstract class TestExpert extends TestCase {
 								}
 
 								InvokeDTO invokeDTO = null;
-								if(this.isCallerForCollab(regelHoger.trim())) {
+								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
 									if (this.collabs.contains(invokeDTO.getCollab())) {
-										// continue processing this collab below ...
-									} else {
-										continue inner;
+										// continue processing this collab below
+										// ...
 									}
 
+								} else {
+									continue inner;
 								}
-								
+
 								String construction = invokeDTO.getCollabMethodParams();
 								if (mocked.contains(construction)) {
 									// continue inner;
@@ -1447,18 +1449,17 @@ public abstract class TestExpert extends TestCase {
 		return fixtures;
 	}
 
-	
 	protected void setCurrentFramework(MockFramework currentFramework) {
 		this.mockFramework = currentFramework;
 	}
 
-	
 	/**
 	 * 
 	 * @throws ClassNotFoundException
 	 * @throws FileNotFoundException
 	 * 
-	 * this is the entryPoint / mainmethod of the TestExpert application
+	 *             this is the entryPoint / mainmethod of the TestExpert
+	 *             application
 	 */
 	@Test
 	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
@@ -1518,7 +1519,7 @@ public abstract class TestExpert extends TestCase {
 	public abstract String getOutputFolder();
 
 	public abstract String getTestsuiteName();
-	
+
 	public abstract MockFramework getMockFramework();
 
 }

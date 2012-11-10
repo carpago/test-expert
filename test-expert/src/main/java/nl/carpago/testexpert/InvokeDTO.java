@@ -17,15 +17,15 @@ public class InvokeDTO {
 	private String regel;
 
 	// output
-	private String constructionFromLine; // regel zonder assignment
 	private String collab;
 	private String method;
 	private List<String> params = new ArrayList<String>();
+	private String paramsAsString = "";
 	private Set<String> collabs; // contains the current collabs from the
 									// generated class for test class.
-
+	
 	public InvokeDTO(String regel, Set<String> collabs) {
-		this.regel = regel;
+		this.regel = regel.trim();
 		System.out.println("regel:>" + regel + "<");
 		this.collabs = collabs;
 		process();
@@ -44,8 +44,6 @@ public class InvokeDTO {
 			}
 		}
 
-		this.constructionFromLine = this.regel;
-
 		int indexDotAfterCollab = regel.indexOf('.');
 
 		this.collab = this.regel.substring(0, indexDotAfterCollab);
@@ -56,7 +54,8 @@ public class InvokeDTO {
 		this.method = this.regel.substring(0, indexOpenParenthesisAfterMethod);
 		this.regel = this.regel.substring(indexOpenParenthesisAfterMethod);
 
-		String params = "";
+		StringBuilder params = new StringBuilder();
+		System.out.println(params.toString());
 		int level = 0;
 		outer:
 		for(int i = 0;i<this.regel.length();i++) {
@@ -64,24 +63,28 @@ public class InvokeDTO {
 			
 			switch (element) {
 			case '(':
-				params += element;
+				if(level != 0) {
+					params.append(element);
+				}
 				level++;
 				break;
-
 			case ')':
-				params += element;
 				level--;
 				if(level == 0) {
 					break outer;
 				}
+				else {
+					params.append(element);
+				}
 				break;
 			default:
-				params += element;
+				params.append(element);
 				break;
 			}
 		}
 		
-		String[] paramsVanCollabArray = params.split(",\\s");
+		String[] paramsVanCollabArray = params.toString().split(",\\s");
+		this.paramsAsString = params.toString();
 		this.params = Arrays.asList(paramsVanCollabArray);
 
 		// old school
@@ -141,25 +144,7 @@ public class InvokeDTO {
 	}
 
 	public String getCollabMethodParams() {
-		String result = "";
-		result += this.getCollab();
-		result += ".";
-		result += this.getMethod();
-		result += "(";
-
-		String first = EMPTY_STRING;
-		String tail = EMPTY_STRING;
-		if (!(this.params.size() < 1)) {
-			first = this.params.get(0);
-		}
-		for (int i = 1; i <= this.params.size() - 1; i++) {
-			tail += ", " + this.params.get(i);
-		}
-
-		result += first + tail;
-
-		result += ")";
-
+		String result = this.collab+"."+this.method+"("+this.paramsAsString+")";
 		return result;
 	}
 
@@ -169,10 +154,6 @@ public class InvokeDTO {
 
 	public String getMethod() {
 		return method;
-	}
-
-	public String getConstruction() {
-		return this.constructionFromLine;
 	}
 
 	public List<String> getParams() {
