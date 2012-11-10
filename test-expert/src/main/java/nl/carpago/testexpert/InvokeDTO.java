@@ -26,7 +26,6 @@ public class InvokeDTO {
 	
 	public InvokeDTO(String regel, Set<String> collabs) {
 		this.regel = regel.trim();
-		System.out.println("regel:>" + regel + "<");
 		this.collabs = collabs;
 		process();
 	}
@@ -55,7 +54,6 @@ public class InvokeDTO {
 		this.regel = this.regel.substring(indexOpenParenthesisAfterMethod);
 
 		StringBuilder params = new StringBuilder();
-		System.out.println(params.toString());
 		int level = 0;
 		outer:
 		for(int i = 0;i<this.regel.length();i++) {
@@ -86,61 +84,6 @@ public class InvokeDTO {
 		String[] paramsVanCollabArray = params.toString().split(",\\s");
 		this.paramsAsString = params.toString();
 		this.params = Arrays.asList(paramsVanCollabArray);
-
-		// old school
-
-		/*
-		 * if (regel.indexOf(" return ") > -1) { regel =
-		 * regel.replaceFirst("return", EMPTY_STRING).trim(); } if
-		 * (regel.indexOf("=") > -1) { scanner = new
-		 * Scanner(regel).useDelimiter("="); declaration =
-		 * scanner.next().trim();
-		 * 
-		 * if (declaration.indexOf(" ") > -1) { Scanner subScanner = null;
-		 * subScanner = new Scanner(declaration).useDelimiter(" ");
-		 * 
-		 * // skip String type = subScanner.next(); String variableName =
-		 * subScanner.next();
-		 * 
-		 * } regel = scanner.next(); }
-		 * 
-		 * scanner = new Scanner(regel).useDelimiter(";"); construction =
-		 * scanner.next().trim(); this.constructionFromLine = construction;
-		 * 
-		 * // new
-		 * 
-		 * int indexOfFirstDot = construction.indexOf('.'); // voor temp sol.
-		 * int starter = construction.indexOf('(') < ch //x // hier verder. moet
-		 * goede beginpunt van regel hebben. en das niet altijd 0 bijvoorbeeld
-		 * bij if en System.out.println. // vanuit '.' 1 of twee haakjes terug.
-		 * // moet maar gewoon met een kleine parser. Eerst andere issues ...
-		 * collab = construction.substring(0, indexOfFirstDot);
-		 * while(collab.indexOf(" ") > -1) { collab =
-		 * collab.substring(collab.indexOf(" ")+1); }
-		 * 
-		 * construction =
-		 * construction.substring(indexOfFirstDot+1,construction.length());
-		 * 
-		 * int indexOfOpenParenthesis = construction.indexOf('(');
-		 * 
-		 * this.method = construction.substring(0,indexOfOpenParenthesis);
-		 * 
-		 * construction = construction.substring(indexOfOpenParenthesis+1,
-		 * construction.length());
-		 * 
-		 * int indexOfClosingParenthesis = construction.indexOf('.')-1;
-		 * if(indexOfClosingParenthesis < 0 ) { // no separator so take last
-		 * closing parenthesis indexOfClosingParenthesis =
-		 * construction.lastIndexOf(")"); }
-		 * 
-		 * // this.constructionFromLine = construction.substring(0,
-		 * indexOfClosingParenthesis);
-		 * 
-		 * String paramsVanCollab = construction.substring(0,
-		 * indexOfClosingParenthesis); String[] paramsVanCollabArray =
-		 * paramsVanCollab.split(",\\s"); this.params =
-		 * Arrays.asList(paramsVanCollabArray);
-		 */
 	}
 
 	public String getCollabMethodParams() {

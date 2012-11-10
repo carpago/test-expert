@@ -826,7 +826,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 	
 	@Test
-	public void testGetInAnnotationsForMethod() {
+	public void testGetInAnnotationsForMethodForAnnotationCreateUnitTest() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
@@ -849,7 +849,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 	
 	@Test
-	public void testGetOutAnnotationsForMethod() {
+	public void testGetOutAnnotationsForMethodForCreateUnitTest() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
@@ -869,7 +869,52 @@ public class TestExpertTest extends AbstractTestExpert {
 		}
 		
 	}
-
+	
+	@Test
+	public void testGetOutAnnotationsForMethodForExpect() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[]{int.class, int.class});
+			String out = t.getOutAnnotationForMethod(method);
+			
+			Assert.assertFalse(out == null);
+			Assert.assertTrue("vier".equals(out));
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+		
+	}
+	
+	@Test
+	public void testGetInAnnotationsForMethodForAnnotationExpect() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[]{int.class, int.class});
+			String[] ins = t.getInAnnotationsForMethod(method);
+			
+			Assert.assertFalse(ins.length == 0);
+			Assert.assertTrue("two".equals(ins[0]));
+			Assert.assertTrue("three".equals(ins[1]));
+			
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+	
+	}
+	
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethod() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
