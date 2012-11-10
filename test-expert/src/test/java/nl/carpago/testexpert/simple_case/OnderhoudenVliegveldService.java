@@ -25,16 +25,5 @@ public class OnderhoudenVliegveldService {
 		
 		return result;
 	}
-	
-	@CreateUnittest(in="three", out="vier")
-	public int getForBooleanTest(int aNumber) {
-		if(onderhoudenVliegVelddao.add(aNumber) == 3) {
-			System.out.println("drie");
-		}
-		
-		return 4;
-	}
-	
-
 }
  

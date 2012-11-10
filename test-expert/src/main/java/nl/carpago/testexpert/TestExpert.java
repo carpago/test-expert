@@ -477,19 +477,11 @@ public abstract class TestExpert extends TestCase {
 								InvokeDTO invokeDTO = null;
 								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
-									if (this.collabs.contains(invokeDTO.getCollab())) {
-										// continue processing this collab below
-										// ...
-									}
-
 								} else {
 									continue inner;
 								}
 
 								String construction = invokeDTO.getCollabMethodParams();
-								if (mocked.contains(construction)) {
-									// continue inner;
-								}
 								mocked.add(construction);
 
 								// maak nu een lijst van beiden.
