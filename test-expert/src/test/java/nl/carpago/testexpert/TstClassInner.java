@@ -62,6 +62,11 @@ public class TstClassInner {
 	public void testIn(int i) {
 
 	}
+	
+	@CreateUnittest(in={"two", "three"}, out="vier")
+	public int testMethodeForGetIn(int getal, int getal2) {
+		return getal++;
+	}
 
 	@CreateUnittest(in = { "?", "?", "?" })
 	public void methodForCreateArguments(int firstUnknowArgument, String secondUnknowArgument, Person thirdUnknowArgument) {
