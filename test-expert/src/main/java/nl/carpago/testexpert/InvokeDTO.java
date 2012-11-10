@@ -22,7 +22,7 @@ public class InvokeDTO {
 	private String collab;
 	private String method;
 	private List<String> params = new ArrayList<String>();
-	private Set<String> collabs;
+	private Set<String> collabs; // contains the current collabs from the generated class for test class.
 	
 	public InvokeDTO(String regel, Set<String> collabs){
 		this.regel = regel;
@@ -49,9 +49,45 @@ public class InvokeDTO {
 			}
 		}
 		
+		System.out.println("nieuwe regel:"+this.regel);
+		
+		this.constructionFromLine = this.regel;
 		
 		
 		
+		int indexDotAfterCollab = regel.indexOf('.');
+		
+		this.collab = this.regel.substring(0,indexDotAfterCollab);
+		this.regel = this.regel.substring(indexDotAfterCollab+1);
+		
+		System.out.println("collab: >"+this.collab+"<");
+		
+		int indexOpenParenthesisAfterMethod = this.regel.indexOf('(');
+		
+		this.method = this.regel.substring(0,indexOpenParenthesisAfterMethod);
+		this.regel = this.regel.substring(indexOpenParenthesisAfterMethod);
+		
+		System.out.println("method:>"+this.method+"<");
+		
+		System.out.println("regel:>"+this.regel+"<");
+		
+		String params = this.regel.substring(1,regel.indexOf(')'));
+		
+		System.out.println("params:>"+params+"<");
+		
+		String[] paramsVanCollabArray = params.split(",\\s");
+		this.params = Arrays.asList(paramsVanCollabArray);
+		
+		this.constructionFromLine = this.collab+"."+this.method+"("+params+")";
+		
+		
+		System.out.println(constructionFromLine);
+		
+		
+		
+		// old school
+		
+		/*
 		if (regel.indexOf(" return ") > -1) {
 			regel = regel.replaceFirst("return", EMPTY_STRING).trim();
 		}
@@ -105,6 +141,7 @@ public class InvokeDTO {
 		String paramsVanCollab = construction.substring(0, indexOfClosingParenthesis);
 		String[] paramsVanCollabArray = paramsVanCollab.split(",\\s");
 		this.params = Arrays.asList(paramsVanCollabArray);
+		*/
 	}
 	
 	public String getCollabMethodParams() {

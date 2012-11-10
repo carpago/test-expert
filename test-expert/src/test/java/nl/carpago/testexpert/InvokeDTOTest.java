@@ -50,8 +50,8 @@ public class InvokeDTOTest extends TestCase {
 		expectedMethod = "getSofi";
 		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
 		
-		line = "if(onderhoudenVliegVeldDao.add(aNumber) == 3)";
-		expectedCollab = "onderhoudenVliegVeldDao";
+		line = "if(onderhoudenVliegveldDao.add(aNumber) == 3)";
+		expectedCollab = "onderhoudenVliegveldDao";
 		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(aNumber)";
 		expectedConstruction = "onderhoudenVliegveldDao.add(aNumber)";
 		expectedParams = new ArrayList<String>();
@@ -59,6 +59,36 @@ public class InvokeDTOTest extends TestCase {
 		expectedMethod = "add";
 		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
 		
+		
+		line = "if(onderhoudenVliegveldDao.add(aNumber, anotherNumber) == 3)";
+		expectedCollab = "onderhoudenVliegveldDao";
+		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(aNumber, anotherNumber)";
+		expectedConstruction = "onderhoudenVliegveldDao.add(aNumber, anotherNumber)";
+		expectedParams = new ArrayList<String>();
+		expectedParams.add("aNumber");
+		expectedParams.add("anotherNumber");
+		expectedMethod = "add";
+		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
+		
+		line = "if(onderhoudenVliegveldDao.add(aNumber, anotherNumber).toString().equals(\"3\");";
+		expectedCollab = "onderhoudenVliegveldDao";
+		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(aNumber, anotherNumber)";
+		expectedConstruction = "onderhoudenVliegveldDao.add(aNumber, anotherNumber)";
+		expectedParams = new ArrayList<String>();
+		expectedParams.add("aNumber");
+		expectedParams.add("anotherNumber");
+		expectedMethod = "add";
+		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
+		
+		line = "if(onderhoudenVliegveldDao.add(aNumber, new String()).toString().equals(\"3\");";
+		expectedCollab = "onderhoudenVliegveldDao";
+		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(aNumber, new String())";
+		expectedConstruction = "onderhoudenVliegveldDao.add(aNumber, new String())";
+		expectedParams = new ArrayList<String>();
+		expectedParams.add("aNumber");
+		expectedParams.add("new String()");
+		expectedMethod = "add";
+		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
 		
 	}
 	
