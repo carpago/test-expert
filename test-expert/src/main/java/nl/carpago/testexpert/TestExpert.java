@@ -408,10 +408,7 @@ public abstract class TestExpert extends TestCase {
 		String fileName = this.getPathToBinaryFile(this.classUnderTest);
 		List<String> lines = this.getLinesFromFile(fileName);
 		Pattern p = this.getRegularExpressionForMethod(methodeArgument);
-		
-		
-		// get a matcher object
-		// int delta = 1;
+
 		String linesLocal = null;
 		Set<String> mocked = new HashSet<String>();
 		List<Integer> gemockteRegelsUitSource = new ArrayList<Integer>();
@@ -430,7 +427,6 @@ public abstract class TestExpert extends TestCase {
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
 						logger.debug("found:" + linesLocal);
 						
-						//==> method
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
 						String collabAndInvokee = null;
@@ -438,10 +434,8 @@ public abstract class TestExpert extends TestCase {
 						while (collabScanner.hasNext()) {
 							collabAndInvokee = collabScanner.next();
 						}
-						logger.debug(collabAndInvokee);
 
 						List<Class<?>> params = this.parseParameters(s,  patternForSeparatingParameters);
-						
 						
 						String[] collabs = collabAndInvokee.split("\\.");
 						String collab = EMPTY_STRING;
@@ -452,44 +446,15 @@ public abstract class TestExpert extends TestCase {
 						collab = collab.substring(0, collab.length() - 1);
 						String invokee = collabs[collabs.length - 1];
 
-						logger.debug("collab=" + collab);
-						logger.debug("invokee=" + invokee);
-
-						
 						Class<?>[] parametersVoorInvokee = new Class<?>[params.size()];
 						parametersVoorInvokee = (Class[]) params.toArray(parametersVoorInvokee);
 						
-					
-						
-						
-						// System.out.println("collab:" + collab);
-						// System.out.println("invokee:" + invokee);
-						// System.out.println("parameters:" + params);
-						// now I can get the signature of the to be colled
-						// method of the collab
-						// and know the EXACT returntype ... Not just List but
-						// also List <Melding> that's
-						// why I needed this verbose code.
 						Method method = null;
 						try {
-							// rloman: hier collab nog automatisch verlengen
-							// door gebruik te maken
-							// van jad met zijn FQCN - mogelijkheid zodat
-							// MeldingDAO wordt:
-							// nl.belastingdienst.aig.dao.MeldingDao
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
-							// method = Class.forName(collab).getmet
 							if (collab.equals(this.classUnderTest.getName())) {
 								continue inner;
 							}
-							
-							
-							logger.debug("methode to collab is:" + method);
-							logger.debug("methods return type:" + method.getReturnType());
-							logger.debug("methods generic return type:" + method.getGenericReturnType());
-							// tjakkaa: hier heb ik dus het generieke type.
-						
-							
 						} catch (SecurityException e) {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
@@ -500,20 +465,14 @@ public abstract class TestExpert extends TestCase {
 							assert false;
 						}
 
-						
-						// == eind method
-
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
-
 							if (regelHoger.indexOf(invokee) > -1) {
-
 								if (gemockteRegelsUitSource.contains(k)) {
 									continue inner; // already done ...
 								} else {
 									gemockteRegelsUitSource.add(k);
 								}
-
 								InvokeDTO invokeDTO = null;
 								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
@@ -524,7 +483,7 @@ public abstract class TestExpert extends TestCase {
 								String construction = invokeDTO.getCollabMethodParams();
 								mocked.add(construction);
 
-								// maak nu een lijst van beiden.
+								// create a list of them both.
 								List<String> testMethodeZijnParams = new ArrayList<String>(Arrays.asList(this.getParameterNamesForMethod(methodeArgument)));
 								List<String> collabZijnParams = invokeDTO.getParams();
 
@@ -532,32 +491,12 @@ public abstract class TestExpert extends TestCase {
 								String out = this.getOutAnnotationForMethod(method);
 
 								// En neem de wiskundige A-B
-								logger.debug(method);
-								logger.debug("returns:" + out);
-
 								for (int n = 0; n < collabZijnParams.size(); n++) {
 									String element = collabZijnParams.get(n);
 									if (!testMethodeZijnParams.contains(element) && !(isLiteral(element)) && !(localVars.contains(element))) {
 										localVars.add(element);
-
-										// hier de code uit service halen.
-										// hier probeer ik of ik een annotatie
-										// uit de dao kan halen van het
-										// betreffende element.
-										// Zo niet dan onderstaande code. (via
-										// constructor dus)
-
-										/*
-										 * deze code hieronder haalt de
-										 * annotatie op van de collab en kijkt
-										 * of hij daar wat mee kan als de
-										 * variable niet via de te testen
-										 * methode binnen komt. Refactoring is
-										 * gewenst .... :-))
-										 */
 										if (in != null && in.length != 0) {
 											String annotatieElement = in[n];
-											// element = annotatieElement;
 											if (!(QUESTION_MARK.equals(annotatieElement) || ASTERISK.equals(annotatieElement))) {
 												if (!this.isLiteral(annotatieElement)) {
 													addFixture(annotatieElement);
@@ -586,24 +525,20 @@ public abstract class TestExpert extends TestCase {
 													result += addCode(generateConstructorForClass(parameterType));
 													result += addCodeLn(";");
 												}
-
 											} catch (IndexOutOfBoundsException iobe) {
 												logger.error("INdexOutOfBoundException for method:" + method.getName() + ", index:" + n);
 											}
-
 										}
 									} else {
 										try {
 											if (!this.isLiteral(collabZijnParams.get(n))) {
 												construction = construction.replaceAll(element, inputParametersViaAnnotations[n]);
 											}
-
 										} catch (IndexOutOfBoundsException iobe) {
 											logger.error("IndexOutOfBoundsException in replacing elemnt with annotation.");
 										}
 									}
 								}
-
 								String returnFromMethod = null;
 								if ("void".equals(method.getReturnType().toString())) {
 									result += addCodeLn("\t\t" + construction + ";");
@@ -663,16 +598,12 @@ public abstract class TestExpert extends TestCase {
 										}
 									}
 								}
-
 								continue inner;
-
 							}
 						}
 					}
-
 				}
 			}
-
 		}
 		logger.debug("leave");
 
