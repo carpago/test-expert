@@ -549,26 +549,8 @@ public abstract class TestExpert extends TestCase {
 										returnFromMethod = generateConstructorForClass(method.getReturnType());
 									}
 
-									if (MockFramework.MOCKIT.equals(getMockFramework())) {
-										this.checkAndAddImport(mockit.Mocked.class);
-										this.checkAndAddImport(mockit.Expectations.class);
-										result += addCodeLn("\t\tnew Expectations() {");
-										result += addCodeLn("\t\t\t{");
-										result += addCodeLn("\t\t\t\t" + construction + ";");
-										result += addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
-										result += addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
-										this.checkAndAddImport(method.getReturnType().getClass());
-										result += addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
-										result += addCode(" validate(");
-										result += addCode(this.getParameterTypesAndNameAsString(method));
-										result += addCodeLn("){");
-
-									} else {
-										if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-											this.checkAndAddImport(org.easymock.EasyMock.class);
-											result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
-										}
-									}
+									result += this.generateExpectationForMethod(method, construction);
+									
 									if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 										assert returnFromMethod != null;
 										String cloneString = EMPTY_STRING;
@@ -607,6 +589,32 @@ public abstract class TestExpert extends TestCase {
 		}
 		logger.debug("leave");
 
+		return result;
+	}
+
+	private String generateExpectationForMethod(Method method, String construction) {
+		String result = EMPTY_STRING;
+		if (MockFramework.MOCKIT.equals(getMockFramework())) {
+			this.checkAndAddImport(mockit.Mocked.class);
+			this.checkAndAddImport(mockit.Expectations.class);
+			result += addCodeLn("\t\tnew Expectations() {");
+			result += addCodeLn("\t\t\t{");
+			result += addCodeLn("\t\t\t\t" + construction + ";");
+			result += addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
+			result += addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
+			this.checkAndAddImport(method.getReturnType().getClass());
+			result += addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
+			result += addCode(" validate(");
+			result += addCode(this.getParameterTypesAndNameAsString(method));
+			result += addCodeLn("){");
+
+		} else {
+			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
+				this.checkAndAddImport(org.easymock.EasyMock.class);
+				result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
+			}
+		}
+		
 		return result;
 	}
 
