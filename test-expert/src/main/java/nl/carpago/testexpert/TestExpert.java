@@ -370,6 +370,7 @@ public abstract class TestExpert extends TestCase {
 		return pattern;
 	}
 	
+	//TODO Test
 	protected List<Class<?>> parseParameters(Scanner s, Pattern p) {
 		List<Class<?>> params = new ArrayList<Class<?>>();
 		
@@ -396,13 +397,13 @@ public abstract class TestExpert extends TestCase {
 
 	}
 	
+	
 	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
-		logger.debug("enter");
 
+		logger.debug("enter generateExpectForCollabsOfMethod");
+		
 		String result = EMPTY_STRING;
-
-		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);//methodeArgument.getAnnotation(nl.carpago.testexpert.annotation.CreateUnittest.class).in();
-		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
+		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);
 
 		Set<String> localVars = new HashSet<String>();
 		String fileName = this.getPathToBinaryFile(this.classUnderTest);
@@ -415,17 +416,14 @@ public abstract class TestExpert extends TestCase {
 		outer: for (int i = 0; i < lines.size(); i = i + 1) {
 			linesLocal = lines.get(i);
 			Matcher m = p.matcher(linesLocal);
-			logger.debug(">" + linesLocal + "<");
 			if (m.find()) {
 				inner: for (int j = i; j < lines.size(); j++) {
 					linesLocal = lines.get(j);
 					if (linesLocal.equals("    }")) {
-						logger.debug("breaking:" + linesLocal);
 						break outer;
 					}
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
-						logger.debug("found:" + linesLocal);
 						
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
@@ -542,6 +540,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 	
+	//TODO Test
 	private String generateParameter(Method method, String element, int elementIndex) {
 		String result = EMPTY_STRING;
 		if (!this.isLiteral(element)) {
@@ -554,6 +553,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
+	//TODO Test
 	private String generateReturnForMethod(Method method, String construction) {
 		String returnFromMethod = null;
 		String result = EMPTY_STRING;
@@ -603,6 +603,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
+	//TODO Test
 	private String generateExpectationForMethod(Method method, String construction) {
 		String result = EMPTY_STRING;
 		if (MockFramework.MOCKIT.equals(getMockFramework())) {
