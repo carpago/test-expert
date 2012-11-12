@@ -33,13 +33,24 @@ public class InvokeDTO {
 	private void process() {
 
 		regel = regel.replaceAll("this.", "");
+		int positionOfCollab;
 
 		for (String aCollab : collabs) {
-			int positionOfCollab = regel.indexOf(aCollab);
+			
+			//try to find a getter of the collab. 
+			// TODO This should be improved
+			positionOfCollab = regel.toLowerCase().indexOf("get"+aCollab.toLowerCase()+"()");
 
 			if (positionOfCollab > -1) {
 				regel = regel.substring(positionOfCollab);
 				break;
+			}
+			else {
+				positionOfCollab = regel.indexOf(aCollab);
+				if(positionOfCollab > -1) {
+					regel = regel.substring(positionOfCollab);
+					break;
+				}
 			}
 		}
 
