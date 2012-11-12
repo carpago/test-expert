@@ -18,16 +18,6 @@ public class OnderhoudenVliegveldService {
 		return Integer.toString(resultFromDao);
 	}
 	
-	
-	@CreateUnittest(in="three", out="vier")
-	public int getAddInt(int aNumber) {
-		int result = aNumber ++;
-		
-		System.out.println(getOnderhoudenVliegveldDao().add(45));
-		
-		return result;
-	}
-
 	protected OnderhoudenVliegveldDao getOnderhoudenVliegveldDao() {
 		return onderhoudenVliegveldDao;
 	}
