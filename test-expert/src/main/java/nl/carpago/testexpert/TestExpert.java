@@ -443,6 +443,7 @@ public abstract class TestExpert extends TestCase {
 						for (int collabLoop = 0; collabLoop < collabs.length - 1; collabLoop++) {
 							collab += collabs[collabLoop] + ".";
 						}
+					
 						collab = collab.substring(0, collab.length() - 1);
 						String invokee = collabs[collabs.length - 1];
 

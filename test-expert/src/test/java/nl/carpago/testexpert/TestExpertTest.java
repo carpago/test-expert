@@ -48,7 +48,6 @@ public class TestExpertTest extends AbstractTestExpert {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.testExpert = null;
-
 	}
 
 	@Test
