@@ -48,7 +48,6 @@ public class TestExpertTest extends AbstractTestExpert {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		this.testExpert = null;
-
 	}
 
 	@Test
@@ -97,52 +96,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	}
 
-	/*
-	 * @Test public void testGetInAnnotationsForMethod() { Method method = null;
-	 * try { method =
-	 * OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding",
-	 * Betrokkene.class, String.class); } catch (SecurityException e) {
-	 * e.printStackTrace(); fail(); } catch (NoSuchMethodException e) { fail();
-	 * e.printStackTrace(); }
-	 * 
-	 * String[] expectedIn = { "andereBetrokkene", "anderBerichtkenmerkAig" };
-	 * 
-	 * String[] actualIn = this.testExpert.getInAnnotationsForMethod(method);
-	 * 
-	 * assertEquals(Arrays.asList(actualIn), Arrays.asList(expectedIn));
-	 * 
-	 * try { method = TstClassInner.class.getMethod("test4", new Class<?>[] {
-	 * int.class }); expectedIn = new String[] { "3" }; actualIn =
-	 * this.testExpert.getInAnnotationsForMethod(method);
-	 * assertEquals(Arrays.asList(expectedIn), Arrays.asList(actualIn)); } catch
-	 * (SecurityException e) { e.printStackTrace(); fail(); } catch
-	 * (NoSuchMethodException e) { e.printStackTrace(); fail(); } }
-	 * 
-	 * 
-	 * @Test public void testGetOutAnnotationForMethod() { Method method = null;
-	 * try { method =
-	 * OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding",
-	 * Betrokkene.class, String.class); } catch (SecurityException e) { // TODO
-	 * Auto-generated catch block e.printStackTrace(); } catch
-	 * (NoSuchMethodException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); }
-	 * 
-	 * String expectedOut = "melding";
-	 * 
-	 * String actualOut = this.testExpert.getOutAnnotationForMethod(method);
-	 * 
-	 * assertEquals(expectedOut, actualOut);
-	 * 
-	 * try { method = TstClassInner.class.getMethod("test4", new Class<?>[] {
-	 * int.class }); expectedOut = "5"; actualOut =
-	 * this.testExpert.getOutAnnotationForMethod(method);
-	 * assertEquals(expectedOut, actualOut); } catch (SecurityException e) {
-	 * e.printStackTrace(); fail(); } catch (NoSuchMethodException e) {
-	 * e.printStackTrace(); fail(); } }
-	 */
 	@Test
 	public void testGenerateConstructorForClass() {
-		Class c = OnderhoudenMeldingServiceImpl.class;
+		Class<?> c = OnderhoudenMeldingServiceImpl.class;
 
 		String expected = "new OnderhoudenMeldingServiceImpl()";
 
@@ -931,18 +887,18 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("getNumber", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));") > -1);
 				method = TstClassInner.class.getMethod("getPersoon", new Class<?>[] { int.class });
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));") > -1);
 
 				method = TstClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[] { int.class, Person.class });
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") > -1);
 
 				method = TstClassInner.class.getMethod("testWithCallToSelf", new Class<?>[] { int.class });
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				// System.out.println(">"+expectAndReplays+"<");
 				// rloman: to be implemented in the next release.
 				// .Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(inner.inc(number)).andReturn(4);")
@@ -978,7 +934,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("testWithLocalVariable", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("Person localPerson = new Person(new String(), 17);") > -1);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));") > -1);
 			} catch (IOException e) {
@@ -1011,7 +967,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("testWithLocalVariableWithHelp", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") > -1);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1043,7 +999,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("getNumber", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 
 				String[] expectedLines = new String[6];
 				expectedLines[0] = "new Expectations() {";
@@ -1090,7 +1046,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("testHelperMethodForQuestionmark", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method);
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 
 				String[] expectedLines = new String[2];
 				expectedLines[0] = "int aNumber = 17;";
@@ -1129,7 +1085,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("helperVoidMethod", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method).trim();
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method).trim();
 				String expected = "persoonDao.voidmethod(number);";
 				Assert.assertEquals(expected, expectAndReplays);
 			} catch (IOException e) {
@@ -1166,7 +1122,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			method = TstClassInner.class.getMethod("addMe", new Class<?>[] { int.class });
 			String expectAndReplays;
 			try {
-				expectAndReplays = t.generateExpectAndReplayForCollaboratorsOfMethod(method).trim();
+				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method).trim();
 				String expected = "EasyMock.expect(persoonDao.inc(number)).andReturn(number);";
 				Assert.assertEquals(expected, expectAndReplays);
 			} catch (IOException e) {

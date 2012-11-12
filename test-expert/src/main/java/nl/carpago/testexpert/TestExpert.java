@@ -320,36 +320,36 @@ public abstract class TestExpert extends TestCase {
 	 * call naar interface (dao)
 	 */
 	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-	protected String generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
-		logger.debug("enter");
-
-		String result = EMPTY_STRING;
-
-		String[] inputParametersViaAnnotations = methodeArgument.getAnnotation(nl.carpago.testexpert.annotation.CreateUnittest.class).in();
-		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
-
-		Set<String> localVars = new HashSet<String>();
-
-		// creer String path to .class file
-		String fileName = this.getBinaryFolder() + "/" + this.classUnderTest.getName().replaceAll("\\.", "/");
-
+	
+	//TODO Test
+	protected String getPathToBinaryFile(Class<?> clazz) {
+		return this.getBinaryFolder() + "/" + clazz.getName().replaceAll("\\.", "/");
+	}
+	
+	
+	//TODO test
+	protected List<String> getLinesFromFile(String pathToBinaryFile) throws IOException {
 		// via jad
-		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
+				ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
 
-		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
-		Process process = builder.start();
+				Process process = builder.start();
 
-		InputStream stream = process.getInputStream();
-		InputStreamReader reader = new InputStreamReader(stream);
-		BufferedReader bufferReader = new BufferedReader(reader);
-		LinkedList<String> lines = new LinkedList<String>();
+				InputStream stream = process.getInputStream();
+				InputStreamReader reader = new InputStreamReader(stream);
+				BufferedReader bufferReader = new BufferedReader(reader);
+				LinkedList<String> lines = new LinkedList<String>();
 
-		String line = null;
-		while ((line = bufferReader.readLine()) != null) {
-			lines.add(line);
-		}
-
-		// create here the String from the method
+				String line = null;
+				while ((line = bufferReader.readLine()) != null) {
+					lines.add(line);
+				}
+				
+				return lines;
+	}
+	
+	// TODO Test
+	protected Pattern getRegularExpressionForMethod(Method methodeArgument) {
+		// create here the Regular expression for and from the method
 		String accessMod = Modifier.toString(methodeArgument.getModifiers());
 		String returnClass = methodeArgument.getReturnType().getSimpleName();
 		String methodeLocalName = methodeArgument.getName();
@@ -364,91 +364,93 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		regexp += "\\)";
+		
+		Pattern pattern = Pattern.compile(regexp);
+		
+		return pattern;
+	}
+	
+	//TODO Test
+	protected List<Class<?>> parseParameters(Scanner s, Pattern p) {
+		List<Class<?>> params = new ArrayList<Class<?>>();
+		
+		while (s.hasNext()) {
+			String param = s.next().trim();
+			logger.debug(param);
+			Class<?> parameter = null;
+			if (!StringUtils.isEmpty(param)) {
+				try {
+					parameter = Class.forName(param);
+				} catch (ClassNotFoundException e) {
+					logger.info("Class not found for " + param);
+					if ((this.isPrimitive(param))) {
+						parameter = this.getPrimitiveType(param);
+					} else {
+						assert false; // should never happen.
+					}
+				}
+				params.add(parameter);
+			}
+		}
+		
+		return params;
 
-		Pattern p = Pattern.compile(regexp);
-		// get a matcher object
-		// int delta = 1;
+	}
+	
+	
+	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
+
+		logger.debug("enter generateExpectForCollabsOfMethod");
+		
+		String result = EMPTY_STRING;
+		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);
+
+		Set<String> localVars = new HashSet<String>();
+		String fileName = this.getPathToBinaryFile(this.classUnderTest);
+		List<String> lines = this.getLinesFromFile(fileName);
+		Pattern p = this.getRegularExpressionForMethod(methodeArgument);
+
 		String linesLocal = null;
 		Set<String> mocked = new HashSet<String>();
 		List<Integer> gemockteRegelsUitSource = new ArrayList<Integer>();
 		outer: for (int i = 0; i < lines.size(); i = i + 1) {
 			linesLocal = lines.get(i);
 			Matcher m = p.matcher(linesLocal);
-			logger.debug(">" + linesLocal + "<");
 			if (m.find()) {
 				inner: for (int j = i; j < lines.size(); j++) {
 					linesLocal = lines.get(j);
 					if (linesLocal.equals("    }")) {
-						logger.debug("breaking:" + linesLocal);
 						break outer;
 					}
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
-						logger.debug("found:" + linesLocal);
-						Pattern patterntje = Pattern.compile("\\(|,|\\)>");
-						Scanner s = new Scanner(linesLocal).useDelimiter(patterntje);
-						String prelude = s.next();
+						
+						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
+						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
 						String collabAndInvokee = null;
-						Scanner collabScanner = new Scanner(prelude).useDelimiter(" ");
+						Scanner collabScanner = new Scanner(s.next()).useDelimiter(" ");
 						while (collabScanner.hasNext()) {
 							collabAndInvokee = collabScanner.next();
 						}
-						logger.debug(collabAndInvokee);
 
+						List<Class<?>> params = this.parseParameters(s,  patternForSeparatingParameters);
+						
 						String[] collabs = collabAndInvokee.split("\\.");
 						String collab = EMPTY_STRING;
 
 						for (int collabLoop = 0; collabLoop < collabs.length - 1; collabLoop++) {
 							collab += collabs[collabLoop] + ".";
 						}
+					
 						collab = collab.substring(0, collab.length() - 1);
 						String invokee = collabs[collabs.length - 1];
 
-						logger.debug("collab=" + collab);
-						logger.debug("invokee=" + invokee);
-
-						List<Class<?>> params = new ArrayList<Class<?>>();
-						while (s.hasNext()) {
-							String param = s.next().trim();
-							logger.debug(param);
-							Class<?> parameter = null;
-							if (!StringUtils.isEmpty(param)) {
-								try {
-									parameter = Class.forName(param);
-								} catch (ClassNotFoundException e) {
-									logger.info("Class not found for " + param);
-									if ((this.isPrimitive(param))) {
-										parameter = this.getPrimitiveType(param);
-									} else {
-										assert false; // should never happen.
-									}
-								}
-								params.add(parameter);
-							}
-						}
-
 						Class<?>[] parametersVoorInvokee = new Class<?>[params.size()];
 						parametersVoorInvokee = (Class[]) params.toArray(parametersVoorInvokee);
-						// System.out.println("collab:" + collab);
-						// System.out.println("invokee:" + invokee);
-						// System.out.println("parameters:" + params);
-						// now I can get the signature of the to be colled
-						// method of the collab
-						// and know the EXACT returntype ... Not just List but
-						// also List <Melding> that's
-						// why I needed this verbose code.
+						
 						Method method = null;
 						try {
-							// rloman: hier collab nog automatisch verlengen
-							// door gebruik te maken
-							// van jad met zijn FQCN - mogelijkheid zodat
-							// MeldingDAO wordt:
-							// nl.belastingdienst.aig.dao.MeldingDao
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
-							// method = Class.forName(collab).getmet
-							if (collab.equals(this.classUnderTest.getName())) {
-								continue inner;
-							}
 						} catch (SecurityException e) {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
@@ -458,22 +460,19 @@ public abstract class TestExpert extends TestCase {
 							logger.error(e);
 							assert false;
 						}
-						logger.debug("methode to collab is:" + method);
-						logger.debug("methods return type:" + method.getReturnType());
-						logger.debug("methods generic return type:" + method.getGenericReturnType());
-						// tjakkaa: hier heb ik dus het generieke type.
+						
+						if (collab.equals(this.classUnderTest.getName())) {
+							continue inner;
+						}
 
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
-
 							if (regelHoger.indexOf(invokee) > -1) {
-
 								if (gemockteRegelsUitSource.contains(k)) {
 									continue inner; // already done ...
 								} else {
 									gemockteRegelsUitSource.add(k);
 								}
-
 								InvokeDTO invokeDTO = null;
 								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
@@ -484,40 +483,18 @@ public abstract class TestExpert extends TestCase {
 								String construction = invokeDTO.getCollabMethodParams();
 								mocked.add(construction);
 
-								// maak nu een lijst van beiden.
+								// create a list of them both.
 								List<String> testMethodeZijnParams = new ArrayList<String>(Arrays.asList(this.getParameterNamesForMethod(methodeArgument)));
 								List<String> collabZijnParams = invokeDTO.getParams();
 
 								String[] in = this.getInAnnotationsForMethod(method);
-								String out = this.getOutAnnotationForMethod(method);
-
 								// En neem de wiskundige A-B
-								logger.debug(method);
-								logger.debug("returns:" + out);
-
 								for (int n = 0; n < collabZijnParams.size(); n++) {
 									String element = collabZijnParams.get(n);
 									if (!testMethodeZijnParams.contains(element) && !(isLiteral(element)) && !(localVars.contains(element))) {
 										localVars.add(element);
-
-										// hier de code uit service halen.
-										// hier probeer ik of ik een annotatie
-										// uit de dao kan halen van het
-										// betreffende element.
-										// Zo niet dan onderstaande code. (via
-										// constructor dus)
-
-										/*
-										 * deze code hieronder haalt de
-										 * annotatie op van de collab en kijkt
-										 * of hij daar wat mee kan als de
-										 * variable niet via de te testen
-										 * methode binnen komt. Refactoring is
-										 * gewenst .... :-))
-										 */
 										if (in != null && in.length != 0) {
 											String annotatieElement = in[n];
-											// element = annotatieElement;
 											if (!(QUESTION_MARK.equals(annotatieElement) || ASTERISK.equals(annotatieElement))) {
 												if (!this.isLiteral(annotatieElement)) {
 													addFixture(annotatieElement);
@@ -525,20 +502,9 @@ public abstract class TestExpert extends TestCase {
 												construction = construction.replaceAll(element, annotatieElement);
 
 											} else {
-												if (!this.isLiteral(element)) {
-													Class<?> parameterType = method.getParameterTypes()[n];
-													result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
-													result += addCode(generateConstructorForClass(parameterType));
-													result += addCodeLn(";");
-												}
-
+												result += generateParameter(method, element, n);
 											}
-											// klaar want dan komt hij gewoon
-											// uit de appcontext....
 										} else {
-											// dan moet er maar gewoon via de
-											// constructor een lokaal object
-											// worden gemaakt.
 											try {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
@@ -546,96 +512,121 @@ public abstract class TestExpert extends TestCase {
 													result += addCode(generateConstructorForClass(parameterType));
 													result += addCodeLn(";");
 												}
-
 											} catch (IndexOutOfBoundsException iobe) {
 												logger.error("INdexOutOfBoundException for method:" + method.getName() + ", index:" + n);
 											}
-
 										}
 									} else {
 										try {
 											if (!this.isLiteral(collabZijnParams.get(n))) {
 												construction = construction.replaceAll(element, inputParametersViaAnnotations[n]);
 											}
-
 										} catch (IndexOutOfBoundsException iobe) {
 											logger.error("IndexOutOfBoundsException in replacing elemnt with annotation.");
 										}
 									}
 								}
-
-								String returnFromMethod = null;
-								if ("void".equals(method.getReturnType().toString())) {
-									result += addCodeLn("\t\t" + construction + ";");
-								} else {
-									if (out != null) {
-										returnFromMethod = out;
-									} else {
-										returnFromMethod = generateConstructorForClass(method.getReturnType());
-									}
-
-									if (MockFramework.MOCKIT.equals(getMockFramework())) {
-										this.checkAndAddImport(mockit.Mocked.class);
-										this.checkAndAddImport(mockit.Expectations.class);
-										result += addCodeLn("\t\tnew Expectations() {");
-										result += addCodeLn("\t\t\t{");
-										result += addCodeLn("\t\t\t\t" + construction + ";");
-										result += addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
-										result += addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
-										this.checkAndAddImport(method.getReturnType().getClass());
-										result += addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
-										result += addCode(" validate(");
-										result += addCode(this.getParameterTypesAndNameAsString(method));
-										result += addCodeLn("){");
-
-									} else {
-										if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-											this.checkAndAddImport(org.easymock.EasyMock.class);
-											result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
-										}
-									}
-									if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-										assert returnFromMethod != null;
-										String cloneString = EMPTY_STRING;
-										if (!this.isLiteral(returnFromMethod)) {
-											if (this.isPrimitive(method.getReturnType().toString())) {
-												cloneString += returnFromMethod;
-											} else {
-												cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
-											}
-										} else {
-											cloneString = returnFromMethod;
-										}
-
-										result += addCode(cloneString);
-
-										result += addCodeLn(");");
-
-									} else {
-										if (MockFramework.MOCKIT.equals(getMockFramework())) {
-											// return the value.
-											result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
-
-											result += addCodeLn("\t\t\t\t\t}");
-											result += addCodeLn("\t\t\t\t};");
-											result += addCodeLn("\t\t\t}");
-											result += addCodeLn("\t\t};");
-										}
-									}
-								}
-
+								result += this.generateReturnForMethod(method, construction);
+								
 								continue inner;
-
 							}
 						}
 					}
-
 				}
 			}
-
 		}
 		logger.debug("leave");
 
+		return result;
+	}
+	
+	//TODO Test
+	private String generateParameter(Method method, String element, int elementIndex) {
+		String result = EMPTY_STRING;
+		if (!this.isLiteral(element)) {
+			Class<?> parameterType = method.getParameterTypes()[elementIndex];
+			result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
+			result += addCode(generateConstructorForClass(parameterType));
+			result += addCodeLn(";");
+		}
+		
+		return result;
+	}
+
+	//TODO Test
+	private String generateReturnForMethod(Method method, String construction) {
+		String returnFromMethod = null;
+		String result = EMPTY_STRING;
+		String out = this.getOutAnnotationForMethod(method);
+
+		if ("void".equals(method.getReturnType().toString())) {
+			result += addCodeLn("\t\t" + construction + ";");
+		} else {
+			if (out != null) {
+				returnFromMethod = out;
+			} else {
+				returnFromMethod = generateConstructorForClass(method.getReturnType());
+			}
+
+			result += this.generateExpectationForMethod(method, construction);
+			
+			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
+				assert returnFromMethod != null;
+				String cloneString = EMPTY_STRING;
+				if (!this.isLiteral(returnFromMethod)) {
+					if (this.isPrimitive(method.getReturnType().toString())) {
+						cloneString += returnFromMethod;
+					} else {
+						cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
+					}
+				} else {
+					cloneString = returnFromMethod;
+				}
+
+				result += addCode(cloneString);
+
+				result += addCodeLn(");");
+
+			} else {
+				if (MockFramework.MOCKIT.equals(getMockFramework())) {
+					// return the value.
+					result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
+
+					result += addCodeLn("\t\t\t\t\t}");
+					result += addCodeLn("\t\t\t\t};");
+					result += addCodeLn("\t\t\t}");
+					result += addCodeLn("\t\t};");
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	//TODO Test
+	private String generateExpectationForMethod(Method method, String construction) {
+		String result = EMPTY_STRING;
+		if (MockFramework.MOCKIT.equals(getMockFramework())) {
+			this.checkAndAddImport(mockit.Mocked.class);
+			this.checkAndAddImport(mockit.Expectations.class);
+			result += addCodeLn("\t\tnew Expectations() {");
+			result += addCodeLn("\t\t\t{");
+			result += addCodeLn("\t\t\t\t" + construction + ";");
+			result += addCodeLn("\t\t\t\tforEachInvocation = new Object() {");
+			result += addCodeLn("\t\t\t\t\t@SuppressWarnings(\"unused\")");
+			this.checkAndAddImport(method.getReturnType().getClass());
+			result += addCode("\t\t\t\t\t" + method.getReturnType().getSimpleName());
+			result += addCode(" validate(");
+			result += addCode(this.getParameterTypesAndNameAsString(method));
+			result += addCodeLn("){");
+
+		} else {
+			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
+				this.checkAndAddImport(org.easymock.EasyMock.class);
+				result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
+			}
+		}
+		
 		return result;
 	}
 
@@ -970,7 +961,7 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			try {
-				generateExpectAndReplayForCollaboratorsOfMethod(methode);
+				generateExpectForCollaboratorsOfMethod(methode);
 			} catch (IOException e) {
 				logger.error(e);
 			}
