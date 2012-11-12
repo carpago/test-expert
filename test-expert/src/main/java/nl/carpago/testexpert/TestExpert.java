@@ -320,36 +320,36 @@ public abstract class TestExpert extends TestCase {
 	 * call naar interface (dao)
 	 */
 	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-	protected String generateExpectAndReplayForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
-		logger.debug("enter");
-
-		String result = EMPTY_STRING;
-
-		String[] inputParametersViaAnnotations = methodeArgument.getAnnotation(nl.carpago.testexpert.annotation.CreateUnittest.class).in();
-		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
-
-		Set<String> localVars = new HashSet<String>();
-
-		// creer String path to .class file
-		String fileName = this.getBinaryFolder() + "/" + this.classUnderTest.getName().replaceAll("\\.", "/");
-
+	
+	//TODO Test
+	protected String getPathToBinaryFile(Class<?> clazz) {
+		return this.getBinaryFolder() + "/" + clazz.getName().replaceAll("\\.", "/");
+	}
+	
+	
+	//TODO test
+	protected List<String> getLinesFromFile(String pathToBinaryFile) throws IOException {
 		// via jad
-		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", fileName);
+				ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
 
-		// "bin/nl/belastingdienst/aig/melding/OnderhoudenMeldingServiceImpl");
-		Process process = builder.start();
+				Process process = builder.start();
 
-		InputStream stream = process.getInputStream();
-		InputStreamReader reader = new InputStreamReader(stream);
-		BufferedReader bufferReader = new BufferedReader(reader);
-		LinkedList<String> lines = new LinkedList<String>();
+				InputStream stream = process.getInputStream();
+				InputStreamReader reader = new InputStreamReader(stream);
+				BufferedReader bufferReader = new BufferedReader(reader);
+				LinkedList<String> lines = new LinkedList<String>();
 
-		String line = null;
-		while ((line = bufferReader.readLine()) != null) {
-			lines.add(line);
-		}
-
-		// create here the String from the method
+				String line = null;
+				while ((line = bufferReader.readLine()) != null) {
+					lines.add(line);
+				}
+				
+				return lines;
+	}
+	
+	// TODO Test
+	protected Pattern getRegularExpressionForMethod(Method methodeArgument) {
+		// create here the Regular expression for and from the method
 		String accessMod = Modifier.toString(methodeArgument.getModifiers());
 		String returnClass = methodeArgument.getReturnType().getSimpleName();
 		String methodeLocalName = methodeArgument.getName();
@@ -364,8 +364,26 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		regexp += "\\)";
+		
+		Pattern pattern = Pattern.compile(regexp);
+		
+		return pattern;
+	}
+	
+	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
+		logger.debug("enter");
 
-		Pattern p = Pattern.compile(regexp);
+		String result = EMPTY_STRING;
+
+		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);//methodeArgument.getAnnotation(nl.carpago.testexpert.annotation.CreateUnittest.class).in();
+		logger.info("methode " + methodeArgument + " is annotated with in:" + Arrays.asList(inputParametersViaAnnotations));
+
+		Set<String> localVars = new HashSet<String>();
+		String fileName = this.getPathToBinaryFile(this.classUnderTest);
+		List<String> lines = this.getLinesFromFile(fileName);
+		Pattern p = this.getRegularExpressionForMethod(methodeArgument);
+		
+		
 		// get a matcher object
 		// int delta = 1;
 		String linesLocal = null;
@@ -970,7 +988,7 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			try {
-				generateExpectAndReplayForCollaboratorsOfMethod(methode);
+				generateExpectForCollaboratorsOfMethod(methode);
 			} catch (IOException e) {
 				logger.error(e);
 			}
