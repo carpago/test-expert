@@ -370,6 +370,32 @@ public abstract class TestExpert extends TestCase {
 		return pattern;
 	}
 	
+	protected List<Class<?>> parseParameters(Scanner s, Pattern p) {
+		List<Class<?>> params = new ArrayList<Class<?>>();
+		
+		while (s.hasNext()) {
+			String param = s.next().trim();
+			logger.debug(param);
+			Class<?> parameter = null;
+			if (!StringUtils.isEmpty(param)) {
+				try {
+					parameter = Class.forName(param);
+				} catch (ClassNotFoundException e) {
+					logger.info("Class not found for " + param);
+					if ((this.isPrimitive(param))) {
+						parameter = this.getPrimitiveType(param);
+					} else {
+						assert false; // should never happen.
+					}
+				}
+				params.add(parameter);
+			}
+		}
+		
+		return params;
+
+	}
+	
 	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 		logger.debug("enter");
 
@@ -403,16 +429,20 @@ public abstract class TestExpert extends TestCase {
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
 						logger.debug("found:" + linesLocal);
+						
+						//==> method
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
-						String prelude = s.next();
 						String collabAndInvokee = null;
-						Scanner collabScanner = new Scanner(prelude).useDelimiter(" ");
+						Scanner collabScanner = new Scanner(s.next()).useDelimiter(" ");
 						while (collabScanner.hasNext()) {
 							collabAndInvokee = collabScanner.next();
 						}
 						logger.debug(collabAndInvokee);
 
+						List<Class<?>> params = this.parseParameters(s,  patternForSeparatingParameters);
+						
+						
 						String[] collabs = collabAndInvokee.split("\\.");
 						String collab = EMPTY_STRING;
 
@@ -425,28 +455,13 @@ public abstract class TestExpert extends TestCase {
 						logger.debug("collab=" + collab);
 						logger.debug("invokee=" + invokee);
 
-						List<Class<?>> params = new ArrayList<Class<?>>();
-						while (s.hasNext()) {
-							String param = s.next().trim();
-							logger.debug(param);
-							Class<?> parameter = null;
-							if (!StringUtils.isEmpty(param)) {
-								try {
-									parameter = Class.forName(param);
-								} catch (ClassNotFoundException e) {
-									logger.info("Class not found for " + param);
-									if ((this.isPrimitive(param))) {
-										parameter = this.getPrimitiveType(param);
-									} else {
-										assert false; // should never happen.
-									}
-								}
-								params.add(parameter);
-							}
-						}
-
+						
 						Class<?>[] parametersVoorInvokee = new Class<?>[params.size()];
 						parametersVoorInvokee = (Class[]) params.toArray(parametersVoorInvokee);
+						
+					
+						
+						
 						// System.out.println("collab:" + collab);
 						// System.out.println("invokee:" + invokee);
 						// System.out.println("parameters:" + params);
@@ -467,6 +482,14 @@ public abstract class TestExpert extends TestCase {
 							if (collab.equals(this.classUnderTest.getName())) {
 								continue inner;
 							}
+							
+							
+							logger.debug("methode to collab is:" + method);
+							logger.debug("methods return type:" + method.getReturnType());
+							logger.debug("methods generic return type:" + method.getGenericReturnType());
+							// tjakkaa: hier heb ik dus het generieke type.
+						
+							
 						} catch (SecurityException e) {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
@@ -476,10 +499,9 @@ public abstract class TestExpert extends TestCase {
 							logger.error(e);
 							assert false;
 						}
-						logger.debug("methode to collab is:" + method);
-						logger.debug("methods return type:" + method.getReturnType());
-						logger.debug("methods generic return type:" + method.getGenericReturnType());
-						// tjakkaa: hier heb ik dus het generieke type.
+
+						
+						// == eind method
 
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
