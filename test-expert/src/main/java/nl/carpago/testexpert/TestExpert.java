@@ -504,15 +504,9 @@ public abstract class TestExpert extends TestCase {
 												construction = construction.replaceAll(element, annotatieElement);
 
 											} else {
-												
 												result += generateParameter(method, element, n);
 											}
-											// klaar want dan komt hij gewoon
-											// uit de appcontext....
 										} else {
-											// dan moet er maar gewoon via de
-											// constructor een lokaal object
-											// worden gemaakt.
 											try {
 												if (!this.isLiteral(element)) {
 													Class<?> parameterType = method.getParameterTypes()[n];
@@ -548,10 +542,10 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 	
-	private String generateParameter(Method method, String element, int n) {
+	private String generateParameter(Method method, String element, int elementIndex) {
 		String result = EMPTY_STRING;
 		if (!this.isLiteral(element)) {
-			Class<?> parameterType = method.getParameterTypes()[n];
+			Class<?> parameterType = method.getParameterTypes()[elementIndex];
 			result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
 			result += addCode(generateConstructorForClass(parameterType));
 			result += addCodeLn(";");
