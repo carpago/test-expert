@@ -36,6 +36,9 @@ public class InvokeDTO {
 		int positionOfCollab;
 
 		for (String aCollab : collabs) {
+			
+			//try to find a getter of the collab. 
+			// TODO This should be improved
 			positionOfCollab = regel.toLowerCase().indexOf("get"+aCollab.toLowerCase()+"()");
 
 			if (positionOfCollab > -1) {

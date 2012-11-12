@@ -22,7 +22,7 @@ public class TestExpertImplForUnittestingPurposes extends TestExpert {
 
 	@Override
 	public String getBinaryFolder() {
-		return "bin";
+		return "../build";
 	}
 
 	@Override
@@ -38,6 +38,12 @@ public class TestExpertImplForUnittestingPurposes extends TestExpert {
 
 	@Override
 	public MockFramework getMockFramework() {
-		return this.mockFramework;
+		if(this.mockFramework != null) {
+			return this.mockFramework;
+		}
+		else {
+			return MockFramework.EASYMOCK; // for convenience while running this test in file generating mode ...
+		}
+		
 	}
 }
