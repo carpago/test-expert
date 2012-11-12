@@ -453,9 +453,6 @@ public abstract class TestExpert extends TestCase {
 						Method method = null;
 						try {
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
-							if (collab.equals(this.classUnderTest.getName())) {
-								continue inner;
-							}
 						} catch (SecurityException e) {
 							logger.error(e);
 						} catch (NoSuchMethodException e) {
@@ -464,6 +461,10 @@ public abstract class TestExpert extends TestCase {
 						} catch (ClassNotFoundException e) {
 							logger.error(e);
 							assert false;
+						}
+						
+						if (collab.equals(this.classUnderTest.getName())) {
+							continue inner;
 						}
 
 						for (int k = j - 1; k > i; k--) {
@@ -489,8 +490,6 @@ public abstract class TestExpert extends TestCase {
 								List<String> collabZijnParams = invokeDTO.getParams();
 
 								String[] in = this.getInAnnotationsForMethod(method);
-								String out = this.getOutAnnotationForMethod(method);
-
 								// En neem de wiskundige A-B
 								for (int n = 0; n < collabZijnParams.size(); n++) {
 									String element = collabZijnParams.get(n);
@@ -505,13 +504,8 @@ public abstract class TestExpert extends TestCase {
 												construction = construction.replaceAll(element, annotatieElement);
 
 											} else {
-												if (!this.isLiteral(element)) {
-													Class<?> parameterType = method.getParameterTypes()[n];
-													result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
-													result += addCode(generateConstructorForClass(parameterType));
-													result += addCodeLn(";");
-												}
-
+												
+												result += generateParameter(method, element, n);
 											}
 											// klaar want dan komt hij gewoon
 											// uit de appcontext....
@@ -540,47 +534,8 @@ public abstract class TestExpert extends TestCase {
 										}
 									}
 								}
-								String returnFromMethod = null;
-								if ("void".equals(method.getReturnType().toString())) {
-									result += addCodeLn("\t\t" + construction + ";");
-								} else {
-									if (out != null) {
-										returnFromMethod = out;
-									} else {
-										returnFromMethod = generateConstructorForClass(method.getReturnType());
-									}
-
-									result += this.generateExpectationForMethod(method, construction);
-									
-									if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-										assert returnFromMethod != null;
-										String cloneString = EMPTY_STRING;
-										if (!this.isLiteral(returnFromMethod)) {
-											if (this.isPrimitive(method.getReturnType().toString())) {
-												cloneString += returnFromMethod;
-											} else {
-												cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
-											}
-										} else {
-											cloneString = returnFromMethod;
-										}
-
-										result += addCode(cloneString);
-
-										result += addCodeLn(");");
-
-									} else {
-										if (MockFramework.MOCKIT.equals(getMockFramework())) {
-											// return the value.
-											result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
-
-											result += addCodeLn("\t\t\t\t\t}");
-											result += addCodeLn("\t\t\t\t};");
-											result += addCodeLn("\t\t\t}");
-											result += addCodeLn("\t\t};");
-										}
-									}
-								}
+								result += this.generateReturnForMethod(method, construction);
+								
 								continue inner;
 							}
 						}
@@ -590,6 +545,67 @@ public abstract class TestExpert extends TestCase {
 		}
 		logger.debug("leave");
 
+		return result;
+	}
+	
+	private String generateParameter(Method method, String element, int n) {
+		String result = EMPTY_STRING;
+		if (!this.isLiteral(element)) {
+			Class<?> parameterType = method.getParameterTypes()[n];
+			result += addCode("\t\t" + parameterType.getSimpleName() + " " + element + " = ");
+			result += addCode(generateConstructorForClass(parameterType));
+			result += addCodeLn(";");
+		}
+		
+		return result;
+	}
+
+	private String generateReturnForMethod(Method method, String construction) {
+		String returnFromMethod = null;
+		String result = EMPTY_STRING;
+		String out = this.getOutAnnotationForMethod(method);
+
+		if ("void".equals(method.getReturnType().toString())) {
+			result += addCodeLn("\t\t" + construction + ";");
+		} else {
+			if (out != null) {
+				returnFromMethod = out;
+			} else {
+				returnFromMethod = generateConstructorForClass(method.getReturnType());
+			}
+
+			result += this.generateExpectationForMethod(method, construction);
+			
+			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
+				assert returnFromMethod != null;
+				String cloneString = EMPTY_STRING;
+				if (!this.isLiteral(returnFromMethod)) {
+					if (this.isPrimitive(method.getReturnType().toString())) {
+						cloneString += returnFromMethod;
+					} else {
+						cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
+					}
+				} else {
+					cloneString = returnFromMethod;
+				}
+
+				result += addCode(cloneString);
+
+				result += addCodeLn(");");
+
+			} else {
+				if (MockFramework.MOCKIT.equals(getMockFramework())) {
+					// return the value.
+					result += addCodeLn("\t\t\t\t\t\treturn " + returnFromMethod + ";");
+
+					result += addCodeLn("\t\t\t\t\t}");
+					result += addCodeLn("\t\t\t\t};");
+					result += addCodeLn("\t\t\t}");
+					result += addCodeLn("\t\t};");
+				}
+			}
+		}
+		
 		return result;
 	}
 

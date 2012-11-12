@@ -96,52 +96,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	}
 
-	/*
-	 * @Test public void testGetInAnnotationsForMethod() { Method method = null;
-	 * try { method =
-	 * OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding",
-	 * Betrokkene.class, String.class); } catch (SecurityException e) {
-	 * e.printStackTrace(); fail(); } catch (NoSuchMethodException e) { fail();
-	 * e.printStackTrace(); }
-	 * 
-	 * String[] expectedIn = { "andereBetrokkene", "anderBerichtkenmerkAig" };
-	 * 
-	 * String[] actualIn = this.testExpert.getInAnnotationsForMethod(method);
-	 * 
-	 * assertEquals(Arrays.asList(actualIn), Arrays.asList(expectedIn));
-	 * 
-	 * try { method = TstClassInner.class.getMethod("test4", new Class<?>[] {
-	 * int.class }); expectedIn = new String[] { "3" }; actualIn =
-	 * this.testExpert.getInAnnotationsForMethod(method);
-	 * assertEquals(Arrays.asList(expectedIn), Arrays.asList(actualIn)); } catch
-	 * (SecurityException e) { e.printStackTrace(); fail(); } catch
-	 * (NoSuchMethodException e) { e.printStackTrace(); fail(); } }
-	 * 
-	 * 
-	 * @Test public void testGetOutAnnotationForMethod() { Method method = null;
-	 * try { method =
-	 * OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding",
-	 * Betrokkene.class, String.class); } catch (SecurityException e) { // TODO
-	 * Auto-generated catch block e.printStackTrace(); } catch
-	 * (NoSuchMethodException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); }
-	 * 
-	 * String expectedOut = "melding";
-	 * 
-	 * String actualOut = this.testExpert.getOutAnnotationForMethod(method);
-	 * 
-	 * assertEquals(expectedOut, actualOut);
-	 * 
-	 * try { method = TstClassInner.class.getMethod("test4", new Class<?>[] {
-	 * int.class }); expectedOut = "5"; actualOut =
-	 * this.testExpert.getOutAnnotationForMethod(method);
-	 * assertEquals(expectedOut, actualOut); } catch (SecurityException e) {
-	 * e.printStackTrace(); fail(); } catch (NoSuchMethodException e) {
-	 * e.printStackTrace(); fail(); } }
-	 */
 	@Test
 	public void testGenerateConstructorForClass() {
-		Class c = OnderhoudenMeldingServiceImpl.class;
+		Class<?> c = OnderhoudenMeldingServiceImpl.class;
 
 		String expected = "new OnderhoudenMeldingServiceImpl()";
 
