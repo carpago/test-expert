@@ -29,7 +29,7 @@ public class InvokeDTOTest extends TestCase {
 	}
 	
 	@Test
-	public void testConstructorAndProcess() {
+	public void testProcess() {
 		
 		String line = null;
 		
@@ -80,6 +80,33 @@ public class InvokeDTOTest extends TestCase {
 		expectedParams = new ArrayList<String>();
 		expectedParams.add("aNumber");
 		expectedParams.add("new String()");
+		expectedMethod = "add";
+		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
+		
+		line = "System.out.println(onderhoudenVliegveldDao.add(3));";
+		expectedCollab = "onderhoudenVliegveldDao";
+		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(3)";
+		expectedConstruction = "onderhoudenVliegveldDao.add(3)";
+		expectedParams = new ArrayList<String>();
+		expectedParams.add("3");
+		expectedMethod = "add";
+		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
+		
+		line = "if(onderhoudenVliegveldDao.add(44) > 3) {";
+		expectedCollab = "onderhoudenVliegveldDao";
+		expectedCollabMethodParams = "onderhoudenVliegveldDao.add(44)";
+		expectedConstruction = "onderhoudenVliegveldDao.add(44)";
+		expectedParams = new ArrayList<String>();
+		expectedParams.add("44");
+		expectedMethod = "add";
+		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
+		
+		line = "System.out.println(getOnderhoudenVliegveldDao().add(45));";
+		expectedCollab = "getOnderhoudenVliegveldDao()";
+		expectedCollabMethodParams = "getOnderhoudenVliegveldDao().add(45)";
+		expectedConstruction = "getOnderhoudenVliegveldDao().add(45)";
+		expectedParams = new ArrayList<String>();
+		expectedParams.add("45");
 		expectedMethod = "add";
 		validate(line, expectedCollab, expectedCollabMethodParams, expectedConstruction, expectedParams, expectedMethod);
 		

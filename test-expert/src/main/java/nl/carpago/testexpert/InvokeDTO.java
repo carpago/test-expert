@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 
 public class InvokeDTO {
@@ -33,13 +35,21 @@ public class InvokeDTO {
 	private void process() {
 
 		regel = regel.replaceAll("this.", "");
+		int positionOfCollab;
 
 		for (String aCollab : collabs) {
-			int positionOfCollab = regel.indexOf(aCollab);
+			positionOfCollab = regel.toLowerCase().indexOf("get"+aCollab.toLowerCase()+"()");
 
 			if (positionOfCollab > -1) {
 				regel = regel.substring(positionOfCollab);
 				break;
+			}
+			else {
+				positionOfCollab = regel.indexOf(aCollab);
+				if(positionOfCollab > -1) {
+					regel = regel.substring(positionOfCollab);
+					break;
+				}
 			}
 		}
 

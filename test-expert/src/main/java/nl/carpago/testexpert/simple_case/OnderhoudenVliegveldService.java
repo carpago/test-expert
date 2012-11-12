@@ -5,7 +5,7 @@ import nl.carpago.testexpert.annotation.CreateUnittest;
 
 public class OnderhoudenVliegveldService {
 	
-	private OnderhoudenVliegveldDao onderhoudenVliegVelddao;
+	private OnderhoudenVliegveldDao onderhoudenVliegveldDao;
 
 	public OnderhoudenVliegveldService() {
 		// TODO Auto-generated constructor stub
@@ -13,7 +13,7 @@ public class OnderhoudenVliegveldService {
 	
 	@CreateUnittest(in="number", out="vier")
 	public String getStringForNumber(int eenGetal){
-		int resultFromDao = onderhoudenVliegVelddao.add(eenGetal);
+		int resultFromDao = onderhoudenVliegveldDao.add(eenGetal);
 		
 		return Integer.toString(resultFromDao);
 	}
@@ -23,7 +23,17 @@ public class OnderhoudenVliegveldService {
 	public int getAddInt(int aNumber) {
 		int result = aNumber ++;
 		
+		System.out.println(getOnderhoudenVliegveldDao().add(45));
+		
 		return result;
 	}
+
+	protected OnderhoudenVliegveldDao getOnderhoudenVliegveldDao() {
+		return onderhoudenVliegveldDao;
+	}
+	
+	
+	
+	
 }
  
