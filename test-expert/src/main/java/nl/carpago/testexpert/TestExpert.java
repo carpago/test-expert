@@ -403,8 +403,8 @@ public abstract class TestExpert extends TestCase {
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
 						logger.debug("found:" + linesLocal);
-						Pattern patterntje = Pattern.compile("\\(|,|\\)>");
-						Scanner s = new Scanner(linesLocal).useDelimiter(patterntje);
+						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
+						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
 						String prelude = s.next();
 						String collabAndInvokee = null;
 						Scanner collabScanner = new Scanner(prelude).useDelimiter(" ");
