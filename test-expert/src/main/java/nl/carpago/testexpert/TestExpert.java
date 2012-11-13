@@ -853,9 +853,7 @@ public abstract class TestExpert extends TestCase {
 				Class<?> genericArgument = (Class<?>) t;
 				result += addCode(genericArgument.getSimpleName());
 				this.checkAndAddImport(genericArgument);
-			} else {
-				// ja wat eigenlijk ? :-))
-			}
+			} 
 		}
 		result += addCode(">");
 
