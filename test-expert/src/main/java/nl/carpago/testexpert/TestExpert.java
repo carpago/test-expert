@@ -12,6 +12,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -320,33 +321,32 @@ public abstract class TestExpert extends TestCase {
 	 * call naar interface (dao)
 	 */
 	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-	
-	//TODO Test
+
+	// TODO Test
 	protected String getPathToBinaryFile(Class<?> clazz) {
 		return this.getBinaryFolder() + "/" + clazz.getName().replaceAll("\\.", "/");
 	}
-	
-	
-	//TODO test
+
+	// TODO test
 	protected List<String> getLinesFromFile(String pathToBinaryFile) throws IOException {
 		// via jad
-				ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
+		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
 
-				Process process = builder.start();
+		Process process = builder.start();
 
-				InputStream stream = process.getInputStream();
-				InputStreamReader reader = new InputStreamReader(stream);
-				BufferedReader bufferReader = new BufferedReader(reader);
-				LinkedList<String> lines = new LinkedList<String>();
+		InputStream stream = process.getInputStream();
+		InputStreamReader reader = new InputStreamReader(stream);
+		BufferedReader bufferReader = new BufferedReader(reader);
+		LinkedList<String> lines = new LinkedList<String>();
 
-				String line = null;
-				while ((line = bufferReader.readLine()) != null) {
-					lines.add(line);
-				}
-				
-				return lines;
+		String line = null;
+		while ((line = bufferReader.readLine()) != null) {
+			lines.add(line);
+		}
+
+		return lines;
 	}
-	
+
 	// TODO Test
 	protected Pattern getRegularExpressionForMethod(Method methodeArgument) {
 		// create here the Regular expression for and from the method
@@ -364,16 +364,16 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		regexp += "\\)";
-		
+
 		Pattern pattern = Pattern.compile(regexp);
-		
+
 		return pattern;
 	}
-	
-	//TODO Test
+
+	// TODO Test
 	protected List<Class<?>> parseParameters(Scanner s, Pattern p) {
 		List<Class<?>> params = new ArrayList<Class<?>>();
-		
+
 		while (s.hasNext()) {
 			String param = s.next().trim();
 			logger.debug(param);
@@ -392,16 +392,15 @@ public abstract class TestExpert extends TestCase {
 				params.add(parameter);
 			}
 		}
-		
+
 		return params;
 
 	}
-	
-	
+
 	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 
 		logger.debug("enter generateExpectForCollabsOfMethod");
-		
+
 		String result = EMPTY_STRING;
 		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);
 
@@ -424,7 +423,7 @@ public abstract class TestExpert extends TestCase {
 					}
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
-						
+
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
 						String collabAndInvokee = null;
@@ -433,21 +432,21 @@ public abstract class TestExpert extends TestCase {
 							collabAndInvokee = collabScanner.next();
 						}
 
-						List<Class<?>> params = this.parseParameters(s,  patternForSeparatingParameters);
-						
+						List<Class<?>> params = this.parseParameters(s, patternForSeparatingParameters);
+
 						String[] collabs = collabAndInvokee.split("\\.");
 						String collab = EMPTY_STRING;
 
 						for (int collabLoop = 0; collabLoop < collabs.length - 1; collabLoop++) {
 							collab += collabs[collabLoop] + ".";
 						}
-					
+
 						collab = collab.substring(0, collab.length() - 1);
 						String invokee = collabs[collabs.length - 1];
 
 						Class<?>[] parametersVoorInvokee = new Class<?>[params.size()];
 						parametersVoorInvokee = (Class[]) params.toArray(parametersVoorInvokee);
-						
+
 						Method method = null;
 						try {
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
@@ -460,7 +459,7 @@ public abstract class TestExpert extends TestCase {
 							logger.error(e);
 							assert false;
 						}
-						
+
 						if (collab.equals(this.classUnderTest.getName())) {
 							continue inner;
 						}
@@ -527,7 +526,7 @@ public abstract class TestExpert extends TestCase {
 									}
 								}
 								result += this.generateReturnForMethod(method, construction);
-								
+
 								continue inner;
 							}
 						}
@@ -539,8 +538,8 @@ public abstract class TestExpert extends TestCase {
 
 		return result;
 	}
-	
-	//TODO Test
+
+	// TODO Test
 	private String generateParameter(Method method, String element, int elementIndex) {
 		String result = EMPTY_STRING;
 		if (!this.isLiteral(element)) {
@@ -549,11 +548,11 @@ public abstract class TestExpert extends TestCase {
 			result += addCode(generateConstructorForClass(parameterType));
 			result += addCodeLn(";");
 		}
-		
+
 		return result;
 	}
 
-	//TODO Test
+	// TODO Test
 	private String generateReturnForMethod(Method method, String construction) {
 		String returnFromMethod = null;
 		String result = EMPTY_STRING;
@@ -569,7 +568,7 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			result += this.generateExpectationForMethod(method, construction);
-			
+
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 				assert returnFromMethod != null;
 				String cloneString = EMPTY_STRING;
@@ -599,11 +598,11 @@ public abstract class TestExpert extends TestCase {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
-	//TODO Test
+	// TODO Test
 	private String generateExpectationForMethod(Method method, String construction) {
 		String result = EMPTY_STRING;
 		if (MockFramework.MOCKIT.equals(getMockFramework())) {
@@ -626,7 +625,7 @@ public abstract class TestExpert extends TestCase {
 				result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -853,7 +852,7 @@ public abstract class TestExpert extends TestCase {
 				Class<?> genericArgument = (Class<?>) t;
 				result += addCode(genericArgument.getSimpleName());
 				this.checkAndAddImport(genericArgument);
-			} 
+			}
 		}
 		result += addCode(">");
 
@@ -1250,27 +1249,23 @@ public abstract class TestExpert extends TestCase {
 		}
 	}
 
-	protected void checkAndAddImport(Class<?> classToImport) {
+	protected void checkAndAddImport(Object classOrArrayOfClassesToImport) {
+		
+		assert classOrArrayOfClassesToImport != null;
 		logger.debug("enter");
-		if (this.isPrimitive(classToImport.getName())) {
-			return;
-		}
-		if (classToImport.isArray()) {
 
-			return; // voor later...
-			// rloman: zoiets als dit doen ...
-			/*
-			 * Object array = Array.newInstance(classToImport, 1); List lijst =
-			 * Arrays.asList(array); Object object = lijst.get(0);
-			 * System.out.println("object is:"+object.getClass()); classToImport
-			 * = object.getClass();
-			 */
-		}
-		if ("java.lang".equals(classToImport.getPackage().getName()) || this.pakkage.getName().equals(classToImport.getPackage().getName())) {
-			return;
+		if (classOrArrayOfClassesToImport.getClass().isArray()) {
+			Object[] ourTempObjectArray = new Object[Array.getLength(classOrArrayOfClassesToImport)];
+			ourTempObjectArray[0] = Array.get(classOrArrayOfClassesToImport, 0);
+			this.checkAndAddImport(ourTempObjectArray[0].getClass()); //recursive call.
 		} else {
-			if (!this.imports.contains(classToImport.getName())) {
-				this.imports.add(classToImport.getName());
+			if (classOrArrayOfClassesToImport instanceof Class) {
+				Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
+				if (!this.isPrimitive(aRealClass.getName()) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
+						&& !this.imports.contains(aRealClass.getName())) {
+					this.imports.add(aRealClass.getName());
+				}
+
 			}
 
 		}
@@ -1300,16 +1295,13 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 
 		String result = EMPTY_STRING;
+		
 		result += codeGenPackage();
 		result += codeGenImports();
-
 		result += codeGenAnnotationsForSpringTest();
 		result += codeGenHeader();
-
 		result += codeGenFixtures();
-
 		result += codeGenBody();
-
 		result += codeGenFooter();
 
 		logger.debug("leave");

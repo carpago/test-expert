@@ -751,6 +751,14 @@ public class TestExpertTest extends AbstractTestExpert {
 		int newSize = t.getImports().size();
 
 		Assert.assertTrue(currentSize == newSize);
+		
+		Person one = new Person("John Doe", 45);
+		
+		Person[] people = new Person[3];
+		people[0] = one;
+		
+		t.checkAndAddImport(people);
+		
 	}
 
 	@Test
