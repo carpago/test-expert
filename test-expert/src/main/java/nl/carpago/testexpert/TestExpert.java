@@ -1063,7 +1063,7 @@ public abstract class TestExpert extends TestCase {
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
 
 		Object o = ctx.getBean(fixture);
-		this.checkAndAddImport(o.getClass());
+		this.checkAndAddImport(o);
 		this.fixtures.put(fixture, o.getClass());
 
 		logger.debug("leave");
