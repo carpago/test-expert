@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -773,10 +774,14 @@ public class TestExpertTest extends AbstractTestExpert {
 		List <Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
 		betrokkenen.add(betrokkene);
 		t.checkAndAddImport(betrokkenen);
-		System.out.println(t.getImports());
-		System.out.println();
 		Assert.assertTrue("Imports should contain "+betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
 		
+		Assert.assertTrue(t.getImports().contains(java.util.ArrayList.class.getName()));
+		
+		Set <Melding> meldingenSet = new HashSet<Melding>();
+		meldingenSet.add(aMelding);
+		t.checkAndAddImport(meldingenSet);
+		Assert.assertTrue(t.getImports().contains(java.util.HashSet.class.getName()));
 	
 	}
 

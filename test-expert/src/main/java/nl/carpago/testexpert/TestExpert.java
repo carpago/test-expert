@@ -1258,16 +1258,15 @@ public abstract class TestExpert extends TestCase {
 		if (classOrArrayOfClassesToImport.getClass().isArray()) {
 			Object[] ourTempObjectArray = new Object[Array.getLength(classOrArrayOfClassesToImport)];
 			ourTempObjectArray[0] = Array.get(classOrArrayOfClassesToImport, 0);
-			this.checkAndAddImport(ourTempObjectArray[0].getClass()); // recursive
-																		// call.
+			this.checkAndAddImport(ourTempObjectArray[0]);
 		} else {
 			if (classOrArrayOfClassesToImport instanceof Collection<?>) {
 				
 				Object anObject = ((Collection<?>) classOrArrayOfClassesToImport).iterator().next();
+				checkAndAddImport(classOrArrayOfClassesToImport.getClass()); // insert the Collection type
 				if(anObject != null) {
 					checkAndAddImport(anObject);
 				}
-				
 			} else {
 				if (classOrArrayOfClassesToImport instanceof Class) {
 					Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
@@ -1275,10 +1274,8 @@ public abstract class TestExpert extends TestCase {
 							&& !this.imports.contains(aRealClass.getName())) {
 						this.imports.add(aRealClass.getName());
 					}
-
 				}
 				else {
-					
 					assert classOrArrayOfClassesToImport instanceof Object;
 					checkAndAddImport(classOrArrayOfClassesToImport.getClass());
 				}
