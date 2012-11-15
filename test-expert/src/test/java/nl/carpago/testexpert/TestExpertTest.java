@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nl.belastingdienst.Betrokkene;
+import nl.belastingdienst.Melding;
 import nl.carpago.testexpert.TestExpert.MockFramework;
 
 import org.apache.log4j.Logger;
@@ -759,6 +761,23 @@ public class TestExpertTest extends AbstractTestExpert {
 		
 		t.checkAndAddImport(people);
 		
+		Assert.assertFalse("Imports shouldn't contain "+one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
+		
+		Melding aMelding = new Melding();
+		Melding[] meldingen = new Melding[]{aMelding};
+		t.checkAndAddImport(meldingen);
+		Assert.assertTrue("Imports should contain "+aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
+		
+		
+		Betrokkene betrokkene = new Betrokkene();
+		List <Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
+		betrokkenen.add(betrokkene);
+		t.checkAndAddImport(betrokkenen);
+		System.out.println(t.getImports());
+		System.out.println();
+		Assert.assertTrue("Imports should contain "+betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
+		
+	
 	}
 
 	@Test

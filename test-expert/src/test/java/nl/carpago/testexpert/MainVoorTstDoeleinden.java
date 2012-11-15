@@ -1,9 +1,14 @@
 package nl.carpago.testexpert;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Scanner;
+
+import org.apache.log4j.Logger;
 
 
 class ReflectionTrainer {
@@ -14,12 +19,72 @@ class ReflectionTrainer {
 	}
 }
 
+/** This class acts as a wrapper for the Exception that occur
+ * 
+ * 
+ * @author rloman
+ *
+ */
+@SuppressWarnings("serial")
+class CarpagoRuntimeException extends RuntimeException {
+
+	public CarpagoRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public CarpagoRuntimeException(Throwable cause) {
+		super(cause);
+	}
+	
+}
+
 public class MainVoorTstDoeleinden {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 
 	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
 		
-		convertSlash();
+		// testForIsCollectionOrSomething();
+		new MainVoorTstDoeleinden().risky1();
 	}
+
+	
+	public void risky1() {
+		risky2();
+	}
+	
+	public void risky2() {
+		risky3();
+	}
+	
+	public void risky3() {
+		File file = new File("dezebestaatniet");
+		Scanner s;
+		try {
+			s = new Scanner(file);
+			while(s.hasNext()) {
+				System.out.println(s.next());
+			}
+		} catch (FileNotFoundException e) {
+			logger.error(e);
+			throw new CarpagoRuntimeException(e);
+		}
+		
+	}
+	
+	public static void testForIsCollectionOrSomething() {
+		List<String> lijst = new ArrayList<String>();
+		
+		Class <?> clazz = lijst.getClass();
+		
+		if(Collection.class.isAssignableFrom(clazz)) {
+			System.out.println("its a collection");
+		}
+		
+	}
+	
+	
+	
 	
 	
 	public static Object converteer(Object o) {
@@ -37,7 +102,6 @@ public class MainVoorTstDoeleinden {
 	
 	public void fileOpe() {
 		String path = ".";
-		String files;
 		
 		File folder = new File(path);
 		

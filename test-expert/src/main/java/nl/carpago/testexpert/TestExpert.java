@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -1250,22 +1251,37 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	protected void checkAndAddImport(Object classOrArrayOfClassesToImport) {
-		
+
 		assert classOrArrayOfClassesToImport != null;
 		logger.debug("enter");
 
 		if (classOrArrayOfClassesToImport.getClass().isArray()) {
 			Object[] ourTempObjectArray = new Object[Array.getLength(classOrArrayOfClassesToImport)];
 			ourTempObjectArray[0] = Array.get(classOrArrayOfClassesToImport, 0);
-			this.checkAndAddImport(ourTempObjectArray[0].getClass()); //recursive call.
+			this.checkAndAddImport(ourTempObjectArray[0].getClass()); // recursive
+																		// call.
 		} else {
-			if (classOrArrayOfClassesToImport instanceof Class) {
-				Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
-				if (!this.isPrimitive(aRealClass.getName()) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
-						&& !this.imports.contains(aRealClass.getName())) {
-					this.imports.add(aRealClass.getName());
+			if (classOrArrayOfClassesToImport instanceof Collection<?>) {
+				
+				Object anObject = ((Collection<?>) classOrArrayOfClassesToImport).iterator().next();
+				if(anObject != null) {
+					checkAndAddImport(anObject);
 				}
+				
+			} else {
+				if (classOrArrayOfClassesToImport instanceof Class) {
+					Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
+					if (!this.isPrimitive(aRealClass.getName()) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
+							&& !this.imports.contains(aRealClass.getName())) {
+						this.imports.add(aRealClass.getName());
+					}
 
+				}
+				else {
+					
+					assert classOrArrayOfClassesToImport instanceof Object;
+					checkAndAddImport(classOrArrayOfClassesToImport.getClass());
+				}
 			}
 
 		}
@@ -1295,7 +1311,7 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 
 		String result = EMPTY_STRING;
-		
+
 		result += codeGenPackage();
 		result += codeGenImports();
 		result += codeGenAnnotationsForSpringTest();
