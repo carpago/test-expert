@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
@@ -1261,24 +1262,32 @@ public abstract class TestExpert extends TestCase {
 			this.checkAndAddImport(ourTempObjectArray[0]);
 		} else {
 			if (classOrArrayOfClassesToImport instanceof Collection<?>) {
-				
+
 				Object anObject = ((Collection<?>) classOrArrayOfClassesToImport).iterator().next();
-				checkAndAddImport(classOrArrayOfClassesToImport.getClass()); // insert the Collection type
-				if(anObject != null) {
+				checkAndAddImport(classOrArrayOfClassesToImport.getClass()); // insert
+																				// the
+																				// Collection
+																				// type
+				if (anObject != null) {
 					checkAndAddImport(anObject);
 				}
 			} else {
-				if (classOrArrayOfClassesToImport instanceof Class) {
-					Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
-					if (!this.isPrimitive(aRealClass.getName()) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
-							&& !this.imports.contains(aRealClass.getName())) {
-						this.imports.add(aRealClass.getName());
+				if (classOrArrayOfClassesToImport instanceof Map) {
+					x hier verder met uitpluizen van de Map
+
+				} else {
+					if (classOrArrayOfClassesToImport instanceof Class) {
+						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
+						if (!this.isPrimitive(aRealClass.getName()) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
+								&& !this.imports.contains(aRealClass.getName())) {
+							this.imports.add(aRealClass.getName());
+						}
+					} else {
+						assert classOrArrayOfClassesToImport instanceof Object;
+						checkAndAddImport(classOrArrayOfClassesToImport.getClass());
 					}
 				}
-				else {
-					assert classOrArrayOfClassesToImport instanceof Object;
-					checkAndAddImport(classOrArrayOfClassesToImport.getClass());
-				}
+
 			}
 
 		}
