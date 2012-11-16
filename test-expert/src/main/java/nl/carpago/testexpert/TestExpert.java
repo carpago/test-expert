@@ -1280,7 +1280,6 @@ public abstract class TestExpert extends TestCase {
 						this.checkAndAddImport(entry.getKey());
 						this.checkAndAddImport(entry.getValue());
 					}
-					System.out.println(set);
 					this.checkAndAddImport(map.keySet().iterator().next());
 					this.checkAndAddImport(map.values().iterator().next());
 
