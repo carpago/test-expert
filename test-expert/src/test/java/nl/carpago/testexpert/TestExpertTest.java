@@ -789,6 +789,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertFalse(t.getImports().contains(Melding.class.getName()));
 		Map <String, Melding> map = new HashMap<String, Melding>();
 		map.put("aKey", aMelding);
+		t.checkAndAddImport(map);
 		Assert.assertTrue(t.getImports().contains(Melding.class.getName()));
 		Assert.assertTrue(t.getImports().contains(HashMap.class.getName()));
 	}

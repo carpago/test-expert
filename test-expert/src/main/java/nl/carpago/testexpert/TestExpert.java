@@ -1273,7 +1273,16 @@ public abstract class TestExpert extends TestCase {
 				}
 			} else {
 				if (classOrArrayOfClassesToImport instanceof Map) {
-					x hier verder met uitpluizen van de Map
+					Map map = (Map) classOrArrayOfClassesToImport;
+					Set<Entry<?,?>> set = map.entrySet();
+					for(Entry<?, ?> entry : set) {
+						this.checkAndAddImport(classOrArrayOfClassesToImport.getClass());
+						this.checkAndAddImport(entry.getKey());
+						this.checkAndAddImport(entry.getValue());
+					}
+					System.out.println(set);
+					this.checkAndAddImport(map.keySet().iterator().next());
+					this.checkAndAddImport(map.values().iterator().next());
 
 				} else {
 					if (classOrArrayOfClassesToImport instanceof Class) {
