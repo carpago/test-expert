@@ -1252,6 +1252,10 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	protected void checkAndAddImport(Object classOrArrayOfClassesToImport) {
+		
+		if(this.isPrimitive(classOrArrayOfClassesToImport.getClass().getSimpleName())) {
+			return;
+		}
 
 		assert classOrArrayOfClassesToImport != null;
 		logger.debug("enter");
@@ -1274,8 +1278,8 @@ public abstract class TestExpert extends TestCase {
 			} else {
 				if (classOrArrayOfClassesToImport instanceof Map) {
 					Map map = (Map) classOrArrayOfClassesToImport;
-					Set<Entry<?,?>> set = map.entrySet();
-					for(Entry<?, ?> entry : set) {
+					Set<Entry<?, ?>> set = map.entrySet();
+					for (Entry<?, ?> entry : set) {
 						this.checkAndAddImport(classOrArrayOfClassesToImport.getClass());
 						this.checkAndAddImport(entry.getKey());
 						this.checkAndAddImport(entry.getValue());
@@ -1286,8 +1290,15 @@ public abstract class TestExpert extends TestCase {
 				} else {
 					if (classOrArrayOfClassesToImport instanceof Class) {
 						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
-						if (!this.isPrimitive(aRealClass.getName()) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
-								&& !this.imports.contains(aRealClass.getName())) {
+						boolean isPrimitive = this.isPrimitive(aRealClass.getName());
+						if(aRealClass.getPackage() == null) {
+							logger.error("package is null!");
+							logger.error(aRealClass.getName());
+						}
+ 						boolean isLangPackage = "java.lang".equals(aRealClass.getPackage().getName());
+						boolean isSamePackage = this.pakkage.getName().equals(aRealClass.getPackage().getName());
+						boolean isAlreadyInImports = this.imports.contains(aRealClass.getName());
+						if (!isPrimitive && !isLangPackage && !isSamePackage && !isAlreadyInImports) {
 							this.imports.add(aRealClass.getName());
 						}
 					} else {
