@@ -1238,10 +1238,15 @@ public abstract class TestExpert extends TestCase {
 	protected boolean isPrimitive(Class<?> clazz) {
 		logger.debug("enter");
 		assert clazz != null;
+		
+		// rloman: hack for follow up on #131
+		if(clazz.getPackage() == null) {
+			return true;
+		}
 
 		if (clazz == null) {
 			logger.warn("TestExpert::isPrimitive ... clazz is null!");
-			return false;
+			return true;
 		} else {
 			return clazz.isPrimitive();
 		}
@@ -1264,10 +1269,6 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	protected void checkAndAddImport(Object classOrArrayOfClassesToImport) {
-
-		if (this.isPrimitive(classOrArrayOfClassesToImport.getClass())) {
-			return;
-		}
 
 		assert classOrArrayOfClassesToImport != null;
 		logger.debug("enter");
@@ -1304,10 +1305,10 @@ public abstract class TestExpert extends TestCase {
 						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
 //						System.out.println(this.isPrimitive(aRealClass));
 						try {
-							System.out.println(aRealClass.getPackage().getName());
+							//System.out.println(aRealClass.getPackage().getName());
 						}
 						catch(NullPointerException npe) {
-							System.out.println("Deze heeft geen package "+aRealClass+" en is primitivie is:"+this.isPrimitive(aRealClass));
+							//System.out.println("Deze heeft geen package "+aRealClass+" en is primitivie is:"+this.isPrimitive(aRealClass));
 						}
 	//					System.out.println(aRealClass.getName());
 						if (!this.isPrimitive(aRealClass) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
