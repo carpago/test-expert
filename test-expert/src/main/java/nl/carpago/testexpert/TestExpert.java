@@ -1239,15 +1239,16 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 		assert clazz != null;
 		
-		// rloman: hack for follow up on #131
-		if(clazz.getPackage() == null) {
-			return true;
-		}
-
 		if (clazz == null) {
 			logger.warn("TestExpert::isPrimitive ... clazz is null!");
 			return true;
 		} else {
+			// rloman: hack for follow up on #131
+			if(clazz.getPackage() == null) {
+				return true;
+			}
+			else {
+			}
 			return clazz.isPrimitive();
 		}
 	}
@@ -1290,7 +1291,9 @@ public abstract class TestExpert extends TestCase {
 				}
 			} else {
 				if (classOrArrayOfClassesToImport instanceof Map) {
+					@SuppressWarnings("rawtypes")
 					Map map = (Map) classOrArrayOfClassesToImport;
+					@SuppressWarnings("unchecked")
 					Set<Entry<?, ?>> set = map.entrySet();
 					for (Entry<?, ?> entry : set) {
 						this.checkAndAddImport(classOrArrayOfClassesToImport.getClass());
