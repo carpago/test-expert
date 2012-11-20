@@ -385,7 +385,7 @@ public abstract class TestExpert extends TestCase {
 					parameter = Class.forName(param);
 				} catch (ClassNotFoundException e) {
 					logger.info("Class not found for " + param);
-					if ((this.isPrimitive(param))) {
+					if (this.isPrimitiveFallback((param))) {
 						parameter = this.getPrimitiveType(param);
 					} else {
 						assert false; // should never happen.
@@ -575,7 +575,7 @@ public abstract class TestExpert extends TestCase {
 				assert returnFromMethod != null;
 				String cloneString = EMPTY_STRING;
 				if (!this.isLiteral(returnFromMethod)) {
-					if (this.isPrimitive(method.getReturnType().toString())) {
+					if (this.isPrimitive(method.getReturnType())) {
 						cloneString += returnFromMethod;
 					} else {
 						cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
@@ -826,7 +826,7 @@ public abstract class TestExpert extends TestCase {
 			addCodeLn("\t// collaborating classes");
 		}
 		for (Field field : fields) {
-			if (!(this.isPrimitive(field.getType().toString()))) {
+			if (!(this.isPrimitive(field.getType()))) {
 				this.checkAndAddImport(field.getType());
 			}
 			if (MockFramework.MOCKIT.equals(this.getMockFramework())) {
@@ -900,7 +900,7 @@ public abstract class TestExpert extends TestCase {
 		// init the collaborating classes
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
 			result += addCodeLn();
-			if (!(this.isPrimitive(field.getType().getName()))) {
+			if (!(this.isPrimitive(field.getType()))) {
 				if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 				}
@@ -1235,7 +1235,19 @@ public abstract class TestExpert extends TestCase {
 		throw new InvalidArgumentException("Invalid Argument");
 	}
 
-	protected boolean isPrimitive(String type) {
+	protected boolean isPrimitive(Class<?> clazz) {
+		logger.debug("enter");
+		assert clazz != null;
+
+		if (clazz == null) {
+			logger.warn("TestExpert::isPrimitive ... clazz is null!");
+			return false;
+		} else {
+			return clazz.isPrimitive();
+		}
+	}
+
+	protected boolean isPrimitiveFallback(String type) {
 		logger.debug("enter");
 		try {
 			this.getPrimitiveType(type);
@@ -1252,8 +1264,8 @@ public abstract class TestExpert extends TestCase {
 	}
 
 	protected void checkAndAddImport(Object classOrArrayOfClassesToImport) {
-		
-		if(this.isPrimitive(classOrArrayOfClassesToImport.getClass().getSimpleName())) {
+
+		if (this.isPrimitive(classOrArrayOfClassesToImport.getClass())) {
 			return;
 		}
 
@@ -1290,15 +1302,16 @@ public abstract class TestExpert extends TestCase {
 				} else {
 					if (classOrArrayOfClassesToImport instanceof Class) {
 						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
-						boolean isPrimitive = this.isPrimitive(aRealClass.getName());
-						if(aRealClass.getPackage() == null) {
-							logger.error("package is null!");
-							logger.error(aRealClass.getName());
+//						System.out.println(this.isPrimitive(aRealClass));
+						try {
+							System.out.println(aRealClass.getPackage().getName());
 						}
- 						boolean isLangPackage = "java.lang".equals(aRealClass.getPackage().getName());
-						boolean isSamePackage = this.pakkage.getName().equals(aRealClass.getPackage().getName());
-						boolean isAlreadyInImports = this.imports.contains(aRealClass.getName());
-						if (!isPrimitive && !isLangPackage && !isSamePackage && !isAlreadyInImports) {
+						catch(NullPointerException npe) {
+							System.out.println("Deze heeft geen package "+aRealClass+" en is primitivie is:"+this.isPrimitive(aRealClass));
+						}
+	//					System.out.println(aRealClass.getName());
+						if (!this.isPrimitive(aRealClass) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
+								&& !this.imports.contains(aRealClass.getName())) {
 							this.imports.add(aRealClass.getName());
 						}
 					} else {

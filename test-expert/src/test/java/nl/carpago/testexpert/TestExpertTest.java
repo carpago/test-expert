@@ -341,6 +341,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertEquals("int one, String two, Person three", arguments);
 	}
 
+	/*
 	@Test
 	public void testIsPrimitive(String type) {
 		Assert.assertTrue(this.testExpert.isPrimitive("byte"));
@@ -353,6 +354,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(this.testExpert.isPrimitive("boolean"));
 		Assert.assertTrue(this.testExpert.isPrimitive("void"));
 	}
+	*/
 
 	@Test
 	public void testFindAllJavaFilesForFolder() {
