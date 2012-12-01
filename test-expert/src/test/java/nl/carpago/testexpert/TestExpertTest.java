@@ -341,21 +341,6 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertEquals("int one, String two, Person three", arguments);
 	}
 
-	/*
-	@Test
-	public void testIsPrimitive(String type) {
-		Assert.assertTrue(this.testExpert.isPrimitive("byte"));
-		Assert.assertTrue(this.testExpert.isPrimitive("short"));
-		Assert.assertTrue(this.testExpert.isPrimitive("int"));
-		Assert.assertTrue(this.testExpert.isPrimitive("long"));
-		Assert.assertTrue(this.testExpert.isPrimitive("float"));
-		Assert.assertTrue(this.testExpert.isPrimitive("double"));
-		Assert.assertTrue(this.testExpert.isPrimitive("char"));
-		Assert.assertTrue(this.testExpert.isPrimitive("boolean"));
-		Assert.assertTrue(this.testExpert.isPrimitive("void"));
-	}
-	*/
-
 	@Test
 	public void testFindAllJavaFilesForFolder() {
 		try {
@@ -424,16 +409,6 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	@Test
-	/**
-	 * this.checkAndAddImport(org.junit.Before.class);
-		this.checkAndAddImport(org.junit.Test.class);
-		this.checkAndAddImport(nl.carpago.testexpert.AbstractTestExpert.class);
-		this.checkAndAddImport(this.contextClass);
-		this.checkAndAddImport(org.junit.runner.RunWith.class);
-		this.checkAndAddImport(org.springframework.test.context.junit4.SpringJUnit4ClassRunner.class);
-		this.checkAndAddImport(org.springframework.test.context.ContextConfiguration.class);
-		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-	 */
 	public void testInitalizeTestFramework() {
 		// the work should already be done by the constructor
 

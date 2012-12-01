@@ -1306,14 +1306,6 @@ public abstract class TestExpert extends TestCase {
 				} else {
 					if (classOrArrayOfClassesToImport instanceof Class) {
 						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
-//						System.out.println(this.isPrimitive(aRealClass));
-						try {
-							//System.out.println(aRealClass.getPackage().getName());
-						}
-						catch(NullPointerException npe) {
-							//System.out.println("Deze heeft geen package "+aRealClass+" en is primitivie is:"+this.isPrimitive(aRealClass));
-						}
-	//					System.out.println(aRealClass.getName());
 						if (!this.isPrimitive(aRealClass) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
 								&& !this.imports.contains(aRealClass.getName())) {
 							this.imports.add(aRealClass.getName());
