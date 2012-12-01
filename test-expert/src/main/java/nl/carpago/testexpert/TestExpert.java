@@ -12,6 +12,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,10 +21,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
@@ -320,33 +323,32 @@ public abstract class TestExpert extends TestCase {
 	 * call naar interface (dao)
 	 */
 	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-	
-	//TODO Test
+
+	// TODO Test
 	protected String getPathToBinaryFile(Class<?> clazz) {
 		return this.getBinaryFolder() + "/" + clazz.getName().replaceAll("\\.", "/");
 	}
-	
-	
-	//TODO test
+
+	// TODO test
 	protected List<String> getLinesFromFile(String pathToBinaryFile) throws IOException {
 		// via jad
-				ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
+		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
 
-				Process process = builder.start();
+		Process process = builder.start();
 
-				InputStream stream = process.getInputStream();
-				InputStreamReader reader = new InputStreamReader(stream);
-				BufferedReader bufferReader = new BufferedReader(reader);
-				LinkedList<String> lines = new LinkedList<String>();
+		InputStream stream = process.getInputStream();
+		InputStreamReader reader = new InputStreamReader(stream);
+		BufferedReader bufferReader = new BufferedReader(reader);
+		LinkedList<String> lines = new LinkedList<String>();
 
-				String line = null;
-				while ((line = bufferReader.readLine()) != null) {
-					lines.add(line);
-				}
-				
-				return lines;
+		String line = null;
+		while ((line = bufferReader.readLine()) != null) {
+			lines.add(line);
+		}
+
+		return lines;
 	}
-	
+
 	// TODO Test
 	protected Pattern getRegularExpressionForMethod(Method methodeArgument) {
 		// create here the Regular expression for and from the method
@@ -364,16 +366,16 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		regexp += "\\)";
-		
+
 		Pattern pattern = Pattern.compile(regexp);
-		
+
 		return pattern;
 	}
-	
-	//TODO Test
+
+	// TODO Test
 	protected List<Class<?>> parseParameters(Scanner s, Pattern p) {
 		List<Class<?>> params = new ArrayList<Class<?>>();
-		
+
 		while (s.hasNext()) {
 			String param = s.next().trim();
 			logger.debug(param);
@@ -383,7 +385,7 @@ public abstract class TestExpert extends TestCase {
 					parameter = Class.forName(param);
 				} catch (ClassNotFoundException e) {
 					logger.info("Class not found for " + param);
-					if ((this.isPrimitive(param))) {
+					if (this.isPrimitiveFallback((param))) {
 						parameter = this.getPrimitiveType(param);
 					} else {
 						assert false; // should never happen.
@@ -392,16 +394,15 @@ public abstract class TestExpert extends TestCase {
 				params.add(parameter);
 			}
 		}
-		
+
 		return params;
 
 	}
-	
-	
+
 	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 
 		logger.debug("enter generateExpectForCollabsOfMethod");
-		
+
 		String result = EMPTY_STRING;
 		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);
 
@@ -424,7 +425,7 @@ public abstract class TestExpert extends TestCase {
 					}
 
 					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
-						
+
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
 						String collabAndInvokee = null;
@@ -433,21 +434,21 @@ public abstract class TestExpert extends TestCase {
 							collabAndInvokee = collabScanner.next();
 						}
 
-						List<Class<?>> params = this.parseParameters(s,  patternForSeparatingParameters);
-						
+						List<Class<?>> params = this.parseParameters(s, patternForSeparatingParameters);
+
 						String[] collabs = collabAndInvokee.split("\\.");
 						String collab = EMPTY_STRING;
 
 						for (int collabLoop = 0; collabLoop < collabs.length - 1; collabLoop++) {
 							collab += collabs[collabLoop] + ".";
 						}
-					
+
 						collab = collab.substring(0, collab.length() - 1);
 						String invokee = collabs[collabs.length - 1];
 
 						Class<?>[] parametersVoorInvokee = new Class<?>[params.size()];
 						parametersVoorInvokee = (Class[]) params.toArray(parametersVoorInvokee);
-						
+
 						Method method = null;
 						try {
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
@@ -460,7 +461,7 @@ public abstract class TestExpert extends TestCase {
 							logger.error(e);
 							assert false;
 						}
-						
+
 						if (collab.equals(this.classUnderTest.getName())) {
 							continue inner;
 						}
@@ -527,7 +528,7 @@ public abstract class TestExpert extends TestCase {
 									}
 								}
 								result += this.generateReturnForMethod(method, construction);
-								
+
 								continue inner;
 							}
 						}
@@ -539,8 +540,8 @@ public abstract class TestExpert extends TestCase {
 
 		return result;
 	}
-	
-	//TODO Test
+
+	// TODO Test
 	private String generateParameter(Method method, String element, int elementIndex) {
 		String result = EMPTY_STRING;
 		if (!this.isLiteral(element)) {
@@ -549,11 +550,11 @@ public abstract class TestExpert extends TestCase {
 			result += addCode(generateConstructorForClass(parameterType));
 			result += addCodeLn(";");
 		}
-		
+
 		return result;
 	}
 
-	//TODO Test
+	// TODO Test
 	private String generateReturnForMethod(Method method, String construction) {
 		String returnFromMethod = null;
 		String result = EMPTY_STRING;
@@ -569,12 +570,12 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			result += this.generateExpectationForMethod(method, construction);
-			
+
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 				assert returnFromMethod != null;
 				String cloneString = EMPTY_STRING;
 				if (!this.isLiteral(returnFromMethod)) {
-					if (this.isPrimitive(method.getReturnType().toString())) {
+					if (this.isPrimitive(method.getReturnType())) {
 						cloneString += returnFromMethod;
 					} else {
 						cloneString += "(" + method.getReturnType().getSimpleName() + ") this.cloneMe(" + returnFromMethod + ")";
@@ -599,11 +600,11 @@ public abstract class TestExpert extends TestCase {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
-	//TODO Test
+	// TODO Test
 	private String generateExpectationForMethod(Method method, String construction) {
 		String result = EMPTY_STRING;
 		if (MockFramework.MOCKIT.equals(getMockFramework())) {
@@ -626,7 +627,7 @@ public abstract class TestExpert extends TestCase {
 				result += addCode("\t\tEasyMock.expect(" + construction + ").andReturn(");
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -825,7 +826,7 @@ public abstract class TestExpert extends TestCase {
 			addCodeLn("\t// collaborating classes");
 		}
 		for (Field field : fields) {
-			if (!(this.isPrimitive(field.getType().toString()))) {
+			if (!(this.isPrimitive(field.getType()))) {
 				this.checkAndAddImport(field.getType());
 			}
 			if (MockFramework.MOCKIT.equals(this.getMockFramework())) {
@@ -853,7 +854,7 @@ public abstract class TestExpert extends TestCase {
 				Class<?> genericArgument = (Class<?>) t;
 				result += addCode(genericArgument.getSimpleName());
 				this.checkAndAddImport(genericArgument);
-			} 
+			}
 		}
 		result += addCode(">");
 
@@ -899,7 +900,7 @@ public abstract class TestExpert extends TestCase {
 		// init the collaborating classes
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
 			result += addCodeLn();
-			if (!(this.isPrimitive(field.getType().getName()))) {
+			if (!(this.isPrimitive(field.getType()))) {
 				if (MockFramework.EASYMOCK.equals(getMockFramework())) {
 					result += addCodeLn("\t\tthis." + WordUtils.uncapitalize(field.getName()) + " = EasyMock.createMock(" + field.getType().getSimpleName() + ".class);");
 				}
@@ -1064,7 +1065,7 @@ public abstract class TestExpert extends TestCase {
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
 
 		Object o = ctx.getBean(fixture);
-		this.checkAndAddImport(o.getClass());
+		this.checkAndAddImport(o);
 		this.fixtures.put(fixture, o.getClass());
 
 		logger.debug("leave");
@@ -1234,7 +1235,25 @@ public abstract class TestExpert extends TestCase {
 		throw new InvalidArgumentException("Invalid Argument");
 	}
 
-	protected boolean isPrimitive(String type) {
+	protected boolean isPrimitive(Class<?> clazz) {
+		logger.debug("enter");
+		assert clazz != null;
+		
+		if (clazz == null) {
+			logger.warn("TestExpert::isPrimitive ... clazz is null!");
+			return true;
+		} else {
+			// rloman: hack for follow up on #131
+			if(clazz.getPackage() == null) {
+				return true;
+			}
+			else {
+			}
+			return clazz.isPrimitive();
+		}
+	}
+
+	protected boolean isPrimitiveFallback(String type) {
 		logger.debug("enter");
 		try {
 			this.getPrimitiveType(type);
@@ -1250,27 +1269,61 @@ public abstract class TestExpert extends TestCase {
 		}
 	}
 
-	protected void checkAndAddImport(Class<?> classToImport) {
-		logger.debug("enter");
-		if (this.isPrimitive(classToImport.getName())) {
-			return;
-		}
-		if (classToImport.isArray()) {
+	protected void checkAndAddImport(Object classOrArrayOfClassesToImport) {
 
-			return; // voor later...
-			// rloman: zoiets als dit doen ...
-			/*
-			 * Object array = Array.newInstance(classToImport, 1); List lijst =
-			 * Arrays.asList(array); Object object = lijst.get(0);
-			 * System.out.println("object is:"+object.getClass()); classToImport
-			 * = object.getClass();
-			 */
-		}
-		if ("java.lang".equals(classToImport.getPackage().getName()) || this.pakkage.getName().equals(classToImport.getPackage().getName())) {
-			return;
+		assert classOrArrayOfClassesToImport != null;
+		logger.debug("enter");
+
+		if (classOrArrayOfClassesToImport.getClass().isArray()) {
+			Object[] ourTempObjectArray = new Object[Array.getLength(classOrArrayOfClassesToImport)];
+			ourTempObjectArray[0] = Array.get(classOrArrayOfClassesToImport, 0);
+			this.checkAndAddImport(ourTempObjectArray[0]);
 		} else {
-			if (!this.imports.contains(classToImport.getName())) {
-				this.imports.add(classToImport.getName());
+			if (classOrArrayOfClassesToImport instanceof Collection<?>) {
+
+				Object anObject = ((Collection<?>) classOrArrayOfClassesToImport).iterator().next();
+				checkAndAddImport(classOrArrayOfClassesToImport.getClass()); // insert
+																				// the
+																				// Collection
+																				// type
+				if (anObject != null) {
+					checkAndAddImport(anObject);
+				}
+			} else {
+				if (classOrArrayOfClassesToImport instanceof Map) {
+					@SuppressWarnings("rawtypes")
+					Map map = (Map) classOrArrayOfClassesToImport;
+					@SuppressWarnings("unchecked")
+					Set<Entry<?, ?>> set = map.entrySet();
+					for (Entry<?, ?> entry : set) {
+						this.checkAndAddImport(classOrArrayOfClassesToImport.getClass());
+						this.checkAndAddImport(entry.getKey());
+						this.checkAndAddImport(entry.getValue());
+					}
+					this.checkAndAddImport(map.keySet().iterator().next());
+					this.checkAndAddImport(map.values().iterator().next());
+
+				} else {
+					if (classOrArrayOfClassesToImport instanceof Class) {
+						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
+//						System.out.println(this.isPrimitive(aRealClass));
+						try {
+							//System.out.println(aRealClass.getPackage().getName());
+						}
+						catch(NullPointerException npe) {
+							//System.out.println("Deze heeft geen package "+aRealClass+" en is primitivie is:"+this.isPrimitive(aRealClass));
+						}
+	//					System.out.println(aRealClass.getName());
+						if (!this.isPrimitive(aRealClass) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
+								&& !this.imports.contains(aRealClass.getName())) {
+							this.imports.add(aRealClass.getName());
+						}
+					} else {
+						assert classOrArrayOfClassesToImport instanceof Object;
+						checkAndAddImport(classOrArrayOfClassesToImport.getClass());
+					}
+				}
+
 			}
 
 		}
@@ -1300,16 +1353,13 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 
 		String result = EMPTY_STRING;
+
 		result += codeGenPackage();
 		result += codeGenImports();
-
 		result += codeGenAnnotationsForSpringTest();
 		result += codeGenHeader();
-
 		result += codeGenFixtures();
-
 		result += codeGenBody();
-
 		result += codeGenFooter();
 
 		logger.debug("leave");

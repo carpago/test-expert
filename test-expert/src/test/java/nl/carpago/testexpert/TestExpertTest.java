@@ -11,10 +11,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nl.belastingdienst.Betrokkene;
+import nl.belastingdienst.Melding;
 import nl.carpago.testexpert.TestExpert.MockFramework;
 
 import org.apache.log4j.Logger;
@@ -337,6 +341,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertEquals("int one, String two, Person three", arguments);
 	}
 
+	/*
 	@Test
 	public void testIsPrimitive(String type) {
 		Assert.assertTrue(this.testExpert.isPrimitive("byte"));
@@ -349,12 +354,13 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(this.testExpert.isPrimitive("boolean"));
 		Assert.assertTrue(this.testExpert.isPrimitive("void"));
 	}
+	*/
 
 	@Test
 	public void testFindAllJavaFilesForFolder() {
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
-			final int expected = 24;
+			final int expected = 21;
 			Assert.assertEquals("Expected:"+expected+", actual:" + files.size(), expected, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -751,6 +757,49 @@ public class TestExpertTest extends AbstractTestExpert {
 		int newSize = t.getImports().size();
 
 		Assert.assertTrue(currentSize == newSize);
+		
+		Person one = new Person("John Doe", 45);
+		
+		Person[] people = new Person[3];
+		people[0] = one;
+		
+		t.checkAndAddImport(people);
+		
+		Assert.assertFalse("Imports shouldn't contain "+one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
+		
+		Melding aMelding = new Melding();
+		Melding[] meldingen = new Melding[]{aMelding};
+		t.checkAndAddImport(meldingen);
+		Assert.assertTrue("Imports should contain "+aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
+		
+		
+		Betrokkene betrokkene = new Betrokkene();
+		List <Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
+		betrokkenen.add(betrokkene);
+		t.checkAndAddImport(betrokkenen);
+		Assert.assertTrue("Imports should contain "+betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
+		
+		Assert.assertTrue(t.getImports().contains(java.util.ArrayList.class.getName()));
+		
+		Set <Melding> meldingenSet = new HashSet<Melding>();
+		meldingenSet.add(aMelding);
+		t.checkAndAddImport(meldingenSet);
+		Assert.assertTrue(t.getImports().contains(java.util.HashSet.class.getName()));
+		
+		t.init(TstClassInner.class);
+		Assert.assertFalse(t.getImports().contains(java.util.HashMap.class.getName()));
+		Assert.assertFalse(t.getImports().contains(Melding.class.getName()));
+		Map <String, Melding> map = new HashMap<String, Melding>();
+		map.put("aKey", aMelding);
+		t.checkAndAddImport(map);
+		Assert.assertTrue(t.getImports().contains(Melding.class.getName()));
+		Assert.assertTrue(t.getImports().contains(HashMap.class.getName()));
+		
+		t.init(TstClassInner.class);
+		int aNumber = 3;
+		t.checkAndAddImport(aNumber);
+		Assert.assertFalse(t.getImports().contains(Integer.class.getName()));
+		Assert.assertFalse(t.getImports().contains(int.class.getName()));
 	}
 
 	@Test
