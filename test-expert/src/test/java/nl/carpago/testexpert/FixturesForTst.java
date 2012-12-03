@@ -7,10 +7,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 	public class FixturesForTst {
 
-		public FixturesForTst() {
-
-		}
-
 		@Bean
 		public Person person() {
 			Person person = new Person("John Doe", 45);

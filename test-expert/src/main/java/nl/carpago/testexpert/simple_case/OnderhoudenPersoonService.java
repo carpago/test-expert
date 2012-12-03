@@ -18,7 +18,7 @@ public class OnderhoudenPersoonService {
 	@CreateUnittest(in="3", out="4")
 	public int addString(int in) {
 		
-		int result = Integer.valueOf(in);
+		int result = Integer.valueOf(++in);
 		
 		return result;
 		

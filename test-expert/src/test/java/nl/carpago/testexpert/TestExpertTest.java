@@ -345,7 +345,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testFindAllJavaFilesForFolder() {
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
-			final int expected = 24;
+			final int expected = 21;
 			Assert.assertEquals("Expected:"+expected+", actual:" + files.size(), expected, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
