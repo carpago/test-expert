@@ -123,16 +123,27 @@ public abstract class TestExpert extends TestCase {
 
 			PrintStream po = new PrintStream(stream);
 			po.print(this.codeGen());
+			po.flush();
 			po.close();
 
+			try {
+				stream.flush();
+				stream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			addTestToTestsuite(this.classUnderTest.getName() + "Test.class");
 		}
+		
+		
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
 	}
 
-	protected File writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
+	protected void writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
 		File directory = new File(directoryName);
 		directory.mkdirs();
 
@@ -142,13 +153,19 @@ public abstract class TestExpert extends TestCase {
 			file.createNewFile();
 			PrintStream po = new PrintStream(stream);
 			po.print(content);
+			po.flush();
 			po.close();
 		} catch (IOException e) {
 			logger.error("Unable to create outputfile. System halted.");
 			System.exit(1);
 		}
-
-		return file;
+		try {
+			stream.flush();
+			stream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void addTestToTestsuite(String testClassName) {
