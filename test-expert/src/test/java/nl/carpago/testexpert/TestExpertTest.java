@@ -23,7 +23,6 @@ import nl.carpago.testexpert.TestExpert.MockFramework;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -40,13 +39,6 @@ public class TestExpertTest extends AbstractTestExpert {
 	private TestExpert testExpert;
 
 	private final Logger logger = Logger.getLogger(this.getClass());
-
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-	}
 
 	@Override
 	protected void tearDown() throws Exception {
@@ -77,6 +69,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testIsLiteral() {
+		
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 
 		assertTrue(this.testExpert.isLiteral("melding()"));
 
@@ -102,6 +97,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateConstructorForClass() {
+		
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Class<?> c = OnderhoudenMeldingServiceImpl.class;
 
 		String expected = "new OnderhoudenMeldingServiceImpl()";
@@ -173,6 +172,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateSomethingForInterface() {
+		
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 
 		Class<?> c = List.class;
 
@@ -190,6 +192,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterNamesForMethodWithInterface() {
+		
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Method m = null;
 		try {
 			m = MijnLijst.class.getMethod("add", int.class, int.class);
@@ -211,6 +217,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterNamesForMethodWithConcreteClass() {
+		
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Method m = null;
 		try {
 			m = TstClass.class.getMethod("add", int.class, int.class);
@@ -232,6 +242,9 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterNamesForMethodWithInterfaceWithStringAsParameters() {
 
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Method m = null;
 		try {
 			m = MijnLijst.class.getMethod("add", String.class, String.class);
@@ -252,7 +265,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetPrimitiveType() {
-		// Class<?> getPrimitiveType(String baseType) {
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		assertEquals(byte.class, this.testExpert.getPrimitiveType("byte"));
 		assertEquals(short.class, this.testExpert.getPrimitiveType("short"));
 		assertEquals(int.class, this.testExpert.getPrimitiveType("int"));
@@ -274,6 +289,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterNamesForMethod() {
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterNamesForMethod(method)));
 		try {
@@ -297,6 +315,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterTypesForMethod() {
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterTypesForMethod(method)));
 		try {
@@ -324,6 +345,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterTypeAndNameForMethod() {
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		Method method = null;
 		try {
 			method = TstClassInner.class.getMethod("testForParameterTypesAndName", new Class<?>[] { int.class, String.class, Person.class });
@@ -343,6 +367,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testFindAllJavaFilesForFolder() {
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
 			final int expected = 24;
@@ -377,24 +404,8 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateAnnotationsForSpringTest() {
-		/*
-		 * 
-		 * logger.debug("enter");
-		 * 
-		 * this.checkAndAddImport(org.junit.runner.RunWith.class);
-		 * this.checkAndAddImport
-		 * (org.springframework.test.context.junit4.SpringJUnit4ClassRunner
-		 * .class); this.checkAndAddImport(org.springframework.test.context.
-		 * ContextConfiguration.class);
-		 * this.checkAndAddImport(org.springframework
-		 * .beans.factory.annotation.Autowired.class); // ???? fixtures ???
-		 * wordt toch geinsert door klant ???? // this.addImport(classToImport)
-		 * 
-		 * this.annotionsBeforeTestClass.add(
-		 * "@RunWith(SpringJUnit4ClassRunner.class)");
-		 * this.annotionsBeforeTestClass
-		 * .add("@ContextConfiguration(classes={Fixtures.class})");
-		 */
+		this.testExpert = new TestExpertImplForUnittestingPurposes();
+		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 
 		testExpert.generateAnnotationsForSpringTest();
 		List<String> annotations = testExpert.getAnnotionsBeforeTestClass();
