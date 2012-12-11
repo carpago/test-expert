@@ -1258,8 +1258,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		final String directoryName = "src/test/java/nl/carpago/testexpert";
 		final String content = "This should be in the file "+new Date();
 		try {
-			File file = testExpert.writeFile(fileName, directoryName, content);
-			assertNotNull(file);
+			testExpert.writeFile(fileName, directoryName, content);
 		} catch (FileNotFoundException e) {
 			fail("File "+directoryName+"/"+fileName+" could not be written!");
 		}
