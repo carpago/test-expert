@@ -42,7 +42,7 @@ public class TestExpertImplForUnittestingPurposes extends TestExpert {
 			return this.mockFramework;
 		}
 		else {
-			return MockFramework.MOCKIT; // for convenience while running this test in file generating mode ...
+			return MockFramework.EASYMOCK; // for convenience while running this test in file generating mode ...
 		}
 		
 	}

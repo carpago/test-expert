@@ -8,19 +8,18 @@ import junit.framework.TestCase;
 
 import com.thoughtworks.xstream.XStream;
 
-
 public class AbstractTestExpert extends TestCase {
-	
+
 	private final Logger logger = Logger.getLogger(AbstractTestExpert.class);
 
 	public Object cloneMe(Object obj) {
 		XStream xstream = new XStream();
-		
+
 		String toString = xstream.toXML(obj);
 		Object result = xstream.fromXML(toString);
-		
+
 		assertTrue(obj != result);
-		
+
 		return result;
 	}
 
@@ -30,21 +29,21 @@ public class AbstractTestExpert extends TestCase {
 		expectedAsString = removeAllTagsAroundLiterals(expectedAsString);
 		String actualAsString = xstream.toXML(actual);
 		actualAsString = removeAllTagsAroundLiterals(actualAsString);
-		
-		boolean result = expectedAsString.equals(actualAsString); 
+
+		boolean result = expectedAsString.equals(actualAsString);
 
 		return result;
 	}
-	
+
 	protected String removeAllTagsAroundLiterals(String expectedAsString) {
-		
-		String[] basicTypes = new String[]{"byte", "short", "int", "long", "float", "double","char", "boolean","string"};
+
+		String[] basicTypes = new String[] { "byte", "short", "int", "long", "float", "double", "char", "boolean", "string" };
 		String result = expectedAsString;
-		
-		for(String basicType : basicTypes) {
-			result = result.replaceAll("</?"+basicType+">", "");
+
+		for (String basicType : basicTypes) {
+			result = result.replaceAll("</?" + basicType + ">", "");
 		}
-		
+
 		return result;
 	}
 
@@ -52,22 +51,20 @@ public class AbstractTestExpert extends TestCase {
 		Field field = null;
 		try {
 			field = victim.getClass().getDeclaredField(fieldName);
-		} catch (SecurityException e1) {
-			logger.error(e1);
-		} catch (NoSuchFieldException e1) {
-			logger.error(e1);
+		} catch (Exception exception) {
+			logger.error(exception);
+			throw new TestExpertException(exception);
 		}
-		if(field != null) {
+		if (field != null) {
 			field.setAccessible(true);
 			try {
 				field.set(victim, what);
-			} catch (IllegalArgumentException e) {
-				logger.error(e);
-			} catch (IllegalAccessException e) {
-				logger.error(e);
+			} catch (Exception exception) {
+				logger.error(exception);
+				throw new TestExpertException(exception);
 			}
 		}
-		
+
 		return victim;
 	}
 }

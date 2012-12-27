@@ -101,7 +101,7 @@ public abstract class TestExpert extends TestCase {
 		this.footer = "";
 	}
 
-	public void writeFile() throws FileNotFoundException {
+	public void writeFile() {
 		logger.debug("entering writeFile");
 		final String fileName = getOutputFolder() + "/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
 		final String directoryName = getOutputFolder() + "/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");
@@ -113,58 +113,44 @@ public abstract class TestExpert extends TestCase {
 
 		File file = new File(fileName);
 		if (!file.exists() || this.overwriteExistingFiles()) {
-			FileOutputStream stream = new FileOutputStream(file);
 			try {
+				FileOutputStream stream = new FileOutputStream(file);
 				file.createNewFile();
-			} catch (IOException e) {
-				logger.error("Unable to create outputfile. System halted.");
-				System.exit(1);
-			}
-
-			PrintStream po = new PrintStream(stream);
-			po.print(this.codeGen());
-			po.flush();
-			po.close();
-
-			try {
+				PrintStream po = new PrintStream(stream);
+				po.print(this.codeGen());
+				po.flush();
+				po.close();
 				stream.flush();
 				stream.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			} catch (Exception exception) {
+				throw new TestExpertException("File " + file + " unable to create!", exception);
 			}
-			
+
 			addTestToTestsuite(this.classUnderTest.getName() + "Test.class");
 		}
-		
-		
 
 		logger.info(("Written '" + directoryName + this.classUnderTest.getSimpleName() + "Test'"));
 		logger.debug("leaving writeFile");
 	}
 
-	protected void writeFile(String fileName, String directoryName, String content) throws FileNotFoundException {
+	protected void writeFile(String fileName, String directoryName, String content) {
 		File directory = new File(directoryName);
 		directory.mkdirs();
 
 		File file = new File(directoryName + "/" + fileName);
-		FileOutputStream stream = new FileOutputStream(file);
+		
 		try {
+			FileOutputStream stream = new FileOutputStream(file);
 			file.createNewFile();
 			PrintStream po = new PrintStream(stream);
 			po.print(content);
 			po.flush();
 			po.close();
-		} catch (IOException e) {
-			logger.error("Unable to create outputfile. System halted.");
-			System.exit(1);
-		}
-		try {
 			stream.flush();
 			stream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception exception) {
+			throw new TestExpertException("File " + file + " unable to create!", exception);
 		}
 	}
 
@@ -469,15 +455,10 @@ public abstract class TestExpert extends TestCase {
 						Method method = null;
 						try {
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
-						} catch (SecurityException e) {
+						} catch (Exception e) {
 							logger.error(e);
-						} catch (NoSuchMethodException e) {
-							logger.error(e);
-							assert false;
-						} catch (ClassNotFoundException e) {
-							logger.error(e);
-							assert false;
-						}
+							throw new TestExpertException(e);
+						} 
 
 						if (collab.equals(this.classUnderTest.getName())) {
 							continue inner;
@@ -532,6 +513,7 @@ public abstract class TestExpert extends TestCase {
 												}
 											} catch (IndexOutOfBoundsException iobe) {
 												logger.error("INdexOutOfBoundException for method:" + method.getName() + ", index:" + n);
+												throw new TestExpertException(iobe);
 											}
 										}
 									} else {
@@ -541,6 +523,7 @@ public abstract class TestExpert extends TestCase {
 											}
 										} catch (IndexOutOfBoundsException iobe) {
 											logger.error("IndexOutOfBoundsException in replacing elemnt with annotation.");
+											throw new TestExpertException(iobe);
 										}
 									}
 								}
@@ -931,8 +914,10 @@ public abstract class TestExpert extends TestCase {
 							+ ");");
 
 				} catch (SecurityException e) {
-					e.printStackTrace();
+					logger.error(e);
+					throw new TestExpertException(e);
 				} catch (NoSuchMethodException e) {
+					// happens when the method is not found through the framework from Martin Fowler
 					result += addCodeLn("\t\tsetFieldThroughReflection(" + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ", \"" + field.getName() + "\", this."
 							+ WordUtils.uncapitalize(field.getName()) + ");");
 				}
@@ -980,6 +965,7 @@ public abstract class TestExpert extends TestCase {
 				generateExpectForCollaboratorsOfMethod(methode);
 			} catch (IOException e) {
 				logger.error(e);
+				throw new TestExpertException(e);
 			}
 
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
@@ -1255,17 +1241,15 @@ public abstract class TestExpert extends TestCase {
 	protected boolean isPrimitive(Class<?> clazz) {
 		logger.debug("enter");
 		assert clazz != null;
-		
+
 		if (clazz == null) {
 			logger.warn("TestExpert::isPrimitive ... clazz is null!");
 			return true;
 		} else {
 			// rloman: hack for follow up on #131
-			if(clazz.getPackage() == null) {
+			if (clazz.getPackage() == null) {
 				return true;
-			}
-			else {
-			}
+			} 
 			return clazz.isPrimitive();
 		}
 	}
@@ -1510,6 +1494,7 @@ public abstract class TestExpert extends TestCase {
 			lijstMetAlleJavaFilesUitProject = findAllJavaFiles(getSourceFolder());
 		} catch (IOException e) {
 			logger.fatal(e.getMessage());
+			throw new TestExpertException(e);
 		}
 
 		Class<?> classUnderTest = null;
@@ -1525,6 +1510,7 @@ public abstract class TestExpert extends TestCase {
 					this.generateTestClass();
 				} catch (InvalidAnnotationException e) {
 					logger.warn(e);
+					throw new TestExpertException(e);
 				}
 
 				this.writeFile();
