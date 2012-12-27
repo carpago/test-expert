@@ -1,5 +1,6 @@
 package nl.carpago.testexpert;
 
+@SuppressWarnings("serial")
 public class InvalidAnnotationException extends Exception {
 
 

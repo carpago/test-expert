@@ -69,7 +69,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testIsLiteral() {
-		
+
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 
@@ -97,10 +97,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateConstructorForClass() {
-		
+
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Class<?> c = OnderhoudenMeldingServiceImpl.class;
 
 		String expected = "new OnderhoudenMeldingServiceImpl()";
@@ -172,7 +172,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGenerateSomethingForInterface() {
-		
+
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
 
@@ -192,10 +192,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterNamesForMethodWithInterface() {
-		
+
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Method m = null;
 		try {
 			m = MijnLijst.class.getMethod("add", int.class, int.class);
@@ -217,10 +217,10 @@ public class TestExpertTest extends AbstractTestExpert {
 
 	@Test
 	public void testGetParameterNamesForMethodWithConcreteClass() {
-		
+
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Method m = null;
 		try {
 			m = TstClass.class.getMethod("add", int.class, int.class);
@@ -244,7 +244,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Method m = null;
 		try {
 			m = MijnLijst.class.getMethod("add", String.class, String.class);
@@ -267,7 +267,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetPrimitiveType() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		assertEquals(byte.class, this.testExpert.getPrimitiveType("byte"));
 		assertEquals(short.class, this.testExpert.getPrimitiveType("short"));
 		assertEquals(int.class, this.testExpert.getPrimitiveType("int"));
@@ -291,7 +291,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterNamesForMethod(method)));
 		try {
@@ -317,7 +317,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterTypesForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterTypesForMethod(method)));
 		try {
@@ -347,7 +347,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterTypeAndNameForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		Method method = null;
 		try {
 			method = TstClassInner.class.getMethod("testForParameterTypesAndName", new Class<?>[] { int.class, String.class, Person.class });
@@ -369,11 +369,11 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testFindAllJavaFilesForFolder() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(OnderhoudenMeldingServiceImpl.class);
-		
+
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
 			final int expected = 24;
-			Assert.assertEquals("Expected:"+expected+", actual:" + files.size(), expected, files.size());
+			Assert.assertEquals("Expected:" + expected + ", actual:" + files.size(), expected, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail();
@@ -439,7 +439,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
-		// correct: is now done when necessary!  Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
+		// correct: is now done when necessary!
+		// Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
 
 		// test the code that eventually is generated.
 		String code = testExpert.codeGenImports();
@@ -455,7 +456,9 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
-		 // correct: should be inserted when necessary ... Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
+		// correct: should be inserted when necessary ...
+		// Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;")
+		// > -1);
 
 		// other package
 		testExpert = new TestExpertImplForUnittestingPurposes();
@@ -482,7 +485,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
 		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
-	// 	Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;") > -1);
+		// Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;")
+		// > -1);
 	}
 
 	@Test
@@ -641,7 +645,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.init(TstClassInner.class);
 		try {
 			t.generateTestClass();
-		}catch (InvalidAnnotationException e) {
+		} catch (InvalidAnnotationException e) {
 			logger.error("Annotation and Parameters are ordinal not equal!");
 		}
 
@@ -720,7 +724,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			assertStatement = t.generateAssertStatements(method);
 			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(4, resultFromMethod));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
-			
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -743,44 +747,43 @@ public class TestExpertTest extends AbstractTestExpert {
 		int newSize = t.getImports().size();
 
 		Assert.assertTrue(currentSize == newSize);
-		
+
 		Person one = new Person("John Doe", 45);
-		
+
 		Person[] people = new Person[3];
 		people[0] = one;
-		
+
 		t.checkAndAddImport(people);
-		
-		Assert.assertFalse("Imports shouldn't contain "+one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
-		
+
+		Assert.assertFalse("Imports shouldn't contain " + one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
+
 		Melding aMelding = new Melding();
-		Melding[] meldingen = new Melding[]{aMelding};
+		Melding[] meldingen = new Melding[] { aMelding };
 		t.checkAndAddImport(meldingen);
-		Assert.assertTrue("Imports should contain "+aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
-		
-		
+		Assert.assertTrue("Imports should contain " + aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
+
 		Betrokkene betrokkene = new Betrokkene();
-		List <Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
+		List<Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
 		betrokkenen.add(betrokkene);
 		t.checkAndAddImport(betrokkenen);
-		Assert.assertTrue("Imports should contain "+betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
-		
+		Assert.assertTrue("Imports should contain " + betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
+
 		Assert.assertTrue(t.getImports().contains(java.util.ArrayList.class.getName()));
-		
-		Set <Melding> meldingenSet = new HashSet<Melding>();
+
+		Set<Melding> meldingenSet = new HashSet<Melding>();
 		meldingenSet.add(aMelding);
 		t.checkAndAddImport(meldingenSet);
 		Assert.assertTrue(t.getImports().contains(java.util.HashSet.class.getName()));
-		
+
 		t.init(TstClassInner.class);
 		Assert.assertFalse(t.getImports().contains(java.util.HashMap.class.getName()));
 		Assert.assertFalse(t.getImports().contains(Melding.class.getName()));
-		Map <String, Melding> map = new HashMap<String, Melding>();
+		Map<String, Melding> map = new HashMap<String, Melding>();
 		map.put("aKey", aMelding);
 		t.checkAndAddImport(map);
 		Assert.assertTrue(t.getImports().contains(Melding.class.getName()));
 		Assert.assertTrue(t.getImports().contains(HashMap.class.getName()));
-		
+
 		t.init(TstClassInner.class);
 		int aNumber = 3;
 		t.checkAndAddImport(aNumber);
@@ -815,7 +818,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"persoonDao\", this.persoonDao);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 	}
-	
+
 	@Test
 	public void testGetInAnnotationsForMethodForAnnotationCreateUnitTest() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
@@ -823,22 +826,22 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		Method method;
 		try {
-			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[]{int.class, int.class});
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[] { int.class, int.class });
 			String[] ins = t.getInAnnotationsForMethod(method);
-			
+
 			Assert.assertFalse(ins.length == 0);
 			Assert.assertTrue("two".equals(ins[0]));
 			Assert.assertTrue("three".equals(ins[1]));
-			
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
-	
+
 	}
-	
+
 	@Test
 	public void testGetOutAnnotationsForMethodForCreateUnitTest() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
@@ -846,21 +849,21 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		Method method;
 		try {
-			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[]{int.class, int.class});
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForCreateUnitTest", new Class<?>[] { int.class, int.class });
 			String out = t.getOutAnnotationForMethod(method);
-			
+
 			Assert.assertFalse(out == null);
 			Assert.assertTrue("vier".equals(out));
-			
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testGetOutAnnotationsForMethodForExpect() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
@@ -868,21 +871,21 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		Method method;
 		try {
-			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[]{int.class, int.class});
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[] { int.class, int.class });
 			String out = t.getOutAnnotationForMethod(method);
-			
+
 			Assert.assertFalse(out == null);
 			Assert.assertTrue("vier".equals(out));
-			
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testGetInAnnotationsForMethodForAnnotationExpect() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
@@ -890,22 +893,22 @@ public class TestExpertTest extends AbstractTestExpert {
 		t.setCurrentFramework(MockFramework.EASYMOCK);
 		Method method;
 		try {
-			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[]{int.class, int.class});
+			method = TstClassInner.class.getMethod("testMethodeForGetInAndOutForExpect", new Class<?>[] { int.class, int.class });
 			String[] ins = t.getInAnnotationsForMethod(method);
-			
+
 			Assert.assertFalse(ins.length == 0);
 			Assert.assertTrue("two".equals(ins[0]));
 			Assert.assertTrue("three".equals(ins[1]));
-			
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
-	
+
 	}
-	
+
 	@Test
 	public void testGenerateExpectAndReplayForCollaboratorsOfMethod() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
@@ -1204,7 +1207,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testAddTestToTestsuiteAndTestCodegenTestsuite() {
 		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
@@ -1212,20 +1215,19 @@ public class TestExpertTest extends AbstractTestExpert {
 		testExpert.setCurrentFramework(MockFramework.EASYMOCK);
 		final String testClassName = "nl.carpago.testexpert.OurTest.class";
 		final String anotherTestClassName = "nl.carpago.testexpert.Another.class";
-		
-		final List <String> mockTestsuite = new ArrayList<String>();
+
+		final List<String> mockTestsuite = new ArrayList<String>();
 		mockTestsuite.add(testClassName);
 		mockTestsuite.add(anotherTestClassName);
-		
+
 		testExpert.addTestToTestsuite(testClassName);
 		testExpert.addTestToTestsuite(anotherTestClassName);
-		
+
 		List<String> result = testExpert.getAllTests();
-		
-		Assert.assertTrue("Alltest does not contain the just added test:"+testClassName, result.contains(testClassName));
-		Assert.assertTrue("Alltest does not contain the just added test:"+anotherTestClassName, result.contains(anotherTestClassName));
-		
-		
+
+		Assert.assertTrue("Alltest does not contain the just added test:" + testClassName, result.contains(testClassName));
+		Assert.assertTrue("Alltest does not contain the just added test:" + anotherTestClassName, result.contains(anotherTestClassName));
+
 		String codeGenExpected = EMPTY_STRING;
 		codeGenExpected += "import junit.framework.JUnit4TestAdapter;\n";
 		codeGenExpected += "import junit.framework.TestCase;\n" + "import junit.framework.TestSuite;\n";
@@ -1256,24 +1258,20 @@ public class TestExpertTest extends AbstractTestExpert {
 		codeGenExpected += "}";
 
 		String codeGenActual = testExpert.codeGenTestsuite();
-		
-		for(String line : codeGenExpected.split("\n")) {
-			Assert.assertTrue("Line '"+line+"' is not found in generated code!", codeGenActual.indexOf(line) > -1);
+
+		for (String line : codeGenExpected.split("\n")) {
+			Assert.assertTrue("Line '" + line + "' is not found in generated code!", codeGenActual.indexOf(line) > -1);
 		}
 	}
-	
+
 	@Test
 	public void testWriteFileForFileDirContent() {
 		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		final String fileName = "writefile-unittest.txt";
 		final String directoryName = "src/test/java/nl/carpago/testexpert";
-		final String content = "This should be in the file "+new Date();
-		try {
-			testExpert.writeFile(fileName, directoryName, content);
-		} catch (FileNotFoundException e) {
-			fail("File "+directoryName+"/"+fileName+" could not be written!");
-		}
-		
+		final String content = "This should be in the file " + new Date();
+		testExpert.writeFile(fileName, directoryName, content);
+
 		File testFile = new File("src/test/java/nl/carpago/testexpert/writefile-unittest.txt");
 		FileInputStream inputStream = null;
 		try {
@@ -1282,8 +1280,8 @@ public class TestExpertTest extends AbstractTestExpert {
 			BufferedReader reader = new BufferedReader(inputstreamReader);
 			String line = null;
 			try {
-				while((line = reader.readLine()) != null){
-					if(content.equals(line)) {
+				while ((line = reader.readLine()) != null) {
+					if (content.equals(line)) {
 						reader.close();
 						return;
 					}
