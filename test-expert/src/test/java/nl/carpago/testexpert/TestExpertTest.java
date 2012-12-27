@@ -439,8 +439,6 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(imports.contains("org.junit.runner.RunWith"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner"));
 		Assert.assertTrue(imports.contains("org.springframework.test.context.ContextConfiguration"));
-		// correct: is now done when necessary!
-		// Assert.assertTrue(imports.contains("org.springframework.beans.factory.annotation.Autowired"));
 
 		// test the code that eventually is generated.
 		String code = testExpert.codeGenImports();

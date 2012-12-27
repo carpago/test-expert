@@ -1249,8 +1249,7 @@ public abstract class TestExpert extends TestCase {
 			// rloman: hack for follow up on #131
 			if (clazz.getPackage() == null) {
 				return true;
-			} else {
-			}
+			} 
 			return clazz.isPrimitive();
 		}
 	}
