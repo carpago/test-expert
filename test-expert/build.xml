@@ -177,7 +177,7 @@
 		<mkdir dir="${dist.dir}/lib" />
 
 		<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
-		<jar jarfile="${dist.dir}/lib/${ant.project.name}-${DSTAMP}.jar" basedir="${build.dir}" />
+		<jar jarfile="${dist.dir}/lib/${ant.project.name}.jar" basedir="${build.dir}" />
 
 		<!-- Put the dependencies at same location -->
 		<copy todir="${dist.dir}/lib">

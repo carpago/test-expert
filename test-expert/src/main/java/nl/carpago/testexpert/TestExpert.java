@@ -432,7 +432,8 @@ public abstract class TestExpert extends TestCase {
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
 						String collabAndInvokee = null;
-						Scanner collabScanner = new Scanner(s.next()).useDelimiter(" ");
+						String subScan = s.next();
+						Scanner collabScanner = new Scanner(subScan).useDelimiter(" ");
 						while (collabScanner.hasNext()) {
 							collabAndInvokee = collabScanner.next();
 						}
@@ -634,7 +635,7 @@ public abstract class TestExpert extends TestCase {
 	protected boolean isCallerForCollab(String aCollabKandidate) {
 
 		for (String element : this.collabs) {
-			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1) {
+			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1 && aCollabKandidate.toLowerCase().indexOf("getfield") < 0) {
 				return true;
 			}
 		}

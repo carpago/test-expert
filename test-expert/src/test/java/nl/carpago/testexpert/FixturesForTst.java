@@ -3,6 +3,8 @@ package nl.carpago.testexpert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.infor.domain.Customer;
+
 
 @Configuration
 	public class FixturesForTst {
@@ -44,6 +46,17 @@ import org.springframework.context.annotation.Configuration;
 		@Bean
 		public String onetwothree() {
 			return "123";
+		}
+		
+		@Bean
+		public int id() {
+			return 1;
+		}
+		
+		@Bean
+		public Customer customer()
+		{
+			return new Customer(1, "Raymond");
 		}
 		
 		@Bean
