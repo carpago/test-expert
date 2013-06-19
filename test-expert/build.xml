@@ -165,7 +165,7 @@
 	<target name="findbugs" depends="build">
 		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/findbugs.xml">
 			<sourcePath path="${src.dir}" />
-			<class location="${dist.dir}/lib/${ant.project.name}-${DSTAMP}.jar" />
+			<class location="${dist.dir}/lib/${ant.project.name}.jar" />
 			<auxclasspath refid="test.classpath" />
 		</findbugs>
 	</target>
