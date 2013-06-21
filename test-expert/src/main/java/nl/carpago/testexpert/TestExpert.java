@@ -408,7 +408,7 @@ public abstract class TestExpert extends TestCase {
 
 		String result = EMPTY_STRING;
 		String[] inputParametersViaAnnotations = this.getInAnnotationsForMethod(methodeArgument);
-
+		
 		Set<String> localVars = new HashSet<String>();
 		String fileName = this.getPathToBinaryFile(this.classUnderTest);
 		List<String> lines = this.getLinesFromFile(fileName);
@@ -481,6 +481,11 @@ public abstract class TestExpert extends TestCase {
 								}
 
 								String construction = invokeDTO.getCollabMethodParams();
+								List<String> paramsForAddingAsExpectFixture = invokeDTO.getParams();
+								for(String paramAddToFixtureForExpects : paramsForAddingAsExpectFixture)
+								{
+									this.addFixture(paramAddToFixtureForExpects);
+								}
 								mocked.add(construction);
 
 								// create a list of them both.
@@ -570,6 +575,10 @@ public abstract class TestExpert extends TestCase {
 				returnFromMethod = generateConstructorForClass(method.getReturnType());
 			}
 
+			
+			// add out to the temperoray expect since this class uses it.
+			this.addFixture(out);
+			
 			result += this.generateExpectationForMethod(method, construction);
 
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
@@ -1041,10 +1050,10 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 
 		List<Class<?>> result = new ArrayList<Class<?>>();
-
+		
 		CreateUnittest annotation = (CreateUnittest) methode.getAnnotation(nl.carpago.testexpert.annotation.CreateUnittest.class);
 		String[] inputFixtures = annotation.in();
-		String outputFixture = annotation.out();
+		String  outputFixture = annotation.out();
 
 		List<String> fixturesAll = new LinkedList<String>(Arrays.asList(inputFixtures));
 		if (!EMPTY_STRING.equals(outputFixture)) {
@@ -1054,7 +1063,11 @@ public abstract class TestExpert extends TestCase {
 		for (String fixture : fixturesAll) {
 			if (!(this.isLiteral(fixture) || QUESTION_MARK.equals(fixture) || ASTERISK.equals(fixture))) {
 				Class<?> fixtureClass = addFixture(fixture);
-				result.add(fixtureClass);
+				if(fixtureClass != null)
+				{
+					result.add(fixtureClass);
+				}
+				
 			}
 		}
 
@@ -1062,12 +1075,19 @@ public abstract class TestExpert extends TestCase {
 
 		return result;
 	}
+	
+	
 
 	private Class<?> addFixture(String fixture) {
 		logger.debug("enter");
-
+		
+		if(this.fixtures.containsKey(fixture) || !ctx.containsBean(fixture))
+		{
+			return null;
+		}
+		
 		this.checkAndAddImport(org.springframework.beans.factory.annotation.Autowired.class);
-
+		
 		Object o = ctx.getBean(fixture);
 		this.checkAndAddImport(o);
 		this.fixtures.put(fixture, o.getClass());
@@ -1112,7 +1132,7 @@ public abstract class TestExpert extends TestCase {
 
 		return result;
 	}
-
+	
 	protected String generateCreateArgumentsForTestMethod(Method methodeToBeTested) throws InvalidAnnotationException {
 		logger.debug("enter");
 
@@ -1498,14 +1518,14 @@ public abstract class TestExpert extends TestCase {
 			throw new TestExpertException(e);
 		}
 
-		Class<?> classUnderTest = null;
-		for (String classFile : lijstMetAlleJavaFilesUitProject) {
-			classUnderTest = Class.forName(classFile); //
+		Class<?> classAsFile = null;
+		for (String classAsString : lijstMetAlleJavaFilesUitProject) {
+			classAsFile = Class.forName(classAsString); //
 
-			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classUnderTest);
+			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classAsFile);
 			if (methods != null && !methods.isEmpty()) {
-
-				this.init(classUnderTest);
+				//hence this method should be tested
+				this.init(classAsFile);
 
 				try {
 					this.generateTestClass();
