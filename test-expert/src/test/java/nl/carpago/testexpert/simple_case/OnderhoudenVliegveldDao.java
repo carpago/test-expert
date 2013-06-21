@@ -5,7 +5,7 @@ import nl.carpago.testexpert.annotation.Expect;
 
 public class OnderhoudenVliegveldDao {
 	
-	@Expect(in="number", out="vier")
+	@Expect(in="number", out="four")
 	public int add(int number) {
 		return number++;
 	}
