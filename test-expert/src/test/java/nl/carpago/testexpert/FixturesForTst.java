@@ -62,6 +62,12 @@ import org.springframework.context.annotation.Configuration;
 		}
 		
 		@Bean
+		public int four()
+		{
+			return 4;
+		}
+		
+		@Bean
 		public Persoon eenAnderPersoon() {
 			return new Persoon(44, "John Doe");
 		}
