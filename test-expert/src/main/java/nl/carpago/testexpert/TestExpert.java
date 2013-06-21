@@ -570,14 +570,16 @@ public abstract class TestExpert extends TestCase {
 			result += addCodeLn("\t\t" + construction + ";");
 		} else {
 			if (out != null) {
+				// add out to the temperoray expect since this class uses it.
+				this.addFixture(out);
+				
 				returnFromMethod = out;
 			} else {
 				returnFromMethod = generateConstructorForClass(method.getReturnType());
 			}
-
 			
-			// add out to the temperoray expect since this class uses it.
-			this.addFixture(out);
+			
+			
 			
 			result += this.generateExpectationForMethod(method, construction);
 
