@@ -13,8 +13,6 @@ public class TestExpertImplForUnittestingPurposes extends TestExpert {
 		return FixturesForTst.class;
 	}
 	
-	public TestExpertImplForUnittestingPurposes(){}
-
 	@Override
 	public boolean overwriteExistingFiles() {
 		return true;
