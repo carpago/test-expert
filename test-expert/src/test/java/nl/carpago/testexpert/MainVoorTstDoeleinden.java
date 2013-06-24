@@ -15,6 +15,7 @@ class ReflectionTrainer {
 	private List<String> lijst;
 	
 	public List<String> getLijst() {
+		lijst = new ArrayList<String>();
 		return lijst;
 	}
 }
@@ -109,8 +110,11 @@ public class MainVoorTstDoeleinden {
 		for(File file : listOfFiles) {
 			if(file.isFile()) {
 				System.out.println(file.getName());
-				if (file.getName().endsWith("java")) {
-					// do the stuff
+				String fileName = file.getName();
+				boolean testResult = fileName.endsWith("java");
+				if(testResult)
+				{
+					//do dome stuff
 				}
 			}
 		}
