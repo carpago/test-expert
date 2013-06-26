@@ -686,15 +686,22 @@ public abstract class TestExpert extends TestCase {
 		if (annotatie instanceof Expect) {
 			in = ((Expect) annotatie).in();
 		}
-		for(int index = 0;index < in.length;index++)
+		if (in != null)
 		{
-			//if("String".equals)
+			for(int index = 0;index < in.length;index++)
+			{
+				if("String".equals(parameterTypes[index]) && this.isLiteral(in[index]))
+				{
+					in[index] = "\"" + in[index] + "\"";
+				}
+			}
 		}
 
 		return in;
 	}
 
 	protected String getOutAnnotationForMethod(Method method) {
+		String returnType = method.getReturnType().getSimpleName();
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String out = null;
 		if (annotatie == null) {
@@ -705,6 +712,12 @@ public abstract class TestExpert extends TestCase {
 		}
 		if (annotatie instanceof Expect) {
 			out = ((Expect) annotatie).out();
+		}
+
+		if (out != null) {
+			if ("String".equals(returnType) && this.isLiteral(out)) {
+				out = "\"" + out + "\"";
+			}
 		}
 
 		return out;
@@ -1024,23 +1037,9 @@ public abstract class TestExpert extends TestCase {
 		String tail = EMPTY_STRING;
 		if (!(parameterNames.length < 1)) {
 			first = parameterNames[0];
-			if("String".equals(parameterTypes[0]) && this.isLiteral(first))
-			{
-				first ="\""+first+"\"";
-			}
 		}
-		//rloman: hier bug fixen. Je zou t kunnen fixen door de user
-		// de String te laten escapen maar ik bouw intelligentie hier in.
 		for (int i = 1; i <= parameterNames.length - 1; i++) {
-			if("String".equals(parameterTypes[i]) && this.isLiteral(parameterNames[i]))
-			{
-				tail += ", " + "\"" + parameterNames[i] + "\"";
-			}
-			else
-			{
 				tail += ", " + parameterNames[i];
-			}
-			
 		}
 
 		parameterString = first + tail;
