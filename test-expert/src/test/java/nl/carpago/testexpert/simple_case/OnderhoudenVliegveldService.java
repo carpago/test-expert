@@ -30,8 +30,36 @@ public class OnderhoudenVliegveldService {
 		
 		return janeDoe;
 	}
-	
 
+	@CreateUnittest(in={"3","2"},out="5")
+	public String telLiteralsOp(int een, int twee)
+	{
+		return Integer.valueOf(een + twee).toString();
+	}
+	
+	@CreateUnittest(in={"2","3"}, out="5")
+	public int telLiteralOpInt(int een, int twee)
+	{
+		return een + twee;
+	}
+	
+	@CreateUnittest(in={"2","3"}, out="23")
+	public String concatString(String een, String twee)
+	{
+		return een+twee;
+	}
+	
+	@CreateUnittest(in={"one","two"}, out="12")
+	public String concatString2(String een, String twee)
+	{
+		return een+twee;
+	}
+
+	@CreateUnittest(in={"'a'","'b'"}, out="'a'")
+	public char returnFirstChar(char een, char twee)
+	{
+		return een;
+	}
 	
 	protected OnderhoudenVliegveldDao getOnderhoudenVliegveldDao() {
 		return onderhoudenVliegveldDao;
