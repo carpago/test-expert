@@ -68,6 +68,12 @@ public class TstClassInner {
 		return getal++;
 	}
 	
+	@CreateUnittest(in={"3","4"}, out="34")
+	public String testMethodeConcatStringForCreateUnittest(String een, String twee)
+	{
+		return een + twee;
+	}
+	
 	@Expect(in={"two","three"}, out="vier")
 	public int testMethodeForGetInAndOutForExpect(int getal, int getal2) {
 		return getal++;
