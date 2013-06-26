@@ -154,6 +154,12 @@ public class TstClassInner {
 		return result;
 	}
 	
+	@CreateUnittest(in={"'a'","'b'"}, out="'a'")
+	public char testReturnFirstChar(char een, char twee)
+	{
+		return een;
+	}
+	
 	@CreateUnittest(in="number")
 	public void helperVoidMethod(int input) {
 		this.persoonDao.voidmethod(input);
