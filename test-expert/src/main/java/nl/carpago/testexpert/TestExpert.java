@@ -616,7 +616,6 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	// TODO Test
 	private String generateExpectationForMethod(Method method, String construction) {
 		String result = EMPTY_STRING;
 		if (MockFramework.MOCKIT.equals(getMockFramework())) {
@@ -675,6 +674,7 @@ public abstract class TestExpert extends TestCase {
 
 	protected String[] getInAnnotationsForMethod(Method method) {
 
+		String[] parameterTypes = getParameterTypesForMethod(method);
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String[] in = null;
 		if (annotatie == null) {
@@ -685,6 +685,10 @@ public abstract class TestExpert extends TestCase {
 		}
 		if (annotatie instanceof Expect) {
 			in = ((Expect) annotatie).in();
+		}
+		for(int index = 0;index < in.length;index++)
+		{
+			//if("String".equals)
 		}
 
 		return in;
@@ -1013,14 +1017,30 @@ public abstract class TestExpert extends TestCase {
 		}
 		result += addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
 
-		String[] parameterNames = methode.getAnnotation(CreateUnittest.class).in(); // this.getParameterNamesForMethod(methode);
+		String[] parameterNames = this.getInAnnotationsForMethod(methode);
+		String[] parameterTypes = getParameterTypesForMethod(methode);
+		// nog testen ... ook in deployment. (dus naar t greenfield project deployen
 		String first = EMPTY_STRING;
 		String tail = EMPTY_STRING;
 		if (!(parameterNames.length < 1)) {
 			first = parameterNames[0];
+			if("String".equals(parameterTypes[0]) && this.isLiteral(first))
+			{
+				first ="\""+first+"\"";
+			}
 		}
+		//rloman: hier bug fixen. Je zou t kunnen fixen door de user
+		// de String te laten escapen maar ik bouw intelligentie hier in.
 		for (int i = 1; i <= parameterNames.length - 1; i++) {
-			tail += ", " + parameterNames[i];
+			if("String".equals(parameterTypes[i]) && this.isLiteral(parameterNames[i]))
+			{
+				tail += ", " + "\"" + parameterNames[i] + "\"";
+			}
+			else
+			{
+				tail += ", " + parameterNames[i];
+			}
+			
 		}
 
 		parameterString = first + tail;
