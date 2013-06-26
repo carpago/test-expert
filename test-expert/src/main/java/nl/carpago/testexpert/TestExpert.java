@@ -616,7 +616,6 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	// TODO Test
 	private String generateExpectationForMethod(Method method, String construction) {
 		String result = EMPTY_STRING;
 		if (MockFramework.MOCKIT.equals(getMockFramework())) {
@@ -675,6 +674,7 @@ public abstract class TestExpert extends TestCase {
 
 	protected String[] getInAnnotationsForMethod(Method method) {
 
+		String[] parameterTypes = getParameterTypesForMethod(method);
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String[] in = null;
 		if (annotatie == null) {
@@ -686,11 +686,22 @@ public abstract class TestExpert extends TestCase {
 		if (annotatie instanceof Expect) {
 			in = ((Expect) annotatie).in();
 		}
+		if (in != null)
+		{
+			for(int index = 0;index < in.length;index++)
+			{
+				if("String".equals(parameterTypes[index]) && this.isLiteral(in[index]) && in[index].indexOf('"') < 0 )
+				{
+					in[index] = "\"" + in[index] + "\"";
+				}
+			}
+		}
 
 		return in;
 	}
 
 	protected String getOutAnnotationForMethod(Method method) {
+		String returnType = method.getReturnType().getSimpleName();
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String out = null;
 		if (annotatie == null) {
@@ -701,6 +712,12 @@ public abstract class TestExpert extends TestCase {
 		}
 		if (annotatie instanceof Expect) {
 			out = ((Expect) annotatie).out();
+		}
+
+		if (out != null) {
+			if ("String".equals(returnType) && this.isLiteral(out)  && out.indexOf('"') < 0 ) {
+				out = "\"" + out + "\"";
+			}
 		}
 
 		return out;
@@ -1013,14 +1030,16 @@ public abstract class TestExpert extends TestCase {
 		}
 		result += addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
 
-		String[] parameterNames = methode.getAnnotation(CreateUnittest.class).in(); // this.getParameterNamesForMethod(methode);
+		String[] parameterNames = this.getInAnnotationsForMethod(methode);
+		String[] parameterTypes = getParameterTypesForMethod(methode);
+		// nog testen ... ook in deployment. (dus naar t greenfield project deployen
 		String first = EMPTY_STRING;
 		String tail = EMPTY_STRING;
 		if (!(parameterNames.length < 1)) {
 			first = parameterNames[0];
 		}
 		for (int i = 1; i <= parameterNames.length - 1; i++) {
-			tail += ", " + parameterNames[i];
+				tail += ", " + parameterNames[i];
 		}
 
 		parameterString = first + tail;

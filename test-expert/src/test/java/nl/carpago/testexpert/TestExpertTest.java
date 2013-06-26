@@ -837,7 +837,50 @@ public class TestExpertTest extends AbstractTestExpert {
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
+	}
+	
+	@Test
+	public void testFortestMethodeConcatStringForCreateUnittestForInAnnation() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testMethodeConcatStringForCreateUnittest", new Class<?>[] { String.class, String.class });
+			String[] ins = t.getInAnnotationsForMethod(method);
 
+			Assert.assertTrue(ins.length == 2);
+			Assert.assertTrue("\"3\"".equals(ins[0]));
+			Assert.assertTrue("\"4\"".equals(ins[1]));
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
+	}
+	
+	@Test
+	public void testFortestMethodeConcatReturnFirstChar() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("testReturnFirstChar", new Class<?>[] { char.class, char.class });
+			String[] ins = t.getInAnnotationsForMethod(method);
+
+			Assert.assertTrue(ins.length == 2);
+			Assert.assertTrue("'a'".equals(ins[0]));
+			Assert.assertTrue("'b'".equals(ins[1]));
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
 	}
 
 	@Test
