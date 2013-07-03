@@ -2,9 +2,9 @@ package nl.carpago.testexpert;
 
 import java.lang.reflect.Field;
 
-import org.apache.log4j.Logger;
-
 import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -66,5 +66,31 @@ public class AbstractTestExpert extends TestCase {
 		}
 
 		return victim;
+	}
+	
+	protected Object getFieldvalueThroughReflection(Object theObject, String fieldName) {
+		assert theObject !=null : "theObject mag niet null zijn" ;
+		assert fieldName !=null && !fieldName.isEmpty() : "fieldName mag niet null en niet leeg zijn";
+		
+		Field field = null;
+		try {
+			field = theObject.getClass().getDeclaredField(fieldName);
+			if (field != null) {
+				field.setAccessible(true);
+			}
+		} catch (Exception exception) {
+			logger.error(exception);
+			throw new TestExpertException(exception);
+		}
+		Object objectFromReflection = null;
+		try {
+			objectFromReflection = field.get(theObject);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		return objectFromReflection;
 	}
 }
