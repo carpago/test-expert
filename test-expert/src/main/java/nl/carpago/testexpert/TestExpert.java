@@ -1024,13 +1024,38 @@ public abstract class TestExpert extends TestCase {
 		
 		
 		if (post != null && !post.isEmpty()) {
-			String[] postConditie = post.split("==");
-			assert postConditie.length == 2;
-			String field = postConditie[0];
-			String value = postConditie[1];
-			String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
-			addCodeLn("\t\tObject object = getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-			addCodeLn("\t\tcheckForDeepEquality(object,"+value+");");
+			String[] postAssertments = post.split(";");
+			if(postAssertments != null && postAssertments.length > 0)
+			{
+				for(String postConditieElement : postAssertments)
+				{
+					if(postConditieElement.indexOf(".equals") > -1)
+					{
+						String[] postConditie = postConditieElement.split(".equals");
+						assert postConditie.length == 2;
+						String field = postConditie[0].trim();
+						String value = postConditie[1].trim();
+						value = value.replaceAll("\\)", "");
+						value = value.replaceAll("\\(", "");
+						String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
+						addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
+						addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+					}
+					else
+					{
+						if(postConditieElement.indexOf("==") > -1)
+						{
+							String[] postConditie = postConditieElement.split("==");
+							String field = postConditie[0].trim();
+							String value = postConditie[1].trim();
+							String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
+							addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
+							addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+						}
+						
+					}
+				}
+			}
 		}
 
 		return post;
