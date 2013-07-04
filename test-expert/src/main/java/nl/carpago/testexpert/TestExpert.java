@@ -1021,7 +1021,9 @@ public abstract class TestExpert extends TestCase {
 		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
 		String post = ((CreateUnittest) annotatie).post();
 
-		
+		String field = null;
+		String value = null;
+		String[] postConditie = null;
 		
 		if (post != null && !post.isEmpty()) {
 			String[] postAssertments = post.split(";");
@@ -1031,29 +1033,23 @@ public abstract class TestExpert extends TestCase {
 				{
 					if(postConditieElement.indexOf(".equals") > -1)
 					{
-						String[] postConditie = postConditieElement.split(".equals");
-						assert postConditie.length == 2;
-						String field = postConditie[0].trim();
-						String value = postConditie[1].trim();
-						value = value.replaceAll("\\)", "");
-						value = value.replaceAll("\\(", "");
-						String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
-						addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-						addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+						postConditie = postConditieElement.split(".equals");
+						//remove the parenthesis
+						postConditie[1] = postConditie[1].replaceAll("\\)", "").replaceAll("\\(", "");
 					}
 					else
 					{
 						if(postConditieElement.indexOf("==") > -1)
 						{
-							String[] postConditie = postConditieElement.split("==");
-							String field = postConditie[0].trim();
-							String value = postConditie[1].trim();
-							String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
-							addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-							addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+							postConditie = postConditieElement.split("==");
 						}
-						
 					}
+					field = postConditie[0].trim();
+					value = postConditie[1].trim();
+					
+					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
+					addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
+					addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
 				}
 			}
 		}
@@ -1062,8 +1058,6 @@ public abstract class TestExpert extends TestCase {
 		
 	}
 
-	// voor mezelf voor ontwerp
-	//@CreateUnittest(in={},out="dd", post="m_name==person")
 	protected String generateCallToTestMethod(Method methode) {
 		logger.debug("enter");
 
