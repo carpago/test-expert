@@ -1,5 +1,7 @@
 package nl.carpago.testexpert.simple_case;
 
+import java.util.List;
+
 import nl.carpago.testexpert.Person;
 import nl.carpago.testexpert.annotation.CreateUnittest;
 
@@ -7,6 +9,8 @@ import nl.carpago.testexpert.annotation.CreateUnittest;
 public class OnderhoudenVliegveldService {
 	
 	private OnderhoudenVliegveldDao onderhoudenVliegveldDao;
+	private List<String> identifier;
+	private int aTestNumber = 3;
 
 	@CreateUnittest(in="number", out="vier")
 	public String getStringForNumber(int eenGetal){
@@ -63,6 +67,12 @@ public class OnderhoudenVliegveldService {
 	
 	protected OnderhoudenVliegveldDao getOnderhoudenVliegveldDao() {
 		return onderhoudenVliegveldDao;
+	}
+
+
+	@CreateUnittest(in={"vliegveldServiceId"}, post="identifier.equals(vliegveldServiceId);aTestNumber==3;")
+	protected void setIdentifier(List<String> anIdentifier) {
+		this.identifier = anIdentifier;
 	}
 	
 	
