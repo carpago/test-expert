@@ -270,7 +270,7 @@ public abstract class TestExpert extends TestCase {
 
 		generateCollaboratingClasses();
 		generateSetup();
-		generateMethodsWithAnnotationTestMe();
+		generateMethodsWithAnnotationCreateUnitTest();
 
 		generateGettersForCollaborators();
 
@@ -959,7 +959,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	protected void generateMethodsWithAnnotationTestMe() throws InvalidAnnotationException {
+	protected void generateMethodsWithAnnotationCreateUnitTest() throws InvalidAnnotationException {
 		logger.debug("enter");
 		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
@@ -1008,11 +1008,54 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			if (!"void".equals(methode.getReturnType().toString())) {
-				generateAssertStatements(methode);
+				generateAssertStatementsForReturnOfMethod(methode);
 			}
+			// here should be a creator method of external / reflection asserts should be build in.
+			generateAssertStatementsForMethod(methode);
 			addCodeLn("\t}");
 		}
 		logger.debug("leave");
+	}
+
+	protected String generateAssertStatementsForMethod(Method method) {
+		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
+		String post = ((CreateUnittest) annotatie).post();
+
+		String field = null;
+		String value = null;
+		String[] postConditie = null;
+		
+		if (post != null && !post.isEmpty()) {
+			String[] postAssertments = post.split(";");
+			if(postAssertments != null && postAssertments.length > 0)
+			{
+				for(String postConditieElement : postAssertments)
+				{
+					if(postConditieElement.indexOf(".equals") > -1)
+					{
+						postConditie = postConditieElement.split(".equals");
+						//remove the parenthesis
+						postConditie[1] = postConditie[1].replaceAll("\\)", "").replaceAll("\\(", "");
+					}
+					else
+					{
+						if(postConditieElement.indexOf("==") > -1)
+						{
+							postConditie = postConditieElement.split("==");
+						}
+					}
+					field = postConditie[0].trim();
+					value = postConditie[1].trim();
+					
+					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
+					addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
+					addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+				}
+			}
+		}
+
+		return post;
+		
 	}
 
 	protected String generateCallToTestMethod(Method methode) {
@@ -1054,7 +1097,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	protected String generateAssertStatements(Method method) {
+	protected String generateAssertStatementsForReturnOfMethod(Method method) {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 		String expected = method.getAnnotation(CreateUnittest.class).out();

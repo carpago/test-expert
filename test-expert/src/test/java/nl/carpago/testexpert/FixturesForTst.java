@@ -1,5 +1,8 @@
 package nl.carpago.testexpert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -70,5 +73,14 @@ import org.springframework.context.annotation.Configuration;
 		@Bean
 		public Persoon eenAnderPersoon() {
 			return new Persoon(44, "John Doe");
+		}
+		
+		@Bean
+		public List<String> vliegveldServiceId()
+		{
+			List<String> result = new ArrayList<String>();
+			result.add("RaymondTest");
+			
+			return result;
 		}
 	}
