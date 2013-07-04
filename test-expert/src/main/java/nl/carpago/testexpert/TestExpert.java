@@ -270,7 +270,7 @@ public abstract class TestExpert extends TestCase {
 
 		generateCollaboratingClasses();
 		generateSetup();
-		generateMethodsWithAnnotationTestMe();
+		generateMethodsWithAnnotationCreateUnitTest();
 
 		generateGettersForCollaborators();
 
@@ -959,7 +959,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	protected void generateMethodsWithAnnotationTestMe() throws InvalidAnnotationException {
+	protected void generateMethodsWithAnnotationCreateUnitTest() throws InvalidAnnotationException {
 		logger.debug("enter");
 		List<Method> methodes = getMethodsWithAnnotationCreateUnitTest(this.classUnderTest);
 		for (Method methode : methodes) {
@@ -1008,13 +1008,37 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			if (!"void".equals(methode.getReturnType().toString())) {
-				generateAssertStatements(methode);
+				generateAssertStatementsForReturnOfMethod(methode);
 			}
+			// here should be a creator method of external / reflection asserts should be build in.
+			generateAssertStatementsForMethod(methode);
 			addCodeLn("\t}");
 		}
 		logger.debug("leave");
 	}
 
+	protected String generateAssertStatementsForMethod(Method method) {
+		Annotation annotatie = method.getAnnotation(CreateUnittest.class);
+		String post = ((CreateUnittest) annotatie).post();
+
+		
+		
+		if (post != null && !post.isEmpty()) {
+			String[] postConditie = post.split("==");
+			assert postConditie.length == 2;
+			String field = postConditie[0];
+			String value = postConditie[1];
+			String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
+			addCodeLn("\t\tObject object = getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
+			addCodeLn("\t\tcheckForDeepEquality(object,"+value+");");
+		}
+
+		return post;
+		
+	}
+
+	// voor mezelf voor ontwerp
+	//@CreateUnittest(in={},out="dd", post="m_name==person")
 	protected String generateCallToTestMethod(Method methode) {
 		logger.debug("enter");
 
@@ -1054,7 +1078,7 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	protected String generateAssertStatements(Method method) {
+	protected String generateAssertStatementsForReturnOfMethod(Method method) {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 		String expected = method.getAnnotation(CreateUnittest.class).out();

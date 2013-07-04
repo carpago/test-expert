@@ -8,5 +8,6 @@ public @interface CreateUnittest {
 	
 	String[] in() default {};
 	String out() default "";
+	String post() default "";
 
 }
