@@ -868,7 +868,11 @@ public abstract class TestExpert extends TestCase {
 				this.generateGeneric(pType);
 			}
 			addCodeLn(WordUtils.uncapitalize(field.getName()) + ";");
-			this.collabs.add(WordUtils.uncapitalize(field.getName()));
+			if(!this.isPrimitive(field.getType()))
+			{
+				this.collabs.add(WordUtils.uncapitalize(field.getName()));
+			}
+		
 
 		}
 		addCodeLn();
@@ -1049,7 +1053,8 @@ public abstract class TestExpert extends TestCase {
 					
 					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
 					addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-					addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+					addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
+					
 				}
 			}
 		}
