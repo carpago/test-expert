@@ -78,6 +78,8 @@ public abstract class TestExpert extends TestCase {
 	private String footer = "";
 
 	private final List<String> generatedTestClasses = new ArrayList<String>();
+	
+	private Map<String, List<String>> methodCollabs = new HashMap<String, List<String>>(); 
 
 	// constants
 	private final String EMPTY_STRING = "";
@@ -97,6 +99,7 @@ public abstract class TestExpert extends TestCase {
 		this.body = "";
 		this.fixtures = new HashMap<String, Class<?>>();
 		this.collabs = new HashSet<String>();
+		this.methodCollabs = new HashMap<String, List<String>>();
 		this.ctx = null;
 		this.footer = "";
 	}
@@ -317,16 +320,6 @@ public abstract class TestExpert extends TestCase {
 
 	}
 
-	// deze methode print naar standard output de methode zijn invokeinterface
-	// geEasyMockte aanroepen.
-	// rloman: known issues:
-	/*
-	 * 
-	 * argumenten van call naar service indien van toepassing gelijk maken in
-	 * call naar interface (dao)
-	 */
-	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
-
 	// TODO Test
 	protected String getPathToBinaryFile(Class<?> clazz) {
 		return this.getBinaryFolder() + "/" + clazz.getName().replaceAll("\\.", "/");
@@ -402,6 +395,16 @@ public abstract class TestExpert extends TestCase {
 
 	}
 
+	// deze methode print naar standard output de methode zijn invokeinterface
+		// geEasyMockte aanroepen.
+		// rloman: known issues:
+		/*
+		 * 
+		 * argumenten van call naar service indien van toepassing gelijk maken in
+		 * call naar interface (dao)
+		 */
+		// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
+
 	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 
 		logger.debug("enter generateExpectForCollabsOfMethod");
@@ -476,6 +479,11 @@ public abstract class TestExpert extends TestCase {
 								InvokeDTO invokeDTO = null;
 								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
+									if(methodCollabs.get(methodeArgument.getName()) == null)
+									{
+										methodCollabs.put(methodeArgument.getName(), new ArrayList<String>());
+									}
+									methodCollabs.get(methodeArgument.getName()).add(invokeDTO.getCollab());
 								} else {
 									continue inner;
 								}
@@ -543,6 +551,8 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		logger.debug("leave");
+		
+		System.err.println(result);
 
 		return result;
 	}
@@ -654,20 +664,30 @@ public abstract class TestExpert extends TestCase {
 
 	}
 
-	protected String generateReplays() {
+	protected String generateReplays(String methodName) {
 		String result = addCodeLn();
-		for (String collab : this.collabs) {
-			result += addCodeLn("\t\tEasyMock.replay(" + collab + ");");
+		List<String> collabsForThisMethod =  this.methodCollabs.get(methodName);
+		if(collabsForThisMethod != null)
+		{
+			for (String collab : collabsForThisMethod) {
+				result += addCodeLn("\t\tEasyMock.replay(" + collab + ");");
+			}
 		}
+		
 
 		return result;
 	}
 
-	protected String generateVerifies() {
+	protected String generateVerifies(String methodName) {
 		String result = addCodeLn();
-		for (String collab : this.collabs) {
-			result += addCodeLn("\t\tEasyMock.verify(" + collab + ");");
+		List<String> collabsForThisMethod =  this.methodCollabs.get(methodName);
+		if(collabsForThisMethod != null)
+		{
+			for (String collab : collabsForThisMethod) {
+				result += addCodeLn("\t\tEasyMock.verify(" + collab + ");");
+			}
 		}
+		
 
 		return result;
 	}
@@ -1002,13 +1022,13 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-				generateReplays();
+				generateReplays(methode.getName());
 			}
 
 			generateCallToTestMethod(methode);
 
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-				generateVerifies();
+				generateVerifies(methode.getName());
 			}
 
 			if (!"void".equals(methode.getReturnType().toString())) {
