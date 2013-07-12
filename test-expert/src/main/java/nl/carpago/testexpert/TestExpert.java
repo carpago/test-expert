@@ -80,6 +80,7 @@ public abstract class TestExpert extends TestCase {
 	private final List<String> generatedTestClasses = new ArrayList<String>();
 	
 	private Map<String, List<String>> methodCollabs = new HashMap<String, List<String>>(); 
+	private Map<String, List<String>> collabMethods = new HashMap<String, List<String>>();
 
 	// constants
 	private final String EMPTY_STRING = "";
@@ -100,6 +101,7 @@ public abstract class TestExpert extends TestCase {
 		this.fixtures = new HashMap<String, Class<?>>();
 		this.collabs = new HashSet<String>();
 		this.methodCollabs = new HashMap<String, List<String>>();
+		this.collabMethods = new HashMap<String, List<String>>();
 		this.ctx = null;
 		this.footer = "";
 	}
@@ -272,10 +274,11 @@ public abstract class TestExpert extends TestCase {
 		addCodeLn("\tprivate " + this.classUnderTest.getSimpleName() + " " + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ";");
 
 		generateCollaboratingClasses();
-		generateSetup();
 		generateMethodsWithAnnotationCreateUnitTest();
 
 		generateGettersForCollaborators();
+		
+		generateSetup();
 
 		generateFooter();
 		logger.debug("leave");
@@ -479,11 +482,21 @@ public abstract class TestExpert extends TestCase {
 								InvokeDTO invokeDTO = null;
 								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
+									
+									// map from method to collabs
 									if(methodCollabs.get(methodeArgument.getName()) == null)
 									{
 										methodCollabs.put(methodeArgument.getName(), new ArrayList<String>());
 									}
 									methodCollabs.get(methodeArgument.getName()).add(invokeDTO.getCollab());
+									
+									//map from collab to methods
+									if(collabMethods.get(invokeDTO.getCollab()) == null)
+									{
+										collabMethods.put(invokeDTO.getCollab(), new ArrayList<String>());
+									}
+									collabMethods.get(invokeDTO.getCollab()).add(methodeArgument.getName());
+									
 								} else {
 									continue inner;
 								}
@@ -952,6 +965,11 @@ public abstract class TestExpert extends TestCase {
 
 		// init the collaborating classes
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
+			List<String> methodsForField = this.collabMethods.get(field.getName());
+			if(methodsForField == null || methodsForField.isEmpty())
+			{
+				continue;
+			}
 			result += addCodeLn();
 			if (!(this.isPrimitive(field.getType()))) {
 				if (MockFramework.EASYMOCK.equals(getMockFramework())) {
