@@ -565,8 +565,6 @@ public abstract class TestExpert extends TestCase {
 		}
 		logger.debug("leave");
 		
-		System.err.println(result);
-
 		return result;
 	}
 

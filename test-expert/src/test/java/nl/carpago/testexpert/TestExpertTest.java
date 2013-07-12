@@ -372,7 +372,17 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
-			final int expected = 24;
+			String environment = this.testExpert.getBinaryFolder();
+			int expected = 0;
+			if("bin".equals(environment))
+			{
+				expected = 21;
+			}
+			else
+			{
+				expected = 24;
+			}
+			
 			Assert.assertEquals("Expected:" + expected + ", actual:" + files.size(), expected, files.size());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -649,7 +659,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
 		// "EasyMock.replay(list);", t.generateReplays());
-		Assert.assertTrue(t.generateReplays().indexOf("EasyMock.replay(lijst);") > -1);
+		Assert.assertTrue(t.generateReplays("testForLijst").indexOf("EasyMock.replay(lijst);") > -1);
 	}
 
 	@Test
@@ -667,7 +677,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
 		// "EasyMock.replay(list);", t.generateReplays());
-		Assert.assertTrue(t.generateVerifies().indexOf("EasyMock.verify(lijst);") > -1);
+		Assert.assertTrue(t.generateVerifies("testForLijst").indexOf("EasyMock.verify(lijst);") > -1);
 	}
 
 	@Test
@@ -790,10 +800,11 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	@Test
-	public void testGenerateSetup() {
+	public void testGenerateSetup() throws InvalidAnnotationException {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
+		t.generateTestClass();
 
 		String setup = t.generateSetup();
 		String anExpectedLine = "@Before";
@@ -803,13 +814,6 @@ public class TestExpertTest extends AbstractTestExpert {
 		anExpectedLine = "this.lijst = EasyMock.createMock(List.class);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"lijst\", this.lijst);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
-		anExpectedLine = "this.voornaam = EasyMock.createMock(String.class);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
-		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"voornaam\", this.voornaam);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
-		anExpectedLine = "this.variableWithSetterForTest = EasyMock.createMock(String.class);";
-		anExpectedLine = "this.tstClassInner.setVariableWithSetterForTest(this.variableWithSetterForTest);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
