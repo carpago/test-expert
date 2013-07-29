@@ -89,4 +89,10 @@ import org.springframework.context.annotation.Configuration;
 		{
 			return 'c';
 		}
+		
+		@Bean
+		public String naamString()
+		{
+			return "naampje";
+		}
 	}
