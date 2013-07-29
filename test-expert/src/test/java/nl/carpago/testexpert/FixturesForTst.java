@@ -83,4 +83,16 @@ import org.springframework.context.annotation.Configuration;
 			
 			return result;
 		}
+		
+		@Bean
+		public char character()
+		{
+			return 'c';
+		}
+		
+		@Bean
+		public String naamString()
+		{
+			return "naampje";
+		}
 	}

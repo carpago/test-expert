@@ -1,5 +1,6 @@
 package nl.carpago.testexpert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.carpago.testexpert.annotation.CreateUnittest;
@@ -9,7 +10,7 @@ import nl.carpago.testexpert.annotation.Expect;
 
 public class TstClassInner {
 
-	private List<String> lijst;
+	private List<String> lijst = new ArrayList<String>();
 	@SuppressWarnings("unused")
 	private String voornaam;
 	@SuppressWarnings("unused")
@@ -31,6 +32,18 @@ public class TstClassInner {
 	@CreateUnittest
 	public void test3() {
 
+	}
+	
+	@CreateUnittest
+	public void testForLijst()
+	{
+		this.lijst.add("string");
+	}
+	
+	@CreateUnittest
+	public void testForLijst2()
+	{
+		lijst.add("string");
 	}
 
 	@Expect(in = { "3" }, out = "5")

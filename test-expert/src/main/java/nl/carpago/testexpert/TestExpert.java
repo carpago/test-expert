@@ -78,6 +78,9 @@ public abstract class TestExpert extends TestCase {
 	private String footer = "";
 
 	private final List<String> generatedTestClasses = new ArrayList<String>();
+	
+	private Map<String, List<String>> methodCollabs = new HashMap<String, List<String>>(); 
+	private Map<String, List<String>> collabMethods = new HashMap<String, List<String>>();
 
 	// constants
 	private final String EMPTY_STRING = "";
@@ -97,6 +100,8 @@ public abstract class TestExpert extends TestCase {
 		this.body = "";
 		this.fixtures = new HashMap<String, Class<?>>();
 		this.collabs = new HashSet<String>();
+		this.methodCollabs = new HashMap<String, List<String>>();
+		this.collabMethods = new HashMap<String, List<String>>();
 		this.ctx = null;
 		this.footer = "";
 	}
@@ -269,10 +274,11 @@ public abstract class TestExpert extends TestCase {
 		addCodeLn("\tprivate " + this.classUnderTest.getSimpleName() + " " + WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + ";");
 
 		generateCollaboratingClasses();
-		generateSetup();
 		generateMethodsWithAnnotationCreateUnitTest();
 
 		generateGettersForCollaborators();
+		
+		generateSetup();
 
 		generateFooter();
 		logger.debug("leave");
@@ -316,16 +322,6 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("leave");
 
 	}
-
-	// deze methode print naar standard output de methode zijn invokeinterface
-	// geEasyMockte aanroepen.
-	// rloman: known issues:
-	/*
-	 * 
-	 * argumenten van call naar service indien van toepassing gelijk maken in
-	 * call naar interface (dao)
-	 */
-	// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
 
 	// TODO Test
 	protected String getPathToBinaryFile(Class<?> clazz) {
@@ -402,6 +398,16 @@ public abstract class TestExpert extends TestCase {
 
 	}
 
+	// deze methode print naar standard output de methode zijn invokeinterface
+		// geEasyMockte aanroepen.
+		// rloman: known issues:
+		/*
+		 * 
+		 * argumenten van call naar service indien van toepassing gelijk maken in
+		 * call naar interface (dao)
+		 */
+		// rloman: deze methode is VEEEEEL te lang geworden. Dus ook refactoren.
+
 	protected String generateExpectForCollaboratorsOfMethod(Method methodeArgument) throws IOException {
 
 		logger.debug("enter generateExpectForCollabsOfMethod");
@@ -476,6 +482,21 @@ public abstract class TestExpert extends TestCase {
 								InvokeDTO invokeDTO = null;
 								if (this.isCallerForCollab(regelHoger.trim())) {
 									invokeDTO = new InvokeDTO(regelHoger.trim(), this.collabs);
+									
+									// map from method to collabs
+									if(methodCollabs.get(methodeArgument.getName()) == null)
+									{
+										methodCollabs.put(methodeArgument.getName(), new ArrayList<String>());
+									}
+									methodCollabs.get(methodeArgument.getName()).add(invokeDTO.getCollab());
+									
+									//map from collab to methods
+									if(collabMethods.get(invokeDTO.getCollab()) == null)
+									{
+										collabMethods.put(invokeDTO.getCollab(), new ArrayList<String>());
+									}
+									collabMethods.get(invokeDTO.getCollab()).add(methodeArgument.getName());
+									
 								} else {
 									continue inner;
 								}
@@ -543,7 +564,7 @@ public abstract class TestExpert extends TestCase {
 			}
 		}
 		logger.debug("leave");
-
+		
 		return result;
 	}
 
@@ -654,20 +675,30 @@ public abstract class TestExpert extends TestCase {
 
 	}
 
-	protected String generateReplays() {
+	protected String generateReplays(String methodName) {
 		String result = addCodeLn();
-		for (String collab : this.collabs) {
-			result += addCodeLn("\t\tEasyMock.replay(" + collab + ");");
+		List<String> collabsForThisMethod =  this.methodCollabs.get(methodName);
+		if(collabsForThisMethod != null)
+		{
+			for (String collab : collabsForThisMethod) {
+				result += addCodeLn("\t\tEasyMock.replay(" + collab + ");");
+			}
 		}
+		
 
 		return result;
 	}
 
-	protected String generateVerifies() {
+	protected String generateVerifies(String methodName) {
 		String result = addCodeLn();
-		for (String collab : this.collabs) {
-			result += addCodeLn("\t\tEasyMock.verify(" + collab + ");");
+		List<String> collabsForThisMethod =  this.methodCollabs.get(methodName);
+		if(collabsForThisMethod != null)
+		{
+			for (String collab : collabsForThisMethod) {
+				result += addCodeLn("\t\tEasyMock.verify(" + collab + ");");
+			}
 		}
+		
 
 		return result;
 	}
@@ -868,7 +899,11 @@ public abstract class TestExpert extends TestCase {
 				this.generateGeneric(pType);
 			}
 			addCodeLn(WordUtils.uncapitalize(field.getName()) + ";");
-			this.collabs.add(WordUtils.uncapitalize(field.getName()));
+			if(!this.isPrimitive(field.getType()))
+			{
+				this.collabs.add(WordUtils.uncapitalize(field.getName()));
+			}
+		
 
 		}
 		addCodeLn();
@@ -928,6 +963,11 @@ public abstract class TestExpert extends TestCase {
 
 		// init the collaborating classes
 		for (Field field : this.classUnderTest.getDeclaredFields()) {
+			List<String> methodsForField = this.collabMethods.get(field.getName());
+			if(methodsForField == null || methodsForField.isEmpty())
+			{
+				continue;
+			}
 			result += addCodeLn();
 			if (!(this.isPrimitive(field.getType()))) {
 				if (MockFramework.EASYMOCK.equals(getMockFramework())) {
@@ -998,13 +1038,13 @@ public abstract class TestExpert extends TestCase {
 			}
 
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-				generateReplays();
+				generateReplays(methode.getName());
 			}
 
 			generateCallToTestMethod(methode);
 
 			if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-				generateVerifies();
+				generateVerifies(methode.getName());
 			}
 
 			if (!"void".equals(methode.getReturnType().toString())) {
@@ -1049,7 +1089,8 @@ public abstract class TestExpert extends TestCase {
 					
 					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
 					addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-					addCodeLn("\t\tassertTrue(checkForDeepEquality("+field+","+value+"));");
+					addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
+					
 				}
 			}
 		}
