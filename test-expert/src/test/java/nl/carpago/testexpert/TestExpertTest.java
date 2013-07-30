@@ -817,7 +817,9 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
-		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"persoonDao\", this.persoonDao);";
+		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPersoonDaoWithoutSetter\", this.onceUsedPersoonDaoWithoutSetter);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.tstClassInner.setPersoonDao(this.persoonDao);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 	}
 
@@ -888,7 +890,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	@Test
-	public void testGetOutAnnotationsForMethodForCreateUnitTest() {
+	public void testGetOutAnnotationsForMethodForCreateUnitTest1() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
@@ -906,7 +908,27 @@ public class TestExpertTest extends AbstractTestExpert {
 		} catch (NoSuchMethodException e) {
 			fail();
 		}
+	}
+	
+	@Test
+	public void testGetOutAnnotationsForMethodForCreateUnitTest2() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("getLiteral");
+			String out = t.getOutAnnotationForMethod(method);
 
+			Assert.assertFalse(out == null);
+			Assert.assertTrue("\"<literal>\"".equals(out));
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+		}
 	}
 
 	@Test
@@ -1337,6 +1359,23 @@ public class TestExpertTest extends AbstractTestExpert {
 			fail("Testline of file not found back in file.");
 		} catch (FileNotFoundException e) {
 			fail("There was an error with reading the testfile back.");
+		}
+	}
+	
+	@Test
+	public void testWriteFile() {
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
+		final String fileName = "1-2-3-/invalidfilename-writefile-unittest.txt";
+		final String directoryName = "src/test/java/nl/carpago/testexpert";
+		final String content = "This should be in the file " + new Date();
+
+		try {
+			testExpert.writeFile(fileName, directoryName, content);
+			Assert.fail("Exception should have been thrown by the callee");
+		}
+		catch (TestExpertException tee)
+		{
+			//ok
 		}
 	}
 }

@@ -18,10 +18,23 @@ public class TstClassInner {
 	@SuppressWarnings("unused")
 	private String variableWithSetterForTest;
 	private PersoonDAO persoonDao;
+	private TstClassInner tstClassInner;
+	
+	@SuppressWarnings("unused")
+	private PersoonDAO unusedPersoonDao;
+	
+	private PersoonDAO onceUsedPersoonDaoWithoutSetter;
 	
 	@CreateUnittest
 	public void test1() {
 
+	}
+	
+	@CreateUnittest
+	public void testOfInnerClassNietWordtGecollabbed()
+	{
+		@SuppressWarnings("unused")
+		int leeftijd = tstClassInner.inc(3);
 	}
 
 	@CreateUnittest
@@ -31,7 +44,7 @@ public class TstClassInner {
 
 	@CreateUnittest
 	public void test3() {
-
+		onceUsedPersoonDaoWithoutSetter.inc(3);
 	}
 	
 	@CreateUnittest
@@ -189,14 +202,18 @@ public class TstClassInner {
 		return this.persoonDao.inc(number);
 	}
 	
+	@CreateUnittest(out="<literal>")
+	public String getLiteral()
+	{
+		return "<literal>";
+	}
+	
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;
 	}
 
 	
-	protected void setPersoonDao(PersoonDAO persoonDao) {
+	public void setPersoonDao(PersoonDAO persoonDao) {
 		this.persoonDao = persoonDao;
 	}
-	
-	
 }

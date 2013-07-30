@@ -87,8 +87,9 @@ public abstract class TestExpert extends TestCase {
 	private final String QUESTION_MARK = "?";
 	private final String ASTERISK = "*";
 	private final String RESULTFROMMETHOD = "resultFromMethod";
-
-	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " " };
+	
+	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " ", "<", ">", ";", "?", "/", ":", "{", "}", "[", "]",
+			"\\", "|", "~", "`" }; 
 
 	private void clean() {
 
@@ -468,6 +469,7 @@ public abstract class TestExpert extends TestCase {
 						} 
 
 						if (collab.equals(this.classUnderTest.getName())) {
+							
 							continue inner;
 						}
 
