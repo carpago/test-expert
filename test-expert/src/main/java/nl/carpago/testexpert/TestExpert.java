@@ -87,8 +87,9 @@ public abstract class TestExpert extends TestCase {
 	private final String QUESTION_MARK = "?";
 	private final String ASTERISK = "*";
 	private final String RESULTFROMMETHOD = "resultFromMethod";
-
-	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " " };
+	
+	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " ", "<", ">", ";", "?", "/", ":", "{", "}", "[", "]",
+			"\\", "|", "~", "`" }; 
 
 	private void clean() {
 
@@ -179,12 +180,12 @@ public abstract class TestExpert extends TestCase {
 					try {
 						pipedOutputStream.flush();
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("unable to flush stream");
 					}
 					try {
 						pipedOutputStream.close();
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error("unable to close stream");
 					}
 
 				}
@@ -194,7 +195,8 @@ public abstract class TestExpert extends TestCase {
 
 			return new BufferedInputStream(pipedInputStream);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("IO Exception creating and using pipe");
+			logger.error(e.getStackTrace());
 			return new BufferedInputStream(pipedInputStream) {
 
 				@Override
@@ -323,12 +325,10 @@ public abstract class TestExpert extends TestCase {
 
 	}
 
-	// TODO Test
 	protected String getPathToBinaryFile(Class<?> clazz) {
 		return this.getBinaryFolder() + "/" + clazz.getName().replaceAll("\\.", "/");
 	}
 
-	// TODO test
 	protected List<String> getLinesFromFile(String pathToBinaryFile) throws IOException {
 		// via jad
 		ProcessBuilder builder = new ProcessBuilder("jad", "-af", "-p", pathToBinaryFile);
@@ -348,7 +348,6 @@ public abstract class TestExpert extends TestCase {
 		return lines;
 	}
 
-	// TODO Test
 	protected Pattern getRegularExpressionForMethod(Method methodeArgument) {
 		// create here the Regular expression for and from the method
 		String accessMod = Modifier.toString(methodeArgument.getModifiers());
@@ -371,7 +370,6 @@ public abstract class TestExpert extends TestCase {
 		return pattern;
 	}
 
-	// TODO Test
 	protected List<Class<?>> parseParameters(Scanner s, Pattern p) {
 		List<Class<?>> params = new ArrayList<Class<?>>();
 
@@ -468,6 +466,7 @@ public abstract class TestExpert extends TestCase {
 						} 
 
 						if (collab.equals(this.classUnderTest.getName())) {
+							
 							continue inner;
 						}
 
@@ -568,7 +567,6 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	// TODO Test
 	private String generateParameter(Method method, String element, int elementIndex) {
 		String result = EMPTY_STRING;
 		if (!this.isLiteral(element)) {
@@ -581,7 +579,6 @@ public abstract class TestExpert extends TestCase {
 		return result;
 	}
 
-	// TODO Test
 	private String generateReturnForMethod(Method method, String construction) {
 		String returnFromMethod = null;
 		String result = EMPTY_STRING;
@@ -778,11 +775,11 @@ public abstract class TestExpert extends TestCase {
 		try {
 			Long.parseLong(literalOrVariablename);
 		} catch (NumberFormatException nfe) {
-			logger.info("String " + literalOrVariablename + " is considered as a literal!");
+			logger.info("String " + literalOrVariablename + " is NOT considered as a literal!");
 			return false;
 		}
 
-		logger.info("String " + literalOrVariablename + " is NOT considered as a literal!");
+		logger.info("String " + literalOrVariablename + " is considered as a literal!");
 
 		return true;
 	}
@@ -966,6 +963,7 @@ public abstract class TestExpert extends TestCase {
 			List<String> methodsForField = this.collabMethods.get(field.getName());
 			if(methodsForField == null || methodsForField.isEmpty())
 			{
+				logger.debug("methods forfield is null or empty");
 				continue;
 			}
 			result += addCodeLn();
@@ -1064,6 +1062,7 @@ public abstract class TestExpert extends TestCase {
 		String field = null;
 		String value = null;
 		String[] postConditie = null;
+		String result = "";
 		
 		if (post != null && !post.isEmpty()) {
 			String[] postAssertments = post.split(";");
@@ -1088,14 +1087,14 @@ public abstract class TestExpert extends TestCase {
 					value = postConditie[1].trim();
 					
 					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
-					addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-					addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
+					result += addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
+					result += addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
 					
 				}
 			}
 		}
 
-		return post;
+		return result;
 		
 	}
 

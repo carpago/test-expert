@@ -718,7 +718,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	@Test
-	public void testGenerateAssertStatementsForMethod() {
+	public void testgenerateAssertStatementsForReturnOfMethod() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
@@ -817,7 +817,9 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
-		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"persoonDao\", this.persoonDao);";
+		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPersoonDaoWithoutSetter\", this.onceUsedPersoonDaoWithoutSetter);";
+		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		anExpectedLine = "this.tstClassInner.setPersoonDao(this.persoonDao);";
 		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
 	}
 
@@ -888,7 +890,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	@Test
-	public void testGetOutAnnotationsForMethodForCreateUnitTest() {
+	public void testGetOutAnnotationsForMethodForCreateUnitTest1() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 		t.setCurrentFramework(MockFramework.EASYMOCK);
@@ -904,9 +906,31 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	@Test
+	public void testGetOutAnnotationsForMethodForCreateUnitTest2() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		t.setCurrentFramework(MockFramework.EASYMOCK);
+		Method method;
+		try {
+			method = TstClassInner.class.getMethod("getLiteral");
+			String out = t.getOutAnnotationForMethod(method);
 
+			Assert.assertFalse(out == null);
+			Assert.assertTrue("\"<literal>\"".equals(out));
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 	@Test
@@ -926,6 +950,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
 
@@ -949,6 +974,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
 
@@ -1338,5 +1364,93 @@ public class TestExpertTest extends AbstractTestExpert {
 		} catch (FileNotFoundException e) {
 			fail("There was an error with reading the testfile back.");
 		}
+	}
+	
+	@Test
+	public void testWriteFileWrongCase() {
+		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
+		final String fileName = "1-2-3-/invalidfilename-writefile-unittest.txt";
+		final String directoryName = "src/test/java/nl/carpago/testexpert";
+		final String content = "This should be in the file " + new Date();
+
+		try {
+			testExpert.writeFile(fileName, directoryName, content);
+			Assert.fail("Exception should have been thrown by the callee");
+		}
+		catch (TestExpertException tee)
+		{
+			//ok
+		}
+	}
+	
+	@Test
+	public void testGenerateAssertStatementsForMethodWithEqualityOperator()
+	{
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+
+		try {
+			Method method = TstClassInner.class.getMethod("setLeeftijd", new Class<?>[] { int.class });
+			String assertStatement = t.generateAssertStatementsForMethod(method);
+
+			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			
+			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,3));";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testGenerateAssertStatementsForMethodWithEquals()
+	{
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+
+		try {
+			Method method = TstClassInner.class.getMethod("setLeeftijd2", new Class<?>[] { int.class });
+			String assertStatement = t.generateAssertStatementsForMethod(method);
+
+			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			
+			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,3));";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testIsPrimitive(){
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		
+		boolean result = t.isPrimitive(null);
+		
+		Assert.assertTrue("null ref is primitive should be (though it is funny) be true", result);
+	}
+	
+	@Test
+	public void testIsPrimitiveFallback()
+	{
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		
+		boolean result = t.isPrimitiveFallback("notanixistingtipe");
+		
+		Assert.assertFalse("not existing primitive type should return false", result);
 	}
 }

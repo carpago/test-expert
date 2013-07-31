@@ -85,5 +85,27 @@ public class AbstractTestExpertTest extends TestCase {
 		Assert.assertEquals("Jane Doe", p2.getName());
 	}
 	
+	@Test
+	public void testgetFieldvalueThroughReflection1(){
+		Person p1 = new Person("John Doe", 45);
+		Object o = this.testExpert.getFieldvalueThroughReflection(p1, "age");
+		Assert.assertEquals(45, o);
+		
+	}
 
+	@Test
+	public void testgetFieldvalueThroughReflection2(){
+		Person p1 = new Person("John Doe", 45);
+		Object o = this.testExpert.getFieldvalueThroughReflection(p1, "sofi");
+		Assert.assertEquals(127788, o);
+		
+	}
+	
+	@Test
+	public void testgetFieldvalueThroughReflection3(){
+		Person p1 = new Person("John Doe", 45);
+		Object o = this.testExpert.getFieldvalueThroughReflection(p1, "name");
+		Assert.assertEquals("John Doe", o);
+		
+	}
 }

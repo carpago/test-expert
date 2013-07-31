@@ -23,6 +23,7 @@ class Bike {
 public class Person {
 	private String name;
 	private int age;
+	private final int sofi = 127788;
 	
 	private Bike bike = new Bike("Batavus", 2001);
 

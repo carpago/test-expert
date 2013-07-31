@@ -18,10 +18,27 @@ public class TstClassInner {
 	@SuppressWarnings("unused")
 	private String variableWithSetterForTest;
 	private PersoonDAO persoonDao;
+	private TstClassInner tstClassInner;
+	
+	@SuppressWarnings("unused")
+	private PersoonDAO unusedPersoonDao;
+	
+	private PersoonDAO onceUsedPersoonDaoWithoutSetter;
 	
 	@CreateUnittest
 	public void test1() {
 
+	}
+	
+	/**
+	 * This method is only used for increasing the coverage en to see if when
+	 * a collab is the same as the tstclass will not be mocked.
+	 */
+	@CreateUnittest
+	public void testOfInnerClassNietWordtGecollabbed()
+	{
+		@SuppressWarnings("unused")
+		int leeftijd = tstClassInner.inc(3);
 	}
 
 	@CreateUnittest
@@ -29,9 +46,12 @@ public class TstClassInner {
 
 	}
 
+	/**
+	 * this method should (and will) create reflections statements.
+	 */
 	@CreateUnittest
-	public void test3() {
-
+	public void testDaoWithoutSettersShouldCreateTestStatements() {
+		onceUsedPersoonDaoWithoutSetter.inc(3);
 	}
 	
 	@CreateUnittest
@@ -189,14 +209,30 @@ public class TstClassInner {
 		return this.persoonDao.inc(number);
 	}
 	
+	@CreateUnittest(out="<literal>")
+	public String getLiteral()
+	{
+		return "<literal>";
+	}
+	
+	@CreateUnittest(in={"3"}, post="leeftijd==3")
+	public void setLeeftijd(int leeftijd)
+	{
+		this.leeftijd = leeftijd;
+	}
+	
+	@CreateUnittest(in={"3"}, post="leeftijd.equals(3)")
+	public void setLeeftijd2(int leeftijd)
+	{
+		this.leeftijd = leeftijd;
+	}
+	
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;
 	}
 
 	
-	protected void setPersoonDao(PersoonDAO persoonDao) {
+	public void setPersoonDao(PersoonDAO persoonDao) {
 		this.persoonDao = persoonDao;
 	}
-	
-	
 }

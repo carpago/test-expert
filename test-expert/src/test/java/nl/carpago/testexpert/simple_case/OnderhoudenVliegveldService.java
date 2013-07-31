@@ -65,25 +65,20 @@ public class OnderhoudenVliegveldService {
 		return een;
 	}
 	
-	protected OnderhoudenVliegveldDao getOnderhoudenVliegveldDao() {
+	public OnderhoudenVliegveldDao getOnderhoudenVliegveldDao() {
 		return onderhoudenVliegveldDao;
 	}
 
 
 	@CreateUnittest(in={"3"}, post="identifier == number")
-	protected void setIdentifier(int anIdentifier) {
+	public void setIdentifier(int anIdentifier) {
 		this.identifier = anIdentifier;
 	}
 
 
 	@CreateUnittest(in={"'c'"}, post="naam=='c'")
-	protected void setName(char naam) {
+	public void setName(char naam) {
 		this.naam = naam;
 	}
-	
-	
-	
-	
-	
 }
  
