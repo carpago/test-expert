@@ -208,6 +208,18 @@ public class TstClassInner {
 		return "<literal>";
 	}
 	
+	@CreateUnittest(in={"3"}, post="leeftijd==3")
+	public void setLeeftijd(int leeftijd)
+	{
+		this.leeftijd = leeftijd;
+	}
+	
+	@CreateUnittest(in={"3"}, post="leeftijd.equals(3)")
+	public void setLeeftijd2(int leeftijd)
+	{
+		this.leeftijd = leeftijd;
+	}
+	
 	public void setVariableWithSetterForTest(String variableWithSetterForTest) {
 		this.variableWithSetterForTest = variableWithSetterForTest;
 	}
