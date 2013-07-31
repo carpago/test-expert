@@ -775,11 +775,11 @@ public abstract class TestExpert extends TestCase {
 		try {
 			Long.parseLong(literalOrVariablename);
 		} catch (NumberFormatException nfe) {
-			logger.info("String " + literalOrVariablename + " is considered as a literal!");
+			logger.info("String " + literalOrVariablename + " is NOT considered as a literal!");
 			return false;
 		}
 
-		logger.info("String " + literalOrVariablename + " is NOT considered as a literal!");
+		logger.info("String " + literalOrVariablename + " is considered as a literal!");
 
 		return true;
 	}
