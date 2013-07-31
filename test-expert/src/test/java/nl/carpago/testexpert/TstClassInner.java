@@ -30,6 +30,10 @@ public class TstClassInner {
 
 	}
 	
+	/**
+	 * This method is only used for increasing the coverage en to see if when
+	 * a collab is the same as the tstclass will not be mocked.
+	 */
 	@CreateUnittest
 	public void testOfInnerClassNietWordtGecollabbed()
 	{
@@ -42,8 +46,11 @@ public class TstClassInner {
 
 	}
 
+	/**
+	 * this method should (and will) create reflections statements.
+	 */
 	@CreateUnittest
-	public void test3() {
+	public void testDaoWithoutSettersShouldCreateTestStatements() {
 		onceUsedPersoonDaoWithoutSetter.inc(3);
 	}
 	
