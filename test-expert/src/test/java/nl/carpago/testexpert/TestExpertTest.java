@@ -718,7 +718,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 
 	@Test
-	public void testGenerateAssertStatementsForMethod() {
+	public void testgenerateAssertStatementsForReturnOfMethod() {
 		TestExpert t = new TestExpertImplForUnittestingPurposes();
 		t.init(TstClassInner.class);
 
@@ -1377,5 +1377,76 @@ public class TestExpertTest extends AbstractTestExpert {
 		{
 			//ok
 		}
+	}
+	
+	@Test
+	public void testGenerateAssertStatementsForMethodWithEqualityOperator()
+	{
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+
+		try {
+			Method method = TstClassInner.class.getMethod("setLeeftijd", new Class<?>[] { int.class });
+			String assertStatement = t.generateAssertStatementsForMethod(method);
+
+			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			
+			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,3));";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testGenerateAssertStatementsForMethodWithEquals()
+	{
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+
+		try {
+			Method method = TstClassInner.class.getMethod("setLeeftijd2", new Class<?>[] { int.class });
+			String assertStatement = t.generateAssertStatementsForMethod(method);
+
+			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			
+			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,3));";
+			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testIsPrimitive(){
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		
+		boolean result = t.isPrimitive(null);
+		
+		Assert.assertTrue("null ref is primitive should be (though it is funny) be true", result);
+	}
+	
+	@Test
+	public void testIsPrimitiveFallback()
+	{
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+		
+		boolean result = t.isPrimitiveFallback("notanixistingtipe");
+		
+		Assert.assertFalse("not existing primitive type should return false", result);
 	}
 }
