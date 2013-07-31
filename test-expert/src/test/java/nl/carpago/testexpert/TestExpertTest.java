@@ -906,6 +906,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
 	}
@@ -927,6 +928,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
 	}
@@ -948,6 +950,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
 
@@ -971,6 +974,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 			fail();
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			fail();
 		}
 
@@ -1363,7 +1367,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	}
 	
 	@Test
-	public void testWriteFile() {
+	public void testWriteFileWrongCase() {
 		TestExpert testExpert = new TestExpertImplForUnittestingPurposes();
 		final String fileName = "1-2-3-/invalidfilename-writefile-unittest.txt";
 		final String directoryName = "src/test/java/nl/carpago/testexpert";
