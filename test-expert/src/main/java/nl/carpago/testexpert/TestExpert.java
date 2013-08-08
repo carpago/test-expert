@@ -1088,8 +1088,9 @@ public abstract class TestExpert extends TestCase {
 					
 					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
 					result += addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-					result += addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
-					
+					result += addCodeLn("System.out.println("+field+");");
+					result += addCodeLn("System.out.println("+value+");");
+					result += addCodeLn("\t\tassertTrue(\"variable '" + field + "'("+field+") and '" + value + "'("+value+") should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
 				}
 			}
 		}
@@ -1624,7 +1625,15 @@ public abstract class TestExpert extends TestCase {
 
 		Class<?> classAsFile = null;
 		for (String classAsString : lijstMetAlleJavaFilesUitProject) {
-			classAsFile = Class.forName(classAsString); //
+			try {
+				classAsFile = Class.forName(classAsString);
+			}
+			catch(Throwable throwable)
+			{
+				logger.warn("class is for whatever reason not openable: "+classAsString);
+				continue;
+			}
+			 
 
 			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classAsFile);
 			if (methods != null && !methods.isEmpty()) {
