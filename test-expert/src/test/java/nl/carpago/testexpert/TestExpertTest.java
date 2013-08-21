@@ -92,6 +92,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		assertTrue(this.testExpert.isLiteral("true"));
 
 		assertTrue(this.testExpert.isLiteral("false"));
+		
+		assertTrue(this.testExpert.isLiteral("John Doe"));
 
 	}
 
@@ -730,7 +732,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 			method = TstClassInner.class.getMethod("inc", new Class<?>[] { int.class });
 			assertStatement = t.generateAssertStatementsForReturnOfMethod(method);
-			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(4, resultFromMethod));";
+			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(\"4\", resultFromMethod));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 
 		} catch (SecurityException e) {
@@ -1396,7 +1398,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 			
-			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,3));";
+			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,\"3\"));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 
 		} catch (SecurityException e) {
@@ -1421,7 +1423,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 			
-			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,3));";
+			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,\"3\"));";
 			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
 
 		} catch (SecurityException e) {
