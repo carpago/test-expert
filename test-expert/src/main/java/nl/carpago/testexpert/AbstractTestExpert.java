@@ -24,11 +24,30 @@ public class AbstractTestExpert extends TestCase {
 	}
 
 	protected boolean checkForDeepEquality(Object expected, Object actual) {
+		
+		//sanity
+		if(expected == null && actual == null) return true;
+		if(expected == null || actual == null) return false;
+		
+		//real code
 		XStream xstream = new XStream();
 		String expectedAsString = xstream.toXML(expected);
 		expectedAsString = removeAllTagsAroundLiterals(expectedAsString);
 		String actualAsString = xstream.toXML(actual);
 		actualAsString = removeAllTagsAroundLiterals(actualAsString);
+		
+		try
+		{
+			double expectedNumeric = Double.valueOf(expectedAsString);
+			double actualNumeric = Double.valueOf(actualAsString);
+			
+			//if succeeds ... we get here ... return the numerical comparison
+			return (actualNumeric == expectedNumeric);
+		}
+		catch(NumberFormatException nfe)
+		{
+			// nothing wrong ... just continue below.
+		}
 
 		boolean result = expectedAsString.equals(actualAsString);
 
