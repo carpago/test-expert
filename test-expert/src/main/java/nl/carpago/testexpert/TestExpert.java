@@ -89,7 +89,7 @@ public abstract class TestExpert extends TestCase {
 	private final String RESULTFROMMETHOD = "resultFromMethod";
 	
 	private final String[] illegalForVariables = new String[] { "\"", "'", "(", ")", "-", ".", "+", "!", "@", "#", "%", "^", "&", "*", "=", " ", "<", ">", ";", "?", "/", ":", "{", "}", "[", "]",
-			"\\", "|", "~", "`" }; 
+			"\\", "|", "~", "`"}; 
 
 	private void clean() {
 
@@ -1088,8 +1088,7 @@ public abstract class TestExpert extends TestCase {
 					
 					String classUnderTest = WordUtils.uncapitalize(this.classUnderTest.getSimpleName());
 					result += addCodeLn("\t\tObject "+field+ "= getFieldvalueThroughReflection("+classUnderTest+",\""+field+"\");");
-					result += addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+field+","+value+"));");
-					
+					result += addCodeLn("\t\tassertTrue(\"variable '" + field + "' and '" + value + "' should be deep equal!\",checkForDeepEquality("+(isLiteral(field)? "\""+field+"\"" : field) +","+(isLiteral(value) ? "\"" + value +"\"" : value)+"));");
 				}
 			}
 		}
@@ -1143,7 +1142,7 @@ public abstract class TestExpert extends TestCase {
 		String expected = method.getAnnotation(CreateUnittest.class).out();
 		String actual = this.RESULTFROMMETHOD;
 		result += addCode("\n\t\t");
-		result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + expected + ", " + actual + "));");
+		result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + (isLiteral(expected) ? "\"" + expected + "\"" : expected) + ", " + (isLiteral(actual) ? "\"" + actual +"\"" : actual) + "));");
 
 		logger.debug("leave");
 
@@ -1624,7 +1623,15 @@ public abstract class TestExpert extends TestCase {
 
 		Class<?> classAsFile = null;
 		for (String classAsString : lijstMetAlleJavaFilesUitProject) {
-			classAsFile = Class.forName(classAsString); //
+			try {
+				classAsFile = Class.forName(classAsString);
+			}
+			catch(Throwable throwable)
+			{
+				logger.warn("class is for whatever reason not openable: "+classAsString);
+				continue;
+			}
+			 
 
 			List<Method> methods = getMethodsWithAnnotationCreateUnitTest(classAsFile);
 			if (methods != null && !methods.isEmpty()) {

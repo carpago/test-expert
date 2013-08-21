@@ -173,17 +173,22 @@
 	<target name="ci" depends="findbugs, emma-report" />
 
 	<target name="build" depends="compile" description="generate the distribution">
-		<!-- Create the distribution directory -->
-		<mkdir dir="${dist.dir}/lib" />
+			<!-- Create the distribution directory -->
+			<mkdir dir="${dist.dir}/lib" />
 
-		<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
-		<jar jarfile="${dist.dir}/lib/${ant.project.name}.jar" basedir="${build.dir}" />
+			<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
+			<!-- even uit voor test van source includen hieronder <jar jarfile="${dist.dir}/lib/${ant.project.name}.jar" basedir="${build.dir}" /> -->
 
-		<!-- Put the dependencies at same location -->
-		<copy todir="${dist.dir}/lib">
-			<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
-		</copy>
-	</target>
+			<jar destfile="${dist.dir}/lib/${ant.project.name}.jar">
+	    		<fileset dir="${build.dir}" />
+	    		<fileset dir="${src.dir}" includes="**/*.java"/>
+			</jar>
+
+			<!-- Put the dependencies at same location -->
+			<copy todir="${dist.dir}/lib">
+				<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
+			</copy>
+		</target>
 
 	<target name="zip" depends="build" description="generate a zipfile for deployment">
 		<zip destfile="${dist.dir}/zip/${ant.project.name}-${DSTAMP}.zip">
