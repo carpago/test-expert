@@ -1628,7 +1628,16 @@ public abstract class TestExpert extends TestCase {
 			}
 			catch(Throwable throwable)
 			{
-				logger.warn("class is for whatever reason not openable: "+classAsString);
+				/*this Exception is thrown when for instance we try to Class.forName aGWT class like Checkbox
+				since a GWT class is unable to be "reflectioned". 
+				url: http://stackoverflow.com/questions/3034881/how-to-create-new-instance-from-class-name-in-gwt
+				we will skip the issue for a later eventually release. See TestExpert issue #135 */
+				
+				/*
+				 * Also it might by an interface. Anyhow ... it might be a normal situation but it is logged.
+				 * 
+				 */
+				logger.debug("class is for whatever reason not openable (is it a GWT class?, or an interface): "+classAsString);
 				continue;
 			}
 			 
