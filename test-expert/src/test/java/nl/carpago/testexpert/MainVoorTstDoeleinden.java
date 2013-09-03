@@ -44,9 +44,8 @@ public class MainVoorTstDoeleinden {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	public static void main(String[] args) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
-		
-		// testForIsCollectionOrSomething();
-		new MainVoorTstDoeleinden().risky1();
+
+		probeerReflectionArray();
 	}
 
 	
@@ -150,6 +149,20 @@ public class MainVoorTstDoeleinden {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static void probeerReflectionArray()
+	{
+		Persoon[] array = new Persoon[1];
+		
+		if(array.getClass().isArray())
+		{
+			Class clazz = array.getClass();
+			System.out.println(clazz.getName());
+			System.out.println(clazz.getComponentType());
+			
+			System.out.println(true);
 		}
 	}
 
