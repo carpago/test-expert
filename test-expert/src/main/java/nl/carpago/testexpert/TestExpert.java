@@ -461,6 +461,8 @@ public abstract class TestExpert extends TestCase {
 						try {
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
 						} catch (Exception e) {
+							//x hier verder: als ik nu OnderhoudenPersoonService draai met array.clone(); dan doet hij het niet. Want de array kent geen clone 
+							// maar ook een rare var collab: collab is namelijknu: _5B_Lnl.carpago.testexpert.Persoon_3B_ :- vaag ...
 							logger.error(e);
 							throw new TestExpertException(e);
 						} 
@@ -1371,8 +1373,8 @@ public abstract class TestExpert extends TestCase {
 			return true;
 		} else {
 			// rloman: hack for follow up on #131
-			if (clazz.getPackage() == null) {
-				return true;
+			if (clazz.isArray()) {
+				return isPrimitive(clazz.getComponentType());
 			} 
 			return clazz.isPrimitive();
 		}
@@ -1399,10 +1401,9 @@ public abstract class TestExpert extends TestCase {
 		assert classOrArrayOfClassesToImport != null;
 		logger.debug("enter");
 
-		if (classOrArrayOfClassesToImport.getClass().isArray()) {
-			Object[] ourTempObjectArray = new Object[Array.getLength(classOrArrayOfClassesToImport)];
-			ourTempObjectArray[0] = Array.get(classOrArrayOfClassesToImport, 0);
-			this.checkAndAddImport(ourTempObjectArray[0]);
+		if (classOrArrayOfClassesToImport instanceof Class && ((Class <?>) classOrArrayOfClassesToImport).isArray()) {
+			Class<?> clazz = (Class <?>) classOrArrayOfClassesToImport;
+			this.checkAndAddImport(clazz.getComponentType());
 		} else {
 			if (classOrArrayOfClassesToImport instanceof Collection<?>) {
 
@@ -1433,7 +1434,9 @@ public abstract class TestExpert extends TestCase {
 						Class<?> aRealClass = (Class<?>) classOrArrayOfClassesToImport;
 						if (!this.isPrimitive(aRealClass) && !"java.lang".equals(aRealClass.getPackage().getName()) && !this.pakkage.getName().equals(aRealClass.getPackage().getName())
 								&& !this.imports.contains(aRealClass.getName())) {
-							this.imports.add(aRealClass.getName());
+							String name = aRealClass.getName();
+							name = name.replaceAll("\\$", "\\.");
+							this.imports.add(name);
 						}
 					} else {
 						assert classOrArrayOfClassesToImport instanceof Object;
