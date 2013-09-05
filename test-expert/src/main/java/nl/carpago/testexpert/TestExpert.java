@@ -1677,19 +1677,41 @@ public abstract class TestExpert extends TestCase {
 		return this.generatedTestClasses;
 	}
 
-	// e.g. "src/main/java
+	/** 
+	 * @return This method should return the relative path to the (sub)directory of the .java files from your project. (e.g. ../<project with classes to test>/src/main/java
+	 */
 	public abstract String getSourceFolder();
 
+	/**
+	 * @return The class in your Testproject which contains the Fixtures. See manual.
+	 */
 	public abstract Class<?> getFixture();
 
+	/**
+	 * @return Does TestExpert overwrite existing Testfiles on creation? n.b. This does not count for methods.
+	 */
+	
 	public abstract boolean overwriteExistingFiles();
 
+	/**
+	 * @return The relative path to the binary (class / bin) folder of the classes onder Test.
+	 */
 	public abstract String getBinaryFolder();
 
+	/**
+	 * @return The local (relative) path to the folder where the TestClassess will be created
+	 */
 	public abstract String getOutputFolder();
 
+
+	/**
+	 * @return The name of the testsuite. (e.g. "MyCreatedTests")
+	 */
 	public abstract String getTestsuiteName();
 
+	/**
+	 * @return The Mocking framework (EasyMock or jMockit). At this moment only EasyMock is widely supported.
+	 */
 	public abstract MockFramework getMockFramework();
 
 }
