@@ -4,7 +4,7 @@
     </description>
 	
 	<!-- software revision number -->
-	<property name="version" value="0.1.0-SNAPSHOT-${DSTAMP}"/>
+	<property name="version" value="0.1.0-SNAPSHOT"/>
 
 	
 	<!-- set global properties for this build -->
