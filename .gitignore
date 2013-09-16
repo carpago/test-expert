@@ -14,3 +14,4 @@ instrumented
 coverage
 emma
 writefile-unittest.txt
+project.properties
