@@ -198,7 +198,7 @@
 		    </propertyfile>
 		</target>
 	
-	<target name="build" depends="compile,buildinfo,test" description="generate the distribution">
+	<target name="build" depends="compile,buildinfo" description="generate the distribution">
 			<!-- Create the distribution directory -->
 			<mkdir dir="${dist.dir}/lib" />
 
