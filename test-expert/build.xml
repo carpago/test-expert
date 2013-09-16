@@ -217,6 +217,7 @@
 		</target>
 
 	<target name="zip" depends="build" description="generate a zipfile for deployment">
+		<mkdir dir="${dist.dir}/zip" />
 		<zip destfile="${dist.dir}/zip/${ant.project.name}-${version}-${DSTAMP}${TSTAMP}.zip">
 			<zipfileset dir="${dist.dir}/lib">
 				<include name="*.jar" />
