@@ -121,7 +121,7 @@ public abstract class TestExpert extends TestCase {
 		this.footer = "";
 	}
 
-	public void writeFile() {
+	private void writeFile() {
 		logger.debug("entering writeFile");
 		final String fileName = getOutputFolder() + "/" + this.classUnderTest.getName().replaceAll("\\.", "/") + "Test.java";
 		final String directoryName = getOutputFolder() + "/" + this.classUnderTest.getPackage().getName().replaceAll("\\.", "/");
@@ -178,7 +178,7 @@ public abstract class TestExpert extends TestCase {
 		this.generatedTestClasses.add(testClassName);
 	}
 
-	public BufferedInputStream getInputStreamFromGeneratedCode() {
+	protected BufferedInputStream getInputStreamFromGeneratedCode() {
 
 		final PipedInputStream pipedInputStream = new PipedInputStream();
 		try {
@@ -1500,7 +1500,7 @@ public abstract class TestExpert extends TestCase {
 		return this.addCode("\n");
 	}
 
-	public String codeGen() {
+	protected String codeGen() {
 		logger.debug("enter");
 
 		String result = EMPTY_STRING;
@@ -1680,7 +1680,7 @@ public abstract class TestExpert extends TestCase {
 	 *             application
 	 */
 	@Test
-	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
+	protected void testStarter() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 
