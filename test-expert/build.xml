@@ -76,6 +76,7 @@
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${dist.dir}/javadoc" />
 		<mkdir dir="${generated.test.source.dir}" />
 		<mkdir dir="${coverage.output.dir}" />
 		<mkdir dir="${instrumented.output.dir}" />
@@ -216,7 +217,25 @@
 			<copy todir="${lib.dir}">
 				<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
 			</copy>
-		</target>
+	</target>
+	
+	<target name='javadoc' description='Generate javadoc.' >
+	    <javadoc  
+	      use='true' author='true'  version='true'
+	      overview='../overview.html'  
+	    	access="public"
+	      sourcepath='${src.dir}'
+	      packagenames='*.*' 
+	      destdir='${build.dir}/javadoc'
+	      windowtitle='${ant.project.name}-${version}'
+	      noqualifier='java.*:javax.*:com.sun.*'   
+	      linksource='true'
+	    >
+	      <classpath refid='compile.classpath'/>
+	      <link href='http://java.sun.com/javase/6/docs/api/'/>      
+	      <header><![CDATA[<h1>${ant.project.name} ${version}</h1>]]></header>
+	    </javadoc>
+	  </target>
 
 	<target name="zip" depends="build" description="generate a zipfile for deployment">
 		<mkdir dir="${dist.dir}" />
