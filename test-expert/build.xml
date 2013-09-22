@@ -14,6 +14,7 @@
 	<property name="generated.test.source.dir" location="src/test/generated-test" />
 	<property name="build.dir" location="../build" />
 	<property name="dist.dir" location="../dist" />
+	<property name="lib.dir" location="../lib" />
 	<property name="test.report.dir" location="../reports" />
 	<property name="thirdparty.dir" location="../3rdparty" />
 	<property name="findbugs.home" value="${thirdparty.dir}/findbugs-2.0.0" />
@@ -74,6 +75,7 @@
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${test.report.dir}" />
 		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${lib.dir}" />
 		<mkdir dir="${generated.test.source.dir}" />
 		<mkdir dir="${coverage.output.dir}" />
 		<mkdir dir="${instrumented.output.dir}" />
@@ -171,7 +173,7 @@
 	<target name="findbugs" depends="build">
 		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/findbugs.xml">
 			<sourcePath path="${src.dir}" />
-			<class location="${dist.dir}/lib/${ant.project.name}.jar" />
+			<class location="${dist.dir}/${ant.project.name}.jar" />
 			<auxclasspath refid="test.classpath" />
 		</findbugs>
 	</target>
@@ -200,28 +202,31 @@
 	
 	<target name="build" depends="compile,buildinfo" description="generate the distribution">
 			<!-- Create the distribution directory -->
-			<mkdir dir="${dist.dir}/lib" />
+			<mkdir dir="${dist.dir}" />
 
 			<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
 			<!-- even uit voor test van source includen hieronder <jar jarfile="${dist.dir}/lib/${ant.project.name}.jar" basedir="${build.dir}" /> -->
 
-			<jar destfile="${dist.dir}/lib/${ant.project.name}.jar">
+			<jar destfile="${dist.dir}/${ant.project.name}.jar">
 	    		<fileset dir="${build.dir}" />
 	    		<fileset dir="${src.dir}" includes="**/*.java"/>
 			</jar>
 
 			<!-- Put the dependencies at same location -->
-			<copy todir="${dist.dir}/lib">
+			<copy todir="${lib.dir}">
 				<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
 			</copy>
 		</target>
 
 	<target name="zip" depends="build" description="generate a zipfile for deployment">
-		<mkdir dir="${dist.dir}/zip" />
-		<zip destfile="${dist.dir}/zip/${ant.project.name}-${version}-${DSTAMP}${TSTAMP}.zip">
-			<zipfileset dir="${dist.dir}/lib">
+		<mkdir dir="${dist.dir}" />
+		<zip destfile="${dist.dir}/${ant.project.name}-${version}-${DSTAMP}${TSTAMP}.zip">
+			<zipfileset dir="${lib.dir}">
 				<include name="*.jar" />
 			</zipfileset>
+			<zipfileset dir="${dist.dir}">
+			    <include name="*.jar" />
+			 </zipfileset>
 		</zip>
 	</target>
 </project>
