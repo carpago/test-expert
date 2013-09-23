@@ -209,13 +209,9 @@
 	<target name="build" depends="compile,buildinfo" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist.dir}" />
-
-		<!-- Put everything in ${build.dir} into the ${ant.project.name}-${DSTAMP}.jar file -->
-		<!-- even uit voor test van source includen hieronder <jar jarfile="${dist.dir}/lib/${ant.project.name}.jar" basedir="${build.dir}" /> -->
-
 		<jar destfile="${dist.dir}/${ant.project.name}.jar">
 			<fileset dir="${build.dir}" />
-			<fileset dir="${src.dir}" includes="**/*.java"/>
+			<!-- <fileset dir="${src.dir}" includes="**/*.java"/> -->
 		</jar>
 
 		<!-- Put the dependencies at same location -->
@@ -228,7 +224,7 @@
 		<javadoc 
 			sourcepath="${src.dir}" destdir="${dist.dir}/javadoc" use='true' author='true'  version='true'
 			access="public"
-			windowtitle=":: TestExpert API ::"
+			windowtitle="TestExpert API"
 			>
 			
 			<classpath refid='compile.classpath' />
@@ -250,6 +246,9 @@
 			<include name="*.jar" />
 		</zipfileset>
 		<zipfileset dir="${dist.dir}/javadoc" prefix="dist/docs">
+		</zipfileset>
+		<zipfileset dir="${src.dir}" includes="**/*.java" prefix="src">
+		
 		</zipfileset>
 	</zip>
 </target>
