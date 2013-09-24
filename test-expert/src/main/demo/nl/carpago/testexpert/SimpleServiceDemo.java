@@ -7,7 +7,7 @@ public class SimpleServiceDemo {
 	private String name = "simpleDemo";
 	
 	@CreateUnittest(out="simpleDemo")
-	private String getName() {
+	public String getName() {
 		
 		return name;
 	}

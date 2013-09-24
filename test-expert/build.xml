@@ -9,6 +9,7 @@
 
 	<!-- set global properties for this build -->
 	<property name="src.dir" location="src/main/java" />
+	<property name="demo.dir" location="src/main/demo" />
 	<property name="resources.dir" location="src/main/resources" />
 	<property name="test.src.dir" location="src/test/java" />
 	<property name="generated.test.source.dir" location="src/test/generated-test" />
@@ -245,11 +246,9 @@
 		<zipfileset dir="${dist.dir}" prefix="dist">
 			<include name="*.jar" />
 		</zipfileset>
-		<zipfileset dir="${dist.dir}/javadoc" prefix="dist/docs">
-		</zipfileset>
-		<zipfileset dir="${src.dir}" includes="**/*.java" prefix="src">
-		
-		</zipfileset>
+		<zipfileset dir="${dist.dir}/javadoc" prefix="dist/docs" />
+		<zipfileset dir="${src.dir}" includes="**/*.java" prefix="src" />
+		<zipfileset dir="${demo.dir}" includes="**/*.java" prefix="demo" />
 	</zip>
 </target>
 </project>

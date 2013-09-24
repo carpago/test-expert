@@ -979,9 +979,9 @@ public abstract class TestExpert extends TestCase {
 
 		String result = EMPTY_STRING;
 
-		result += addCodeLn("\t@Before");
+		result += addCodeLn("\n\n\t@Before");
 		if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-			result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
+			// was da? :-)  result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
 		}
 
 		result += addCodeLn("\t@Override");
@@ -1146,7 +1146,6 @@ public abstract class TestExpert extends TestCase {
 		result += addCode(WordUtils.uncapitalize(this.classUnderTest.getSimpleName()) + "." + methode.getName() + "(");
 
 		String[] parameterNames = this.getInAnnotationsForMethod(methode);
-		String[] parameterTypes = getParameterTypesForMethod(methode);
 		// nog testen ... ook in deployment. (dus naar t greenfield project deployen
 		String first = EMPTY_STRING;
 		String tail = EMPTY_STRING;
@@ -1680,7 +1679,7 @@ public abstract class TestExpert extends TestCase {
 	 *             application
 	 */
 	@Test
-	protected void testStarter() throws ClassNotFoundException, FileNotFoundException {
+	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 
