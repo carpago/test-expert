@@ -980,10 +980,6 @@ public abstract class TestExpert extends TestCase {
 		String result = EMPTY_STRING;
 
 		result += addCodeLn("\n\n\t@Before");
-		if (MockFramework.EASYMOCK.equals(getMockFramework())) {
-			// was da? :-)  result += addCodeLn("\t@SuppressWarnings(\"unchecked\")");
-		}
-
 		result += addCodeLn("\t@Override");
 		result += addCodeLn("\tpublic void setUp() {");
 		// initialize the class under test
@@ -1679,7 +1675,7 @@ public abstract class TestExpert extends TestCase {
 	 *             application
 	 */
 	@Test
-	public void testStarter() throws ClassNotFoundException, FileNotFoundException {
+	public void testAllUnitTestGenerator() throws ClassNotFoundException, FileNotFoundException {
 		logger.debug("entering setup");
 		List<String> lijstMetAlleJavaFilesUitProject = null;
 

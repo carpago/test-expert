@@ -2,7 +2,7 @@ package nl.carpago.testexpert;
 
 import nl.carpago.testexpert.fixtures.FixtureForDemos;
 
-public class Kickstart extends TestExpert {
+public class Runner extends TestExpert {
 
 	@Override
 	public String getSourceFolder() {
