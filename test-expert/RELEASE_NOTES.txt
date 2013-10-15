@@ -1,1 +1,4 @@
-Hier proberen om het met een template op te lossen.
+Hier proberen om het met een template op te lossen
+
+Dependencies:
+Jad.
