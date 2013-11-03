@@ -1145,11 +1145,26 @@ public abstract class TestExpert extends TestCase {
 		// nog testen ... ook in deployment. (dus naar t greenfield project deployen
 		String first = EMPTY_STRING;
 		String tail = EMPTY_STRING;
+		String[] parameterTypeArray = this.getParameterTypesForMethod(methode);
 		if (!(parameterNames.length < 1)) {
 			first = parameterNames[0];
+			
+			if(!this.fixtures.containsKey(first)) {
+				// assume the first is a literal
+				if(parameterTypeArray[0].contains("String") && !first.contains("\"")) {
+					first = "\"" + first + "\"";
+				}
+			}
 		}
 		for (int i = 1; i <= parameterNames.length - 1; i++) {
-				tail += ", " + parameterNames[i];
+				String tailElement = parameterNames[i];
+				if(!this.fixtures.containsKey(tailElement)) {
+					if(parameterTypeArray[i].contains("String") && ! tailElement.contains("\"")){
+						// assume the first is a literal
+						tailElement = "\"" + tailElement + "\"";
+					}
+				}
+				tail += ", " + tailElement;
 		}
 
 		parameterString = first + tail;
@@ -1168,9 +1183,11 @@ public abstract class TestExpert extends TestCase {
 		logger.debug("enter");
 		String result = EMPTY_STRING;
 		String expected = method.getAnnotation(CreateUnittest.class).out();
+		boolean isInFixtures = this.fixtures.containsKey(expected);
+		boolean returnIsString = method.getReturnType().getName().contains("String");
 		String actual = this.RESULTFROMMETHOD;
 		result += addCode("\n\t\t");
-		result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + (isLiteral(expected) ? "\"" + expected + "\"" : expected) + ", " + (isLiteral(actual) ? "\"" + actual +"\"" : actual) + "));");
+		result += addCodeLn("assertTrue(\"variable '" + expected + "' and '" + actual + "' should be deep equal!\", this.checkForDeepEquality(" + (isLiteral(expected) || !isInFixtures && returnIsString ? "\"" + expected + "\"" : expected) + ", " + (isLiteral(actual) ? "\"" + actual +"\"" : actual) + "));");
 
 		logger.debug("leave");
 
