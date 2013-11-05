@@ -23,7 +23,4 @@ public class OnderhoudenPersoonService {
 		return result;
 		
 	}
-	
-	
-
 }

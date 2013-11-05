@@ -80,5 +80,21 @@ public class OnderhoudenVliegveldService {
 	public void setName(char naam) {
 		this.naam = naam;
 	}
+	
+	@CreateUnittest(in={"3"}, out="4")
+	public int addOne(int number) {
+		int result = number + 1;
+		
+		return result;
+	}
+	
+	@CreateUnittest(in={"Martijn"}, out="Martijn")
+	public String getName(String name) {
+		Person p = new Person("Martijn", 37);
+		
+		String result = p.getName();
+		
+		return result;
+	}
 }
  
