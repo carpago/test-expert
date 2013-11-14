@@ -1611,8 +1611,7 @@ public abstract class TestExpert extends TestCase {
 		String result = EMPTY_STRING;
 
 		for (String importLine : this.imports) {
-
-			result += "import " + importLine + ";\n";
+			result += "import " + importLine.replaceAll("\\$", ".") + ";\n";
 		}
 		result += "\n";
 
