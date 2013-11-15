@@ -75,6 +75,11 @@ public class TstClassInner {
 	public String testForParameterNames(String one, String two, String three) {
 		return "" + one + two + three;
 	}
+	
+	@CreateUnittest(in={"erwaseeneen", "erwaseentwee", "erwaseendrie"}, out="eraseeeneenerwaseeentweeerwaseeendrie")
+	public String testForParameterNamesLiterals(String one, String two, String three) {
+		return "" + one + two + three;
+	}
 
 	public String testForParameterTypes(int one, String two, Person three) {
 

@@ -718,6 +718,25 @@ public class TestExpertTest extends AbstractTestExpert {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testGenerateCallToTestMethodWithParameterString() {
+		TestExpert t = new TestExpertImplForUnittestingPurposes();
+		t.init(TstClassInner.class);
+
+		try {
+			Method method = TstClassInner.class.getMethod("testForParameterNamesLiterals", new Class<?>[] { String.class, String.class, String.class });
+			String callToTestMethod = t.generateCallToTestMethod(method);
+			String expected = "String resultFromMethod = tstClassInner.testForParameterNamesLiterals(\"erwaseeneen\", \"erwaseentwee\", \"erwaseendrie\");";
+			Assert.assertTrue(callToTestMethod.contains(expected));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			fail();
+		} catch (NoSuchMethodException e) {
+			fail();
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testgenerateAssertStatementsForReturnOfMethod() {
