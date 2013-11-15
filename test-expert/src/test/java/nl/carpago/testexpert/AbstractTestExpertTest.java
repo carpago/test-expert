@@ -12,7 +12,8 @@ public class AbstractTestExpertTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.testExpert = new AbstractTestExpert();
+		this.testExpert = new AbstractTestExpert() {
+		};
 	}
 
 	@Override
