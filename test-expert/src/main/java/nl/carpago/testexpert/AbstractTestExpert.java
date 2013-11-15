@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
-public class AbstractTestExpert extends TestCase {
+public abstract class AbstractTestExpert extends TestCase {
 
 	private final Logger logger = Logger.getLogger(AbstractTestExpert.class);
 
