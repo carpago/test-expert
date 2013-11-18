@@ -751,7 +751,7 @@ public abstract class TestExpert extends TestCase {
 		{
 			for(int index = 0;index < in.length;index++)
 			{
-				if("String".equals(parameterTypes[index]) && this.isLiteral(in[index]) && in[index].indexOf('"') < 0 )
+				if("String".equals(parameterTypes[index]) && this.isLiteral(in[index]) && !in[index].contains("\""))
 				{
 					in[index] = "\"" + in[index] + "\"";
 				}
@@ -776,7 +776,7 @@ public abstract class TestExpert extends TestCase {
 		}
 
 		if (out != null) {
-			if ("String".equals(returnType) && this.isLiteral(out)  && out.indexOf('"') < 0 ) {
+			if ("String".equals(returnType) && this.isLiteral(out)  && !out.contains("\"")) {
 				out = "\"" + out + "\"";
 			}
 		}
