@@ -427,8 +427,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(annotations.contains("@ContextConfiguration(classes={FixturesForTst.class})"));
 
 		String codeGenAnnotations = testExpert.codeGenAnnotationsForSpringTest();
-		Assert.assertTrue(codeGenAnnotations.indexOf("@RunWith(SpringJUnit4ClassRunner.class)") > -1);
-		Assert.assertTrue(codeGenAnnotations.indexOf("@ContextConfiguration(classes={FixturesForTst.class})") > -1);
+		Assert.assertTrue(codeGenAnnotations.contains("@RunWith(SpringJUnit4ClassRunner.class)"));
+		Assert.assertTrue(codeGenAnnotations.contains("@ContextConfiguration(classes={FixturesForTst.class})") );
 	}
 
 	@Test
@@ -456,19 +456,11 @@ public class TestExpertTest extends AbstractTestExpert {
 		String code = testExpert.codeGenImports();
 		String[] lines = code.split("\n");
 		Assert.assertEquals(5, lines.length);
-		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
-		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
-		// not te be inserted:
-		// Assert.assertTrue(code.contains("nl.carpago.testexpert.AbstractTestExpert")
-		// > -1);
-		// not to be inserted:
-		// Assert.assertTrue(code.contains(t.getContextClass().getSimpleName()));
-		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
-		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
-		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
-		// correct: should be inserted when necessary ...
-		// Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;")
-		// > -1);
+		Assert.assertTrue(code.contains("org.junit.Before;"));
+		Assert.assertTrue(code.contains("org.junit.Test;"));
+		Assert.assertTrue(code.contains("org.junit.runner.RunWith;"));
+		Assert.assertTrue(code.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;"));
+		Assert.assertTrue(code.contains("org.springframework.test.context.ContextConfiguration;"));
 
 		// other package
 		testExpert = new TestExpertImplForUnittestingPurposes();
@@ -488,15 +480,13 @@ public class TestExpertTest extends AbstractTestExpert {
 		lines = code.split("\n");
 
 		Assert.assertEquals(7, lines.length);
-		Assert.assertTrue(code.indexOf("org.junit.Before;") > -1);
-		Assert.assertTrue(code.indexOf("org.junit.Test;") > -1);
-		Assert.assertTrue(code.indexOf("nl.carpago.testexpert.AbstractTestExpert") > -1);
-		Assert.assertTrue(code.indexOf(testExpert.getFixture().getSimpleName()) > -1);
-		Assert.assertTrue(code.indexOf("org.junit.runner.RunWith;") > -1);
-		Assert.assertTrue(code.indexOf("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;") > -1);
-		Assert.assertTrue(code.indexOf("org.springframework.test.context.ContextConfiguration;") > -1);
-		// Assert.assertTrue(code.indexOf("org.springframework.beans.factory.annotation.Autowired;")
-		// > -1);
+		Assert.assertTrue(code.contains("org.junit.Before;"));
+		Assert.assertTrue(code.contains("org.junit.Test;"));
+		Assert.assertTrue(code.contains("nl.carpago.testexpert.AbstractTestExpert"));
+		Assert.assertTrue(code.contains(testExpert.getFixture().getSimpleName()));
+		Assert.assertTrue(code.contains("org.junit.runner.RunWith;"));
+		Assert.assertTrue(code.contains("org.springframework.test.context.junit4.SpringJUnit4ClassRunner;"));
+		Assert.assertTrue(code.contains("org.springframework.test.context.ContextConfiguration;"));
 	}
 
 	@Test
@@ -566,10 +556,10 @@ public class TestExpertTest extends AbstractTestExpert {
 			String actual = t.codeGenFixtures();
 
 			String expected = "\t@Autowired private Person person;";
-			Assert.assertTrue("@Autowired private Person person not found in fixtureCodeGen", actual.indexOf(expected) > -1);
+			Assert.assertTrue("@Autowired private Person person not found in fixtureCodeGen", actual.contains(expected));
 
 			expected = "\t@Autowired private Person anotherPerson;";
-			Assert.assertTrue("@Autowired private Person anotherPerson not found in fixtureCodeGen", actual.indexOf(expected) > -1);
+			Assert.assertTrue("@Autowired private Person anotherPerson not found in fixtureCodeGen", actual.contains(expected));
 
 			String[] actualSplitted = actual.split("\n");
 			Assert.assertEquals(4, actualSplitted.length); // 4 --> emptyline
@@ -607,7 +597,7 @@ public class TestExpertTest extends AbstractTestExpert {
 				String expected = "" + "int firstUnknowArgument = 17;" + "String secondUnknowArgument = new String();" + "Person thirdUnknowArgument = new Person(new String(), 17);";
 				String[] codeSplitted = code.split("\n");
 				for (String line : codeSplitted) {
-					Assert.assertTrue(expected.indexOf(line.trim()) > -1);
+					Assert.assertTrue(expected.contains(line.trim()));
 				}
 			} catch (InvalidAnnotationException e) {
 				logger.error("Invalid annotations.");
@@ -661,7 +651,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
 		// "EasyMock.replay(list);", t.generateReplays());
-		Assert.assertTrue(t.generateReplays("testForLijst").indexOf("EasyMock.replay(lijst);") > -1);
+		Assert.assertTrue(t.generateReplays("testForLijst").contains("EasyMock.replay(lijst);"));
 	}
 
 	@Test
@@ -679,7 +669,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		// ??? why nog?Assert.assertEquals("The generated replay code is wrong",
 		// "EasyMock.replay(list);", t.generateReplays());
-		Assert.assertTrue(t.generateVerifies("testForLijst").indexOf("EasyMock.verify(lijst);") > -1);
+		Assert.assertTrue(t.generateVerifies("testForLijst").contains("EasyMock.verify(lijst);"));
 	}
 
 	@Test
@@ -696,8 +686,8 @@ public class TestExpertTest extends AbstractTestExpert {
 		}
 
 		String collabString = t.generateGettersForCollaborators();
-		Assert.assertTrue(collabString.indexOf("public List<String> getLijst()") > -1);
-		Assert.assertTrue(collabString.indexOf("return this.lijst;") > -1);
+		Assert.assertTrue(collabString.contains("public List<String> getLijst()"));
+		Assert.assertTrue(collabString.contains("return this.lijst;"));
 	}
 
 	@Test
@@ -709,7 +699,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			Method method = TstClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
 			String callTotTestMethod = t.generateCallToTestMethod(method);
 			String expected = "Person resultFromMethod = tstClassInner.testMethodeForCreateCallToTestMethod(person, anotherPerson);";
-			Assert.assertTrue(callTotTestMethod.indexOf(expected) > -1);
+			Assert.assertTrue(callTotTestMethod.contains(expected));
 		} catch (SecurityException e) {
 			e.printStackTrace();
 			fail();
@@ -747,12 +737,12 @@ public class TestExpertTest extends AbstractTestExpert {
 			Method method = TstClassInner.class.getMethod("testMethodeForCreateCallToTestMethod", new Class<?>[] { Person.class, Person.class });
 			String assertStatement = t.generateAssertStatementsForReturnOfMethod(method);
 			String expected = "assertTrue(\"variable 'anotherPerson' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(anotherPerson, resultFromMethod));";
-			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			Assert.assertTrue(assertStatement.contains(expected));
 
 			method = TstClassInner.class.getMethod("inc", new Class<?>[] { int.class });
 			assertStatement = t.generateAssertStatementsForReturnOfMethod(method);
 			expected = "assertTrue(\"variable '4' and 'resultFromMethod' should be deep equal!\", this.checkForDeepEquality(\"4\", resultFromMethod));";
-			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			Assert.assertTrue(assertStatement.contains(expected));
 
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -829,19 +819,19 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		String setup = t.generateSetup();
 		String anExpectedLine = "@Before";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "this.tstClassInner = new TstClassInner();";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "this.lijst = EasyMock.createMock(List.class);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"lijst\", this.lijst);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPersoonDaoWithoutSetter\", this.onceUsedPersoonDaoWithoutSetter);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "this.tstClassInner.setPersoonDao(this.persoonDao);";
-		Assert.assertTrue(setup.indexOf(anExpectedLine) > -1);
+		Assert.assertTrue(setup.contains(anExpectedLine));
 	}
 
 	@Test
@@ -1018,20 +1008,20 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));") > -1);
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));"));
 				method = TstClassInner.class.getMethod("getPersoon", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));") > -1);
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));"));
 
 				method = TstClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[] { int.class, Person.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") > -1);
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
 
 				method = TstClassInner.class.getMethod("testWithCallToSelf", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				// System.out.println(">"+expectAndReplays+"<");
 				// rloman: to be implemented in the next release.
-				// .Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(inner.inc(number)).andReturn(4);")
+				// .Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(inner.inc(number)).andReturn(4);")
 				// >-1);
 
 			} catch (IOException e) {
@@ -1065,8 +1055,8 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.indexOf("Person localPerson = new Person(new String(), 17);") > -1);
-				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));") > -1);
+				Assert.assertTrue(expectAndReplays.contains("Person localPerson = new Person(new String(), 17);"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1098,7 +1088,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.indexOf("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));") > -1);
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1140,7 +1130,7 @@ public class TestExpertTest extends AbstractTestExpert {
 				expectedLines[5] = "return string;";
 
 				for (String anExpectedLine : expectedLines) {
-					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
+					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.contains(anExpectedLine));
 				}
 
 				// asssert that mockit is imported
@@ -1183,7 +1173,7 @@ public class TestExpertTest extends AbstractTestExpert {
 				expectedLines[1] = "EasyMock.expect(persoonDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
 
 				for (String anExpectedLine : expectedLines) {
-					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.indexOf(anExpectedLine) > -1);
+					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.contains(anExpectedLine));
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1290,7 +1280,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		try {
 			while ((line = reader.readLine()) != null) {
 				counter++;
-				Assert.assertTrue(allCode.indexOf(line) > -1);
+				Assert.assertTrue(allCode.contains(line));
 			}
 			Assert.assertTrue(counter > 25);
 			Assert.assertTrue(allCode.split("\n").length == counter);
@@ -1352,7 +1342,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		String codeGenActual = testExpert.codeGenTestsuite();
 
 		for (String line : codeGenExpected.split("\n")) {
-			Assert.assertTrue("Line '" + line + "' is not found in generated code!", codeGenActual.indexOf(line) > -1);
+			Assert.assertTrue("Line '" + line + "' is not found in generated code!", codeGenActual.contains(line));
 		}
 	}
 
@@ -1415,10 +1405,10 @@ public class TestExpertTest extends AbstractTestExpert {
 			String assertStatement = t.generateAssertStatementsForMethod(method);
 
 			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
-			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			Assert.assertTrue(assertStatement.contains(expected));
 			
 			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,\"3\"));";
-			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			Assert.assertTrue(assertStatement.contains(expected));
 
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -1440,10 +1430,10 @@ public class TestExpertTest extends AbstractTestExpert {
 			String assertStatement = t.generateAssertStatementsForMethod(method);
 
 			String expected = "Object leeftijd= getFieldvalueThroughReflection(tstClassInner,\"leeftijd\");";
-			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			Assert.assertTrue(assertStatement.contains(expected));
 			
 			expected = "assertTrue(\"variable 'leeftijd' and '3' should be deep equal!\",checkForDeepEquality(leeftijd,\"3\"));";
-			Assert.assertTrue(assertStatement.indexOf(expected) > -1);
+			Assert.assertTrue(assertStatement.contains(expected));
 
 		} catch (SecurityException e) {
 			e.printStackTrace();

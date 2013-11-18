@@ -462,7 +462,7 @@ public abstract class TestExpert extends TestCase {
 						break outer;
 					}
 
-					if (linesLocal.indexOf("invokeinterface") > -1 || linesLocal.indexOf("invokevirtual") > -1) {
+					if (linesLocal.contains("invokeinterface") || linesLocal.contains("invokevirtual")) {
 
 						Pattern patternForSeparatingParameters = Pattern.compile("\\(|,|\\)>");
 						Scanner s = new Scanner(linesLocal).useDelimiter(patternForSeparatingParameters);
@@ -505,7 +505,7 @@ public abstract class TestExpert extends TestCase {
 
 						for (int k = j - 1; k > i; k--) {
 							String regelHoger = lines.get(k);
-							if (regelHoger.indexOf(invokee) > -1) {
+							if (regelHoger.contains(invokee)) {
 								if (gemockteRegelsUitSource.contains(k)) {
 									continue inner; // already done ...
 								} else {
@@ -696,7 +696,7 @@ public abstract class TestExpert extends TestCase {
 	protected boolean isCallerForCollab(String aCollabKandidate) {
 
 		for (String element : this.collabs) {
-			if (aCollabKandidate.toLowerCase().indexOf(element.toLowerCase()) > -1 && aCollabKandidate.toLowerCase().indexOf("getfield") < 0) {
+			if (aCollabKandidate.toLowerCase().contains(element.toLowerCase()) && !aCollabKandidate.toLowerCase().contains("getfield")) {
 				return true;
 			}
 		}
@@ -792,7 +792,7 @@ public abstract class TestExpert extends TestCase {
 			return true;
 		}
 		for (String element : this.illegalForVariables) {
-			if (literalOrVariablename.indexOf(element) > -1) {
+			if (literalOrVariablename.contains(element)) {
 				logger.info("String " + literalOrVariablename + " is considered as a literal!");
 				return true;
 			}
@@ -1099,7 +1099,7 @@ public abstract class TestExpert extends TestCase {
 			{
 				for(String postConditieElement : postAssertments)
 				{
-					if(postConditieElement.indexOf(".equals") > -1)
+					if(postConditieElement.contains(".equals"))
 					{
 						postConditie = postConditieElement.split(".equals");
 						//remove the parenthesis
@@ -1107,7 +1107,7 @@ public abstract class TestExpert extends TestCase {
 					}
 					else
 					{
-						if(postConditieElement.indexOf("==") > -1)
+						if(postConditieElement.contains("=="))
 						{
 							postConditie = postConditieElement.split("==");
 						}
