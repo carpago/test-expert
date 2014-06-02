@@ -1,4 +1,4 @@
-﻿<project name="test-expert" default="build" basedir=".">
+﻿<project name="test-expert" default="zip" basedir=".">
 	<description>
        Build file for Carpago Software's TestExpert product (c) 2012
     </description>
