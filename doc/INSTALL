@@ -1,0 +1,87 @@
+After creating your application, domainclasses and services which
+are about to be tested do the following:
+
+Install the jad Java Disassembler from the url http://varaneckas.com/jad/  (at the moment of this writing)
+
+
+Add testexpert.jar and lib/*.jar to classpath
+Annotatie your service / domainmethod with the 
+@CreateUnittest annotation and fill in the missing in and out
+parameter, e.g. @CreateUnittest(in="3", out="herman")
+
+
+This return type Herman is a type of the Spring framework context
+bean which might be created in a file in some sourcefolder
+in your project like this:
+
+package nl.whatever;
+
+public class Fixtures {
+	
+	@Bean
+	public Customer herman() {
+		return new Customer(3);
+	}
+	
+	@Bean
+	public Person willy() {
+		return new Person(2);
+	}
+
+}
+
+
+Then your create a so called Kickstarter file which glues all this
+together and is the beating heart of the testexpert:
+create a class in your test folder with a name, e.g. Kickstarter
+which extends the class "TestExpert".
+
+Fill in the blank @Override methods with some properties of your flavor and project setttings, some like this:
+
+
+package nl.whatever
+
+import nl.carpago.testexpert.TestExpert;
+
+public class Kickstarter extends TestExpert {
+
+	@Override
+	public String getBinaryFolder() {
+		return "bin";
+	}
+
+	@Override
+	public Class<?> getFixture() {
+		return Fixtures.class;
+	}
+
+	@Override
+	public MockFramework getMockFramework() {
+		return MockFramework.EASYMOCK;
+	}
+
+	@Override
+	public String getOutputFolder() {
+		return "generated-test";
+	}
+
+	@Override
+	public String getSourceFolder() {
+		return "src";
+	}
+
+	@Override
+	public String getTestsuiteName() {
+		return "CRVAllTests";
+	}
+
+	@Override
+	public boolean overwriteExistingFiles() {
+		return true;
+	}
+
+}
+
+Now start the class "Kickstarter" as a regular unittest and your test are created by surprise.
+
+Be happy.

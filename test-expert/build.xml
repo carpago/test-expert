@@ -17,6 +17,7 @@
 	<property name="dist.dir" location="../dist" />
 	<property name="lib.dir" location="../lib" />
 	<property name="test.report.dir" location="../reports" />
+	<property name="documentation.dir" location="../doc" />
 	<property name="thirdparty.dir" location="../3rdparty" />
 	<property name="findbugs.home" value="${thirdparty.dir}/findbugs-2.0.0" />
 
@@ -246,7 +247,8 @@
 		<zipfileset dir="${dist.dir}" prefix="dist">
 			<include name="*.jar" />
 		</zipfileset>
-		<zipfileset dir="${dist.dir}/javadoc" prefix="dist/docs" />
+		<zipfileset dir="${dist.dir}/javadoc" prefix="dist/javadoc" />
+		<zipfileset dir="${documentation.dir}" prefix="DOCUMENTATION" />
 		<zipfileset dir="${src.dir}" includes="**/*.java" prefix="src" />
 		<zipfileset dir="${demo.dir}" includes="**/*.java" prefix="demo" />
 	</zip>
