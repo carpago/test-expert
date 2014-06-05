@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nl.belastingdienst.Betrokkene;
-import nl.belastingdienst.Melding;
 import nl.carpago.testexpert.TestExpert.MockFramework;
+import nl.foo.AccidentalPerson;
+import nl.foo.Announcement;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -776,31 +776,31 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		Assert.assertFalse("Imports shouldn't contain " + one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
 
-		Melding aMelding = new Melding();
-		Melding[] meldingen = new Melding[] { aMelding };
+		Announcement aMelding = new Announcement();
+		Announcement[] meldingen = new Announcement[] { aMelding };
 		t.checkAndAddImport(meldingen);
 		Assert.assertTrue("Imports should contain " + aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
 
-		Betrokkene betrokkene = new Betrokkene();
-		List<Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
+		AccidentalPerson betrokkene = new AccidentalPerson();
+		List<AccidentalPerson> betrokkenen = new ArrayList<AccidentalPerson>();
 		betrokkenen.add(betrokkene);
 		t.checkAndAddImport(betrokkenen);
 		Assert.assertTrue("Imports should contain " + betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
 
 		Assert.assertTrue(t.getImports().contains(java.util.ArrayList.class.getName()));
 
-		Set<Melding> meldingenSet = new HashSet<Melding>();
+		Set<Announcement> meldingenSet = new HashSet<Announcement>();
 		meldingenSet.add(aMelding);
 		t.checkAndAddImport(meldingenSet);
 		Assert.assertTrue(t.getImports().contains(java.util.HashSet.class.getName()));
 
 		t.init(TstClassInner.class);
 		Assert.assertFalse(t.getImports().contains(java.util.HashMap.class.getName()));
-		Assert.assertFalse(t.getImports().contains(Melding.class.getName()));
-		Map<String, Melding> map = new HashMap<String, Melding>();
+		Assert.assertFalse(t.getImports().contains(Announcement.class.getName()));
+		Map<String, Announcement> map = new HashMap<String, Announcement>();
 		map.put("aKey", aMelding);
 		t.checkAndAddImport(map);
-		Assert.assertTrue(t.getImports().contains(Melding.class.getName()));
+		Assert.assertTrue(t.getImports().contains(Announcement.class.getName()));
 		Assert.assertTrue(t.getImports().contains(HashMap.class.getName()));
 
 		t.init(TstClassInner.class);

@@ -21,26 +21,26 @@ package nl.carpago.testexpert;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.belastingdienst.Betrokkene;
-import nl.belastingdienst.Melding;
-import nl.belastingdienst.MeldingDAO;
 import nl.carpago.testexpert.annotation.CreateUnittest;
 import nl.carpago.testexpert.annotation.Expect;
+import nl.foo.AccidentalPerson;
+import nl.foo.Announcement;
+import nl.foo.MessageDAO;
 
 /**
  * Business service voor het onderhouden van Waarden.
  * 
  * @author manef00
  */
-public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingService {
+public final class OnderhoudenMeldingServiceImpl implements ManageMessageService {
 
-	private MeldingDAO meldingDao;
+	private MessageDAO meldingDao;
 
 	private PersoonDAO persoonDao;
 
 	private List<String> list = new ArrayList<String>();
 
-	private List<MeldingDAO> list2 = new ArrayList<MeldingDAO>();
+	private List<MessageDAO> list2 = new ArrayList<MessageDAO>();
 
 	public OnderhoudenMeldingServiceImpl(String in) {
 
@@ -54,7 +54,7 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 	 * 
 	 * 
 	 * Hieronder een korte beschrijving hoe om te gaan met het afmelden van een
-	 * Melding via JMS / MQ in het algemeen en vooral het omgaan met JAXB en MQ
+	 * Announcement via JMS / MQ in het algemeen en vooral het omgaan met JAXB en MQ
 	 * in het bijzonder.
 	 * 
 	 * Van Dick Jansen en Ruud Wegdam de XSD voor AT300 ontvangen. Deze plaats
@@ -86,34 +86,34 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 	 * zie url in mail.
 	 */
 
-	public List<Melding> findAllByExample(Melding melding) {
-		List<Melding> result = this.getMeldingDao().findAllWhere(melding.getBetrokkene(), melding.getBerichtkenmerkDerden());
+	public List<Announcement> findAllByExample(Announcement melding) {
+		List<Announcement> result = this.getMeldingDao().findAllWhere(melding.getAccidentalPerson(), melding.getMessageDigestOtherParty());
 
 		return result;
 	}
 
-	public List<Melding> geefMeldingenMetStatusHandmatigeAfhandeling() {
-		return this.getMeldingDao().findAllWhereStatusHandmatigeAfhandeling();
+	public List<Announcement> getMessagesWithStateManual() {
+		return this.getMeldingDao().findAllWhereStateIsManual();
 	}
 
 	public void testMe(String in) throws InterruptedException {
 
-		this.getMeldingDao().setMelding("test");
+		this.getMeldingDao().setMessage("test");
 
 	}
 
-	public List<Melding> testMetGenerics() {
-		return this.getMeldingDao().getLijst();
+	public List<Announcement> testMetGenerics() {
+		return this.getMeldingDao().getList();
 	}
 
 	@CreateUnittest(in = { "andereBetrokkene", "anderBerichtkenmerkAig" }, out = "melding")
-	public Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig) {
+	public Announcement getMessage(AccidentalPerson betrokkene, String berichtkenmerkAig) {
 
 		String voornaam = "Raymond";
-		Melding resultMelding = this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam);
-		String test = this.meldingDao.geefMelding(betrokkene, berichtkenmerkAig, voornaam).getBerichtkenmerkAig();
+		Announcement resultMelding = this.meldingDao.getMessage(betrokkene, berichtkenmerkAig, voornaam);
+		String test = this.meldingDao.getMessage(betrokkene, berichtkenmerkAig, voornaam).getMessageDigest();
 
-		if (this.getMeldingDao() != null && this.meldingDao.geefMelding(betrokkene, "riemar", voornaam).getBerichtkenmerkAig().equals("mijn") && true) {
+		if (this.getMeldingDao() != null && this.meldingDao.getMessage(betrokkene, "riemar", voornaam).getMessageDigest().equals("mijn") && true) {
 			System.out.println("equal");
 		}
 
@@ -136,19 +136,19 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 	}
 
 	@CreateUnittest(out = "melding")
-	public Melding geefMelding() {
+	public Announcement geefMelding() {
 
 		list.add("aap");
 
-		Betrokkene betrokkene = new Betrokkene(127797592, (short) 2012);
-		betrokkene.setBurgerservicenummer(127797592);
-		betrokkene.setBelastingJaar((short) 2012);
+		AccidentalPerson betrokkene = new AccidentalPerson(127797592, (short) 2012);
+		betrokkene.setSocialSecurityNumber(127797592);
+		betrokkene.setYear((short) 2012);
 
-		Melding melding = new Melding();
-		melding.setBerichtkenmerkAig("aig02");
-		melding.setBetrokkene(betrokkene);
+		Announcement melding = new Announcement();
+		melding.setMessageDigest("aig02");
+		melding.setAccidentalPerson(betrokkene);
 
-		return this.getMeldingDao().geefMelding();
+		return this.getMeldingDao().getMessage();
 
 	}
 
@@ -165,24 +165,24 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 	}
 
 	// @CreateUnittest(out="melding")
-	public Melding geefTestMelding() {
-		Betrokkene betrokkene = new Betrokkene(127797592, (short) 2012);
+	public Announcement geefTestMelding() {
+		AccidentalPerson betrokkene = new AccidentalPerson(127797592, (short) 2012);
 		String berichtkenmerkAig = "teststring";
 		String voornaam = "Raymond";
 
-		Melding resultMelding = this.getMeldingDao().geefMelding(betrokkene, berichtkenmerkAig, voornaam);
+		Announcement resultMelding = this.getMeldingDao().getMessage(betrokkene, berichtkenmerkAig, voornaam);
 
 		return resultMelding;
 
 	}
 
 	@Expect(out = "meldingDao")
-	public MeldingDAO getMeldingDao() {
+	public MessageDAO getMeldingDao() {
 		return this.meldingDao;
 	}
 
 	@Expect(in = "meldingDao")
-	public void setMeldingDao(MeldingDAO meldingDao) {
+	public void setMeldingDao(MessageDAO meldingDao) {
 		this.meldingDao = meldingDao;
 	}
 
@@ -190,9 +190,9 @@ public final class OnderhoudenMeldingServiceImpl implements OnderhoudenMeldingSe
 	// @CreateUnittest(in={"1", "2"}, out="3")
 	// straks ook testen zonder parameters
 	 @CreateUnittest(in={"2", "3"}, out="drie")
-	public int telOp(int monkey, int horses) {
+	public int add(int monkey, int horses) {
 
-		int resultFromDao = this.getMeldingDao().telOp(monkey, horses);
+		int resultFromDao = this.getMeldingDao().add(monkey, horses);
 
 		int result = monkey + horses;
 

@@ -19,22 +19,22 @@ package nl.carpago.testexpert;
 
 import java.util.List;
 
-import nl.belastingdienst.Betrokkene;
-import nl.belastingdienst.Melding;
+import nl.foo.AccidentalPerson;
+import nl.foo.Announcement;
 
 
 /**
- * Business service interface voor het onderhouden van Melding(en).
+ * Business service interface voor het onderhouden van Announcement(en).
  * 
  * @author Raymond Loman
  */
-public interface OnderhoudenMeldingService {
+public interface ManageMessageService {
 
-	List<Melding> geefMeldingenMetStatusHandmatigeAfhandeling() ;
+	List<Announcement> getMessagesWithStateManual() ;
 
-	List<Melding> findAllByExample(Melding melding);
+	List<Announcement> findAllByExample(Announcement message);
 	
-	Melding geefMelding(Betrokkene betrokkene, String berichtkenmerkAig);
+	Announcement getMessage(AccidentalPerson accidentalPerson, String messageDigest);
 	
-	int telOp(int a, int b);
+	int add(int a, int b);
 }

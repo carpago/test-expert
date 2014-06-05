@@ -1,6 +1,6 @@
 package nl.carpago.testexpert;
 
-import nl.belastingdienst.Melding;
+import nl.foo.Announcement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MijnTstBean {
 
 	@Autowired(required=true)
-	public Melding melding;
+	public Announcement melding;
 	
 
 }
