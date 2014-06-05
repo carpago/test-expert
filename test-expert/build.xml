@@ -111,14 +111,14 @@
 
 	<!-- Run the JUnit Tests -->
 	<!-- Output is xml or plain -->
-	<target name="test" depends="emma-instrument">
+	<target name="test" depends="compile.test">
 		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
 			<classpath refid="test.classpath" />
 			<formatter type="xml" />
 			<formatter type="plain" />
 			<batchtest todir="${test.report.dir}/junit">
 				<fileset dir="${test.src.dir}">
-					<include name="**/*AllTestsForTestExpert*.java" />
+					<include name="**/*Test.java" />
 				</fileset>
 			</batchtest>
 			<jvmarg value="-Demma.coverage.out.file=${coverage.output.dir}/coverage.emma" />
