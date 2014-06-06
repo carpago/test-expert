@@ -2,9 +2,13 @@ TestExpert
 ========
 
 What is TestExpert
+-------------------
+
 TestExpert is a framework which automatically generated JUnittests for Java applications.
 
 Why use TestExpert
+-------------------
+
 To shorted the time of writing unittests for already written code.
 TestExpert fills the gap between writing code and writing test. Despite the succes of TDD - which is a great principle and I really like it - there 
 are still numerous lines of code which should be covered by unittests. Writing them is a pretty tedious and long
@@ -25,12 +29,12 @@ Getting started
 Installing TestExpert
 ---------------------
 See the enclosed INSTALL.pdf for detailed instruction for installing TestExpert
-See the Wiki for up-to-date [Installation Instructions](https://github.com/nvie/gitflow/wiki/Installation).
+See the Wiki for up-to-date [Installation Instructions](https://github.com/carpago/test-expert/INSTALL).
 
 
 FAQ
 ---
-See the [FAQ](http://github.com/carpago/testexpert/wiki/FAQ) section of the project
+See the [FAQ](http://github.com/carpago/test-expert/wiki/FAQ) section of the project
 Wiki.
 
 
