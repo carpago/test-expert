@@ -39,7 +39,7 @@ class CarpagoRuntimeException extends RuntimeException {
 	
 }
 
-public class MainVoorTstDoeleinden {
+public class MainForTestPurposes {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
 
