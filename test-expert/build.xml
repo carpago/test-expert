@@ -63,6 +63,7 @@
 		<!-- Delete some direcotry trees -->
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
+		<delete dir="${lib.dir}" />
 		<delete dir="${test.report.dir}" />
 		<delete dir="${generated.test.source.dir}" />
 		<delete dir="${instrumented.output.dir}" />
