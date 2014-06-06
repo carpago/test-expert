@@ -1,0 +1,10 @@
+RoadMap
+	Near future
+		More successcase per method (max. one at this moment)
+		More unsuccessful cases per method (zero at this moment)
+		
+	Farther future
+		Build system with Ant or Maven or ...
+	
+	Far Future
+		Jad should not be a requirement. Will introduce a parser-generator.

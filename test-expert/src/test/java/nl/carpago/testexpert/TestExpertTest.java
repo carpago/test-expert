@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nl.belastingdienst.Betrokkene;
-import nl.belastingdienst.Melding;
 import nl.carpago.testexpert.TestExpert.MockFramework;
+import nl.foo.AccidentalPerson;
+import nl.foo.Announcement;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -71,11 +71,11 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testIsLiteral() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
-		assertTrue(this.testExpert.isLiteral("melding()"));
+		assertTrue(this.testExpert.isLiteral("message()"));
 
-		assertFalse(this.testExpert.isLiteral("melding"));
+		assertFalse(this.testExpert.isLiteral("message"));
 
 		assertTrue(this.testExpert.isLiteral("123"));
 
@@ -101,17 +101,17 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGenerateConstructorForClass() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
-		Class<?> c = OnderhoudenMeldingServiceImpl.class;
+		Class<?> c = ManageMessageServiceImpl.class;
 
-		String expected = "new OnderhoudenMeldingServiceImpl()";
+		String expected = "new ManageMessageServiceImpl()";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 
-		c = Persoon.class;
+		c = PeoplePerson.class;
 
-		expected = "new Persoon(17, new String())";
+		expected = "new PeoplePerson(17, new String())";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 
@@ -176,7 +176,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGenerateSomethingForInterface() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Class<?> c = List.class;
 
@@ -196,7 +196,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethodWithInterface() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method m = null;
 		try {
@@ -221,7 +221,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethodWithConcreteClass() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method m = null;
 		try {
@@ -245,7 +245,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethodWithInterfaceWithStringAsParameters() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method m = null;
 		try {
@@ -268,7 +268,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetPrimitiveType() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		assertEquals(byte.class, this.testExpert.getPrimitiveType("byte"));
 		assertEquals(short.class, this.testExpert.getPrimitiveType("short"));
@@ -292,7 +292,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterNamesForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterNamesForMethod(method)));
@@ -318,7 +318,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterTypesForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterTypesForMethod(method)));
@@ -348,7 +348,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterTypeAndNameForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method method = null;
 		try {
@@ -370,7 +370,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testFindAllJavaFilesForFolder() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
@@ -417,7 +417,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGenerateAnnotationsForSpringTest() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		testExpert.generateAnnotationsForSpringTest();
 		List<String> annotations = testExpert.getAnnotionsBeforeTestClass();
@@ -776,31 +776,31 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		Assert.assertFalse("Imports shouldn't contain " + one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
 
-		Melding aMelding = new Melding();
-		Melding[] meldingen = new Melding[] { aMelding };
-		t.checkAndAddImport(meldingen);
+		Announcement aMelding = new Announcement();
+		Announcement[] messageen = new Announcement[] { aMelding };
+		t.checkAndAddImport(messageen);
 		Assert.assertTrue("Imports should contain " + aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
 
-		Betrokkene betrokkene = new Betrokkene();
-		List<Betrokkene> betrokkenen = new ArrayList<Betrokkene>();
-		betrokkenen.add(betrokkene);
-		t.checkAndAddImport(betrokkenen);
-		Assert.assertTrue("Imports should contain " + betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
+		AccidentalPerson accidentalPerson = new AccidentalPerson();
+		List<AccidentalPerson> accidentalPersonn = new ArrayList<AccidentalPerson>();
+		accidentalPersonn.add(accidentalPerson);
+		t.checkAndAddImport(accidentalPersonn);
+		Assert.assertTrue("Imports should contain " + accidentalPerson.getClass().getName(), t.getImports().contains(accidentalPerson.getClass().getName()));
 
 		Assert.assertTrue(t.getImports().contains(java.util.ArrayList.class.getName()));
 
-		Set<Melding> meldingenSet = new HashSet<Melding>();
-		meldingenSet.add(aMelding);
-		t.checkAndAddImport(meldingenSet);
+		Set<Announcement> messageenSet = new HashSet<Announcement>();
+		messageenSet.add(aMelding);
+		t.checkAndAddImport(messageenSet);
 		Assert.assertTrue(t.getImports().contains(java.util.HashSet.class.getName()));
 
 		t.init(TstClassInner.class);
 		Assert.assertFalse(t.getImports().contains(java.util.HashMap.class.getName()));
-		Assert.assertFalse(t.getImports().contains(Melding.class.getName()));
-		Map<String, Melding> map = new HashMap<String, Melding>();
+		Assert.assertFalse(t.getImports().contains(Announcement.class.getName()));
+		Map<String, Announcement> map = new HashMap<String, Announcement>();
 		map.put("aKey", aMelding);
 		t.checkAndAddImport(map);
-		Assert.assertTrue(t.getImports().contains(Melding.class.getName()));
+		Assert.assertTrue(t.getImports().contains(Announcement.class.getName()));
 		Assert.assertTrue(t.getImports().contains(HashMap.class.getName()));
 
 		t.init(TstClassInner.class);
@@ -826,11 +826,11 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"lijst\", this.lijst);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
+		anExpectedLine = "this.personDao = EasyMock.createMock(PersonDAO.class);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPersoonDaoWithoutSetter\", this.onceUsedPersoonDaoWithoutSetter);";
+		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPeoplePersonDaoWithoutSetter\", this.onceUsedPeoplePersonDaoWithoutSetter);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "this.tstClassInner.setPersoonDao(this.persoonDao);";
+		anExpectedLine = "this.tstClassInner.setPersonDao(this.personDao);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
 	}
 
@@ -1008,14 +1008,14 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));"));
-				method = TstClassInner.class.getMethod("getPersoon", new Class<?>[] { int.class });
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getSofi(number)).andReturn((String) this.cloneMe(string));"));
+				method = TstClassInner.class.getMethod("getPeoplePerson", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPeoplePerson(number)).andReturn((PeoplePerson) this.cloneMe(eenAnderPeoplePerson));"));
 
 				method = TstClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[] { int.class, Person.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
 
 				method = TstClassInner.class.getMethod("testWithCallToSelf", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
@@ -1056,7 +1056,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.contains("Person localPerson = new Person(new String(), 17);"));
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1088,7 +1088,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1123,7 +1123,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 				String[] expectedLines = new String[6];
 				expectedLines[0] = "new Expectations() {";
-				expectedLines[1] = "persoonDao.getSofi(number);";
+				expectedLines[1] = "personDao.getSofi(number);";
 				expectedLines[2] = "forEachInvocation = new Object() {";
 				expectedLines[3] = "@SuppressWarnings(\"unused\")";
 				expectedLines[4] = "String validate(int number){";
@@ -1170,7 +1170,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 				String[] expectedLines = new String[2];
 				expectedLines[0] = "int aNumber = 17;";
-				expectedLines[1] = "EasyMock.expect(persoonDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
+				expectedLines[1] = "EasyMock.expect(personDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
 
 				for (String anExpectedLine : expectedLines) {
 					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.contains(anExpectedLine));
@@ -1206,7 +1206,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method).trim();
-				String expected = "persoonDao.voidmethod(number);";
+				String expected = "personDao.voidmethod(number);";
 				Assert.assertEquals(expected, expectAndReplays);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1243,7 +1243,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method).trim();
-				String expected = "EasyMock.expect(persoonDao.inc(number)).andReturn(number);";
+				String expected = "EasyMock.expect(personDao.inc(number)).andReturn(number);";
 				Assert.assertEquals(expected, expectAndReplays);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

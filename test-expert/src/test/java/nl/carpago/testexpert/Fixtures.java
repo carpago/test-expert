@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-import nl.belastingdienst.Betrokkene;
-import nl.belastingdienst.Melding;
-import nl.belastingdienst.MeldingDAO;
+import nl.foo.AccidentalPerson;
+import nl.foo.Announcement;
+import nl.foo.MessageDAO;
 
 import org.easymock.EasyMock;
 import org.springframework.context.annotation.Bean;
@@ -28,14 +27,14 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public Melding melding() {
-		Melding melding = new Melding();
-		melding.setBerichtkenmerkAig(this.berichtkenmerkAig());
-		melding.setDatumPlaatsGevonden(new Date(112,7,15));
-		melding.setWaarde(3);
-		melding.setBetrokkene(this.betrokkene());
+	public Announcement message() {
+		Announcement message = new Announcement();
+		message.setMessageDigest(this.messageDigest());
+		message.setDateAccident(new Date(112,7,15));
+		message.setValue(3);
+		message.setAccidentalPerson(this.accidentalPerson());
 		
-		return melding;
+		return message;
 	}
 	
 	@Bean
@@ -61,15 +60,15 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public String berichtkenmerkAig() {
-		String result = "aig02";
+	public String messageDigest() {
+		String result = "aid02";
 		
 		return result;
 	}
 	
 	@Bean
-	public String anderBerichtkenmerkAig() {
-		String result = "aig02";
+	public String anderMessageDigest() {
+		String result = "aid02";
 		
 		return result;
 	}
@@ -91,22 +90,22 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public Betrokkene betrokkene() {
-		Betrokkene betrokkene = new Betrokkene(127797592, (short) 2012);
-		betrokkene.setBurgerservicenummer(127797592);
-		betrokkene.setBelastingJaar((short) 2012);
+	public AccidentalPerson accidentalPerson() {
+		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
+		accidentalPerson.setSocialSecurityNumber(127797592);
+		accidentalPerson.setYear((short) 2012);
 		
-		return betrokkene;
+		return accidentalPerson;
 	}
 	
 
 	@Bean
-	public Betrokkene andereBetrokkene() {
-		Betrokkene betrokkene = new Betrokkene(127797592, (short) 2012);
-		betrokkene.setBurgerservicenummer(127797592);
-		betrokkene.setBelastingJaar((short) 2012);
+	public AccidentalPerson otherAccidentalPerson() {
+		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
+		accidentalPerson.setSocialSecurityNumber(127797592);
+		accidentalPerson.setYear((short) 2012);
 		
-		return betrokkene;
+		return accidentalPerson;
 	}
 	
 	@Bean
@@ -115,23 +114,23 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public OnderhoudenMeldingService onderhoudenMeldingServiceImpl() {
-		OnderhoudenMeldingServiceImpl meldingService = new OnderhoudenMeldingServiceImpl();
-		meldingService.setMeldingDao(this.meldingDao());
+	public ManageMessageService onderhoudenMeldingServiceImpl() {
+		ManageMessageServiceImpl messageService = new ManageMessageServiceImpl();
+		messageService.setMeldingDao(this.messageDao());
 		
-		return meldingService;
+		return messageService;
 	}
 	
 	@Bean
-	public MeldingDAO meldingDao() {
-		return EasyMock.createMock(MeldingDAO.class);
+	public MessageDAO messageDao() {
+		return EasyMock.createMock(MessageDAO.class);
 	}
 	
 	@Bean
 	public Method methode() {
 		Method method = null;
 		try {
-			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", Betrokkene.class, String.class);
+			method = ManageMessageServiceImpl.class.getMethod("geefMelding", AccidentalPerson.class, String.class);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -145,14 +144,14 @@ public class Fixtures {
 	
 	@Bean
 	public String[] methodeInAnnotations() {
-		String[] result = {"andereBetrokkene","anderBerichtkenmerkAig"};
+		String[] result = {"otherAccidentalPerson","anderMessageDigest"};
 		
 		return result;
 	}
 	
 	@Bean
 	public String methodeOutAnnotations() {
-		String result = "melding";
+		String result = "message";
 		
 		return result;
 	}

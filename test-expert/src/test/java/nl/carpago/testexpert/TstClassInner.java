@@ -17,13 +17,13 @@ public class TstClassInner {
 	private int leeftijd;
 	@SuppressWarnings("unused")
 	private String variableWithSetterForTest;
-	private PersoonDAO persoonDao;
+	private PersonDAO personDao;
 	private TstClassInner tstClassInner;
 	
 	@SuppressWarnings("unused")
-	private PersoonDAO unusedPersoonDao;
+	private PersonDAO unusedPeoplePersonDao;
 	
-	private PersoonDAO onceUsedPersoonDaoWithoutSetter;
+	private PersonDAO onceUsedPeoplePersonDaoWithoutSetter;
 	
 	@CreateUnittest
 	public void test1() {
@@ -51,7 +51,7 @@ public class TstClassInner {
 	 */
 	@CreateUnittest
 	public void testDaoWithoutSettersShouldCreateTestStatements() {
-		onceUsedPersoonDaoWithoutSetter.inc(3);
+		onceUsedPeoplePersonDaoWithoutSetter.inc(3);
 	}
 	
 	@CreateUnittest
@@ -140,19 +140,19 @@ public class TstClassInner {
 	
 	@CreateUnittest(in={"number"}, out="string")
 	public String getNumber(int aNumber) {
-		String result = persoonDao.getSofi(aNumber);
+		String result = personDao.getSofi(aNumber);
 		
 		return result;
 	}
 	
-	@CreateUnittest(in="number", out="eenAnderPersoon")
-	public Persoon getPersoon(int number) {
-		return persoonDao.getPersoon(number);
+	@CreateUnittest(in="number", out="eenAnderPeoplePerson")
+	public PeoplePerson getPeoplePerson(int number) {
+		return personDao.getPeoplePerson(number);
 	}
 	
 	@CreateUnittest(in={"number", "person"}, out="anotherPerson")
 	public Person testWithMoreThanOneArgument(int aNumber, Person aPerson) {
-		Person result = this.persoonDao.getPerson(aNumber, aPerson);
+		Person result = this.personDao.getPerson(aNumber, aPerson);
 		
 		return result;
 	}
@@ -161,7 +161,7 @@ public class TstClassInner {
 	public Person testWithLocalVariable(int aNumber) {
 		Person localPerson = new Person("John Doe", 46);
 		
-		Person result = this.persoonDao.getPersonWithoutHelp(aNumber,  localPerson);
+		Person result = this.personDao.getPersonWithoutHelp(aNumber,  localPerson);
 		
 		return result;
 	}
@@ -171,7 +171,7 @@ public class TstClassInner {
 	public Person testWithLocalVariableWithHelp(int aNumber) {
 		Person localPerson = new Person("John Doe", 46);
 		
-		Person result = this.persoonDao.getPerson(aNumber,  localPerson);
+		Person result = this.personDao.getPerson(aNumber,  localPerson);
 		
 		return result;
 	}
@@ -187,7 +187,7 @@ public class TstClassInner {
 	public int testHelperMethodForQuestionmark(int number) {
 		
 		int aNumber = 3;
-		int result = this.persoonDao.getPersonWithQuestionmarksAnnotation(aNumber);
+		int result = this.personDao.getPersonWithQuestionmarksAnnotation(aNumber);
 		
 		return result;
 	}
@@ -200,18 +200,18 @@ public class TstClassInner {
 	
 	@CreateUnittest(in="number")
 	public void helperVoidMethod(int input) {
-		this.persoonDao.voidmethod(input);
+		this.personDao.voidmethod(input);
 	}
 
 	
 	@CreateUnittest(in="number")
 	public void addMe(int number) {
-		int result = this.persoonDao.inc(number);
+		int result = this.personDao.inc(number);
 	}
 	
 	@CreateUnittest(in="number")
 	public int addMeWithoutUsingReturn(int number) {
-		return this.persoonDao.inc(number);
+		return this.personDao.inc(number);
 	}
 	
 	@CreateUnittest(out="<literal>")
@@ -237,7 +237,7 @@ public class TstClassInner {
 	}
 
 	
-	public void setPersoonDao(PersoonDAO persoonDao) {
-		this.persoonDao = persoonDao;
+	public void setPersonDao(PersonDAO personDao) {
+		this.personDao = personDao;
 	}
 }

@@ -39,7 +39,7 @@ class CarpagoRuntimeException extends RuntimeException {
 	
 }
 
-public class MainVoorTstDoeleinden {
+public class MainForTestPurposes {
 	
 	private Logger logger = Logger.getLogger(this.getClass());
 
@@ -154,7 +154,7 @@ public class MainVoorTstDoeleinden {
 	
 	public static void probeerReflectionArray()
 	{
-		Persoon[] array = new Persoon[1];
+		PeoplePerson[] array = new PeoplePerson[1];
 		
 		if(array.getClass().isArray())
 		{

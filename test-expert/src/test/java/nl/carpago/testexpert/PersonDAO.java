@@ -2,16 +2,16 @@ package nl.carpago.testexpert;
 
 import nl.carpago.testexpert.annotation.Expect;
 
-public class PersoonDAO {
+public class PersonDAO {
 	
 	@Expect(in="number", out="string")
 	public String getSofi(int number) {
 		return Integer.toString(number);
 	}
 	
-	@Expect(in="number", out="eenAnderPersoon")
-	public Persoon getPersoon(int aNumber) {
-		return new Persoon(44, "John Doe");
+	@Expect(in="number", out="eenAnderPeoplePerson")
+	public PeoplePerson getPeoplePerson(int aNumber) {
+		return new PeoplePerson(44, "John Doe");
 	}
 	
 	@Expect(in={"number", "person"}, out="anotherPerson")

@@ -34,9 +34,9 @@ public class InvokeDTOTest extends TestCase {
 		String line = null;
 		
 		
-		line = "String result = persoonDao.getSofi(aNumber);";
-		String expectedCollab = "persoonDao";
-		String expectedCollabMethodParams = "persoonDao.getSofi(aNumber)";
+		line = "String result = personDao.getSofi(aNumber);";
+		String expectedCollab = "personDao";
+		String expectedCollabMethodParams = "personDao.getSofi(aNumber)";
 		String expectedConstruction = expectedCollabMethodParams +";";
 		List <String> expectedParams = new ArrayList<String>();
 		expectedParams.add("aNumber");
