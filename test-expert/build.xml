@@ -1,0 +1,256 @@
+﻿<project name="test-expert" default="zip" basedir=".">
+	<description>
+       Build file for Carpago Software's TestExpert product (c) 2012
+    </description>
+
+	<!-- software revision number -->
+	<property name="version" value="0.1.0"/>
+
+
+	<!-- set global properties for this build -->
+	<property name="src.dir" location="src/main/java" />
+	<property name="demo.dir" location="src/main/demo" />
+	<property name="resources.dir" location="src/main/resources" />
+	<property name="test.src.dir" location="src/test/java" />
+	<property name="generated.test.source.dir" location="src/test/generated-test" />
+	<property name="build.dir" location="../build" />
+	<property name="dist.dir" location="../dist" />
+	<property name="lib.dir" location="../lib" />
+	<property name="test.report.dir" location="../reports" />
+	<property name="documentation.dir" location="doc" />
+	<property name="thirdparty.dir" location="../3rdparty" />
+	<property name="findbugs.home" value="${thirdparty.dir}/findbugs-2.0.0" />
+
+
+	<!-- Emma stuff -->
+	<property name="coverage.output.dir" value="${test.report.dir}/emma" />
+	<property name="emma.binaries.dir" value="${thirdparty.dir}/emma-code-coverage" />
+	<property name="instrumented.output.dir" value="../instrumented" />
+
+
+	<path id="emma.lib">
+		<fileset dir="${emma.binaries.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+		<classpath location="${thirdparty.dir}/findbugs-2.0.0/findbugs-ant.jar" />
+	</taskdef>
+
+	<path id="compile.classpath">
+		<fileset dir="${thirdparty.dir}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${emma.binaries.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="test.classpath">
+		<fileset dir="${thirdparty.dir}/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${emma.binaries.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${instrumented.output.dir}" />
+		<pathelement location="${build.dir}" />
+	</path>
+
+	<target name="clean" description="clean up">
+		<!-- Delete some direcotry trees -->
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${test.report.dir}" />
+		<delete dir="${generated.test.source.dir}" />
+		<delete dir="${instrumented.output.dir}" />
+		<delete dir="${coverage.output.dir}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<!-- Create the time stamp -->
+		<tstamp />
+
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${test.report.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${dist.dir}/javadoc" />
+		<mkdir dir="${generated.test.source.dir}" />
+		<mkdir dir="${coverage.output.dir}" />
+		<mkdir dir="${instrumented.output.dir}" />
+		<mkdir dir="${test.report.dir}/findbugs" />
+		<mkdir dir="${test.report.dir}/junit" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="compile.classpath" />
+		</javac>
+
+		<copy todir="${build.dir}">
+			<fileset dir="${resources.dir}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
+	</target>
+
+	<target name="compile.test" depends="compile" description="compile the source ">
+		<javac includeantruntime="false" srcdir="${test.src.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+	<!-- Analyzes the compiled code and adds instrumentation details for testing -->
+	<target name="emma-instrument" depends="compile.test">
+		<emma enabled="true">
+			<instr instrpath="${build.dir}" destdir="${instrumented.output.dir}" metadatafile="${coverage.output.dir}/coverage.emma" merge="true" />
+		</emma>
+	</target>
+
+	<!-- Run the JUnit Tests -->
+	<!-- Output is xml or plain -->
+	<target name="test" depends="compile.test">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="test.classpath" />
+			<formatter type="xml" />
+			<formatter type="plain" />
+			<batchtest todir="${test.report.dir}/junit">
+				<fileset dir="${test.src.dir}">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+			<jvmarg value="-Demma.coverage.out.file=${coverage.output.dir}/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
+		</junit>
+	</target>
+
+	<!-- Create XML reports from the coverage information -->
+	<target name="emma-report" depends="test">
+		<emma enabled="true">
+			<report sourcepath="${src.dir}">
+				<fileset dir="${coverage.output.dir}">
+					<include name="*.emma" />
+				</fileset>
+				<xml outfile="${coverage.output.dir}/coverage.xml" />
+			</report>
+		</emma>
+	</target>
+
+	<target name="generate.all" depends="compile.test">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="test.classpath" />
+			<formatter type="xml" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.src.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="compile.generated" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${build.dir} -->
+		<javac includeantruntime="false" srcdir="${generated.test.source.dir}" destdir="${build.dir}" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+
+
+	<target name="test.generated" depends="compile.generated">
+		<junit fork="true" printsummary="yes" showoutput="true" haltonerror="false" haltonfailure="false">
+			<classpath refid="test.classpath" />
+			<formatter type="plain" />
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${generated.test.source.dir}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="doall" depends="clean, init, compile, compile.test, generate.all, compile.generated, test.generated" />
+
+	<target name="findbugs" depends="build">
+		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.report.dir}/findbugs/findbugs.xml">
+			<sourcePath path="${src.dir}" />
+			<class location="${dist.dir}/${ant.project.name}.jar" />
+			<auxclasspath refid="test.classpath" />
+		</findbugs>
+	</target>
+
+	<target name="ci" depends="findbugs, emma-report, zip" />
+
+	<target name="buildinfo">
+		<tstamp>
+			<format property="builtat" pattern="MM-dd-yyyy hh:mm aa" timezone="Netherlands"/>
+		</tstamp>
+		<property environment="env" />
+		<exec executable="whoami" outputproperty="whoami"/>
+		<exec executable="uname" outputproperty="buildsystem">
+			<arg value="-a"/>
+		</exec>
+		<exec executable="git" outputproperty="commithash">
+			<arg value="rev-parse" />
+			<arg value="HEAD" />
+		</exec>
+
+		<propertyfile file="${resources.dir}/project.properties"
+		        comment="This file is automatically generated - DO NOT EDIT">
+			<entry key="version" value="${version}-${DSTAMP}${TSTAMP}"/>
+			<entry key="buildtime" value="${builtat}"/>
+			<entry key="builder" value="${whoami}"/>
+			<entry key="build" value="${env.BUILD_NUMBER}"/>
+			<entry key="HEAD" value="${commithash}" />
+			<entry key="system" value="${buildsystem}"/>
+		</propertyfile>
+	</target>
+
+	<target name="build" depends="compile,buildinfo" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${ant.project.name}.jar">
+			<fileset dir="${build.dir}" />
+			<!-- <fileset dir="${src.dir}" includes="**/*.java"/> -->
+		</jar>
+
+		<!-- Put the dependencies at same location -->
+		<copy todir="${lib.dir}">
+			<fileset dir="${thirdparty.dir}/lib" includes="**/*.jar" />
+		</copy>
+	</target>
+
+	<target name='javadoc' depends="init" description='Generate javadoc.' >
+		<javadoc 
+			sourcepath="${src.dir}" destdir="${dist.dir}/javadoc" use='true' author='true'  version='true'
+			access="public"
+			windowtitle="TestExpert API"
+			>
+			
+			<classpath refid='compile.classpath' />
+			<link href='http://java.sun.com/javase/6/docs/api/' />
+			<header>
+				<![CDATA[<h1>Test Expert -  ${version}</h1>]]></header>
+			
+			<!-- <bottom><![CDATA[<i>Copyright &#169; 2013 Carpago Software. All Rights Reserved.</i>]]></bottom> -->
+	</javadoc>
+</target>
+
+<target name="zip" depends="build, javadoc" description="generate a zipfile for deployment">
+	<mkdir dir="${dist.dir}" />
+	<zip destfile="${dist.dir}/${ant.project.name}-${version}-${DSTAMP}${TSTAMP}.zip">
+		<zipfileset dir="${lib.dir}" prefix="lib">
+			<include name="*.jar" />
+		</zipfileset>
+		<zipfileset dir="${dist.dir}" prefix="dist">
+			<include name="*.jar" />
+		</zipfileset>
+		<zipfileset dir="${dist.dir}/javadoc" prefix="dist/javadoc" />
+		<zipfileset dir="${documentation.dir}" prefix="DOCUMENTATION" />
+		<zipfileset dir="${src.dir}" includes="**/*.java" prefix="src" />
+		<zipfileset dir="${demo.dir}" includes="**/*.java" prefix="demo" />
+	</zip>
+</target>
+</project>
