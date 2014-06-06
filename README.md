@@ -29,7 +29,7 @@ Getting started
 Installing TestExpert
 ---------------------
 See the enclosed INSTALL.pdf for detailed instruction for installing TestExpert
-See the Wiki for up-to-date [Installation Instructions](https://github.com/carpago/test-expert/INSTALL).
+See the Wiki for up-to-date [Installation Instructions](http://github.com/carpago/test-expert/INSTALL).
 
 
 FAQ
@@ -42,7 +42,7 @@ Please help out
 ---------------
 This project is still under development. Feedback and suggestions are very
 welcome and I encourage you to use the [Issues
-list](http://github.com/carpago/testexpert/issues) on Github to provide that
+list](http://github.com/carpago/test-expert/issues) on Github to provide that
 feedback.
 
 
