@@ -47,14 +47,14 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 		return this.getMessageDao().getList();
 	}
 
-	@CreateUnittest(in = { "andereBetrokkene", "anderBerichtkenmerkAig" }, out = "melding")
-	public Announcement getMessage(AccidentalPerson betrokkene, String berichtkenmerkAig) {
+	@CreateUnittest(in = { "andereBetrokkene", "anderBerichtkenmerkAig" }, out = "message")
+	public Announcement getMessage(AccidentalPerson accidentalPerson, String berichtkenmerkAig) {
 
 		String voornaam = "Raymond";
-		Announcement resultMelding = this.messageDao.getMessage(betrokkene, berichtkenmerkAig, voornaam);
-		String test = this.messageDao.getMessage(betrokkene, berichtkenmerkAig, voornaam).getMessageDigest();
+		Announcement resultMelding = this.messageDao.getMessage(accidentalPerson, berichtkenmerkAig, voornaam);
+		String test = this.messageDao.getMessage(accidentalPerson, berichtkenmerkAig, voornaam).getMessageDigest();
 
-		if (this.getMessageDao() != null && this.messageDao.getMessage(betrokkene, "riemar", voornaam).getMessageDigest().equals("mijn") && true) {
+		if (this.getMessageDao() != null && this.messageDao.getMessage(accidentalPerson, "riemar", voornaam).getMessageDigest().equals("mijn") && true) {
 			System.out.println("equal");
 		}
 
@@ -76,18 +76,18 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 		this.personDao = persoonDao;
 	}
 
-	@CreateUnittest(out = "melding")
+	@CreateUnittest(out = "message")
 	public Announcement geefMelding() {
 
 		list.add("aap");
 
-		AccidentalPerson betrokkene = new AccidentalPerson(127797592, (short) 2012);
-		betrokkene.setSocialSecurityNumber(127797592);
-		betrokkene.setYear((short) 2012);
+		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
+		accidentalPerson.setSocialSecurityNumber(127797592);
+		accidentalPerson.setYear((short) 2012);
 
-		Announcement melding = new Announcement();
-		melding.setMessageDigest("aig02");
-		melding.setAccidentalPerson(betrokkene);
+		Announcement message = new Announcement();
+		message.setMessageDigest("aig02");
+		message.setAccidentalPerson(accidentalPerson);
 
 		return this.getMessageDao().getMessage();
 
@@ -105,13 +105,13 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 
 	}
 
-	// @CreateUnittest(out="melding")
+	// @CreateUnittest(out="message")
 	public Announcement geefTestMelding() {
-		AccidentalPerson betrokkene = new AccidentalPerson(127797592, (short) 2012);
+		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
 		String berichtkenmerkAig = "teststring";
 		String voornaam = "Raymond";
 
-		Announcement resultMelding = this.getMessageDao().getMessage(betrokkene, berichtkenmerkAig, voornaam);
+		Announcement resultMelding = this.getMessageDao().getMessage(accidentalPerson, berichtkenmerkAig, voornaam);
 
 		return resultMelding;
 
@@ -123,8 +123,8 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 	}
 
 	@Expect(in = "messageDao")
-	public void setMeldingDao(MessageDAO meldingDao) {
-		this.messageDao = meldingDao;
+	public void setMeldingDao(MessageDAO messageDao) {
+		this.messageDao = messageDao;
 	}
 
 	// x verder met het maken van literals ipv vars voor EasyMock ...

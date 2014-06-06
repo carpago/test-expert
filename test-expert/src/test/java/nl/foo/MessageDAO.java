@@ -8,13 +8,13 @@ import nl.carpago.testexpert.annotation.Expect;
 public interface MessageDAO {
 
 	/**
-	 * @param betrokkene
+	 * @param accidentalPerson
 	 * @param messageDigest
 	 * @return Lijst met Meldingen voor AccidentalPerson met gegeven berichtKenmerk
 	 */
-	List<Announcement> findAllWhere(AccidentalPerson betrokkene, String messageDigest);
+	List<Announcement> findAllWhere(AccidentalPerson accidentalPerson, String messageDigest);
 
-	@Expect(in = { "betrokkene", "berichtkenmerkAig", "voornaam" }, out = "melding")
+	@Expect(in = { "accidentalPerson", "berichtkenmerkAig", "voornaam" }, out = "message")
 	Announcement getMessage(AccidentalPerson accidentalPerson, String messageDigest,
 			String firstName);
 
@@ -24,7 +24,7 @@ public interface MessageDAO {
 
 	List<Announcement> getList();
 
-	@CreateUnittest(out="melding")
+	@CreateUnittest(out="message")
 	Announcement getMessage();
 
 	@CreateUnittest(in = { "een", "twee" }, out = "drie")

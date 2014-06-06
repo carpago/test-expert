@@ -27,14 +27,14 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public Announcement melding() {
-		Announcement melding = new Announcement();
-		melding.setMessageDigest(this.berichtkenmerkAig());
-		melding.setDateAccident(new Date(112,7,15));
-		melding.setValue(3);
-		melding.setAccidentalPerson(this.betrokkene());
+	public Announcement message() {
+		Announcement message = new Announcement();
+		message.setMessageDigest(this.berichtkenmerkAig());
+		message.setDateAccident(new Date(112,7,15));
+		message.setValue(3);
+		message.setAccidentalPerson(this.accidentalPerson());
 		
-		return melding;
+		return message;
 	}
 	
 	@Bean
@@ -90,22 +90,22 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public AccidentalPerson betrokkene() {
-		AccidentalPerson betrokkene = new AccidentalPerson(127797592, (short) 2012);
-		betrokkene.setSocialSecurityNumber(127797592);
-		betrokkene.setYear((short) 2012);
+	public AccidentalPerson accidentalPerson() {
+		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
+		accidentalPerson.setSocialSecurityNumber(127797592);
+		accidentalPerson.setYear((short) 2012);
 		
-		return betrokkene;
+		return accidentalPerson;
 	}
 	
 
 	@Bean
 	public AccidentalPerson andereBetrokkene() {
-		AccidentalPerson betrokkene = new AccidentalPerson(127797592, (short) 2012);
-		betrokkene.setSocialSecurityNumber(127797592);
-		betrokkene.setYear((short) 2012);
+		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
+		accidentalPerson.setSocialSecurityNumber(127797592);
+		accidentalPerson.setYear((short) 2012);
 		
-		return betrokkene;
+		return accidentalPerson;
 	}
 	
 	@Bean
@@ -115,14 +115,14 @@ public class Fixtures {
 	
 	@Bean
 	public ManageMessageService onderhoudenMeldingServiceImpl() {
-		ManageMessageServiceImpl meldingService = new ManageMessageServiceImpl();
-		meldingService.setMeldingDao(this.meldingDao());
+		ManageMessageServiceImpl messageService = new ManageMessageServiceImpl();
+		messageService.setMeldingDao(this.messageDao());
 		
-		return meldingService;
+		return messageService;
 	}
 	
 	@Bean
-	public MessageDAO meldingDao() {
+	public MessageDAO messageDao() {
 		return EasyMock.createMock(MessageDAO.class);
 	}
 	
@@ -151,7 +151,7 @@ public class Fixtures {
 	
 	@Bean
 	public String methodeOutAnnotations() {
-		String result = "melding";
+		String result = "message";
 		
 		return result;
 	}

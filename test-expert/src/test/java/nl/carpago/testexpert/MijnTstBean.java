@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MijnTstBean {
 
 	@Autowired(required=true)
-	public Announcement melding;
+	public Announcement message;
 	
 
 }

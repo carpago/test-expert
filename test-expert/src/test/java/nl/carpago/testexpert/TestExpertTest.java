@@ -73,9 +73,9 @@ public class TestExpertTest extends AbstractTestExpert {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
 		testExpert.init(ManageMessageServiceImpl.class);
 
-		assertTrue(this.testExpert.isLiteral("melding()"));
+		assertTrue(this.testExpert.isLiteral("message()"));
 
-		assertFalse(this.testExpert.isLiteral("melding"));
+		assertFalse(this.testExpert.isLiteral("message"));
 
 		assertTrue(this.testExpert.isLiteral("123"));
 
@@ -777,21 +777,21 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertFalse("Imports shouldn't contain " + one.getClass().getName(), t.getImports().contains(one.getClass().getName()));
 
 		Announcement aMelding = new Announcement();
-		Announcement[] meldingen = new Announcement[] { aMelding };
-		t.checkAndAddImport(meldingen);
+		Announcement[] messageen = new Announcement[] { aMelding };
+		t.checkAndAddImport(messageen);
 		Assert.assertTrue("Imports should contain " + aMelding.getClass().getName(), t.getImports().contains(aMelding.getClass().getName()));
 
-		AccidentalPerson betrokkene = new AccidentalPerson();
-		List<AccidentalPerson> betrokkenen = new ArrayList<AccidentalPerson>();
-		betrokkenen.add(betrokkene);
-		t.checkAndAddImport(betrokkenen);
-		Assert.assertTrue("Imports should contain " + betrokkene.getClass().getName(), t.getImports().contains(betrokkene.getClass().getName()));
+		AccidentalPerson accidentalPerson = new AccidentalPerson();
+		List<AccidentalPerson> accidentalPersonn = new ArrayList<AccidentalPerson>();
+		accidentalPersonn.add(accidentalPerson);
+		t.checkAndAddImport(accidentalPersonn);
+		Assert.assertTrue("Imports should contain " + accidentalPerson.getClass().getName(), t.getImports().contains(accidentalPerson.getClass().getName()));
 
 		Assert.assertTrue(t.getImports().contains(java.util.ArrayList.class.getName()));
 
-		Set<Announcement> meldingenSet = new HashSet<Announcement>();
-		meldingenSet.add(aMelding);
-		t.checkAndAddImport(meldingenSet);
+		Set<Announcement> messageenSet = new HashSet<Announcement>();
+		messageenSet.add(aMelding);
+		t.checkAndAddImport(messageenSet);
 		Assert.assertTrue(t.getImports().contains(java.util.HashSet.class.getName()));
 
 		t.init(TstClassInner.class);
