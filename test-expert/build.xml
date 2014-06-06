@@ -181,7 +181,7 @@
 		</findbugs>
 	</target>
 
-	<target name="ci" depends="findbugs, emma-report, zip" />
+	<target name="ci" depends="findbugs, emma-instrument, emma-report, zip" />
 
 	<target name="buildinfo">
 		<tstamp>
