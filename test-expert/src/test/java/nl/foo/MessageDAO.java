@@ -10,11 +10,11 @@ public interface MessageDAO {
 	/**
 	 * @param accidentalPerson
 	 * @param messageDigest
-	 * @return Lijst met Meldingen voor AccidentalPerson met gegeven berichtKenmerk
+	 * @return Lijst met Meldingen voor AccidentalPerson met gegeven messageDigest
 	 */
 	List<Announcement> findAllWhere(AccidentalPerson accidentalPerson, String messageDigest);
 
-	@Expect(in = { "accidentalPerson", "berichtkenmerkAig", "voornaam" }, out = "message")
+	@Expect(in = { "accidentalPerson", "messageDigest", "voornaam" }, out = "message")
 	Announcement getMessage(AccidentalPerson accidentalPerson, String messageDigest,
 			String firstName);
 

@@ -57,7 +57,7 @@ public class AccidentalPerson implements Serializable {
 
 	/**
 	 * @param year
-	 *            wordt in year gezet. Veldnaam en type in XSD: Belastingjaar, positiveInteger 4
+	 *            wordt in year gezet. Veldnaam en type in XSD: Year, positiveInteger 4
 	 */
 	public void setYear(Short year) {
 		this.year = year;

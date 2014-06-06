@@ -47,12 +47,12 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 		return this.getMessageDao().getList();
 	}
 
-	@CreateUnittest(in = { "andereBetrokkene", "anderBerichtkenmerkAig" }, out = "message")
-	public Announcement getMessage(AccidentalPerson accidentalPerson, String berichtkenmerkAig) {
+	@CreateUnittest(in = { "otherAccidentalPerson", "anderMessageDigest" }, out = "message")
+	public Announcement getMessage(AccidentalPerson accidentalPerson, String messageDigest) {
 
 		String voornaam = "Raymond";
-		Announcement resultMelding = this.messageDao.getMessage(accidentalPerson, berichtkenmerkAig, voornaam);
-		String test = this.messageDao.getMessage(accidentalPerson, berichtkenmerkAig, voornaam).getMessageDigest();
+		Announcement resultMelding = this.messageDao.getMessage(accidentalPerson, messageDigest, voornaam);
+		String test = this.messageDao.getMessage(accidentalPerson, messageDigest, voornaam).getMessageDigest();
 
 		if (this.getMessageDao() != null && this.messageDao.getMessage(accidentalPerson, "riemar", voornaam).getMessageDigest().equals("mijn") && true) {
 			System.out.println("equal");
@@ -86,7 +86,7 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 		accidentalPerson.setYear((short) 2012);
 
 		Announcement message = new Announcement();
-		message.setMessageDigest("aig02");
+		message.setMessageDigest("aid02");
 		message.setAccidentalPerson(accidentalPerson);
 
 		return this.getMessageDao().getMessage();
@@ -98,7 +98,7 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 
 	}
 
-	// @CreateUnittest(in="berichtkenmerkAig")
+	// @CreateUnittest(in="messageDigest")
 	public void zonderReturnMetParams(String eenString) {
 
 		boolean resultjetemp = list.add("aap");
@@ -108,10 +108,10 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 	// @CreateUnittest(out="message")
 	public Announcement geefTestMelding() {
 		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
-		String berichtkenmerkAig = "teststring";
+		String messageDigest = "teststring";
 		String voornaam = "Raymond";
 
-		Announcement resultMelding = this.getMessageDao().getMessage(accidentalPerson, berichtkenmerkAig, voornaam);
+		Announcement resultMelding = this.getMessageDao().getMessage(accidentalPerson, messageDigest, voornaam);
 
 		return resultMelding;
 

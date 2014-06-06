@@ -11,7 +11,7 @@ public class Announcement{
 	// start key
 	private AccidentalPerson accidentalPerson;
 
-	@Valid(in="aig01", out="aig02")
+	@Valid(in="aid01", out="aid02")
 	private String messageDigest;
 	// einde key
 	private String messageDigestOtherParty;
@@ -138,7 +138,7 @@ public class Announcement{
 	/**
 	 * @param messageDigestOtherParty
 	 *            wordt in messageDigestOtherParty gezet. Veldnaam en type in XSD:
-	 *            BerichtkenmerkDerden, string 32
+	 *            messageDigestThird, string 32
 	 */
 	public void setMessageDigestOtherParty(String messageDigestOtherParty) {
 		this.messageDigestOtherParty = messageDigestOtherParty;

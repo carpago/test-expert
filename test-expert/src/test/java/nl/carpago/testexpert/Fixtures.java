@@ -29,7 +29,7 @@ public class Fixtures {
 	@Bean
 	public Announcement message() {
 		Announcement message = new Announcement();
-		message.setMessageDigest(this.berichtkenmerkAig());
+		message.setMessageDigest(this.messageDigest());
 		message.setDateAccident(new Date(112,7,15));
 		message.setValue(3);
 		message.setAccidentalPerson(this.accidentalPerson());
@@ -60,15 +60,15 @@ public class Fixtures {
 	}
 	
 	@Bean
-	public String berichtkenmerkAig() {
-		String result = "aig02";
+	public String messageDigest() {
+		String result = "aid02";
 		
 		return result;
 	}
 	
 	@Bean
-	public String anderBerichtkenmerkAig() {
-		String result = "aig02";
+	public String anderMessageDigest() {
+		String result = "aid02";
 		
 		return result;
 	}
@@ -100,7 +100,7 @@ public class Fixtures {
 	
 
 	@Bean
-	public AccidentalPerson andereBetrokkene() {
+	public AccidentalPerson otherAccidentalPerson() {
 		AccidentalPerson accidentalPerson = new AccidentalPerson(127797592, (short) 2012);
 		accidentalPerson.setSocialSecurityNumber(127797592);
 		accidentalPerson.setYear((short) 2012);
@@ -144,7 +144,7 @@ public class Fixtures {
 	
 	@Bean
 	public String[] methodeInAnnotations() {
-		String[] result = {"andereBetrokkene","anderBerichtkenmerkAig"};
+		String[] result = {"otherAccidentalPerson","anderMessageDigest"};
 		
 		return result;
 	}
