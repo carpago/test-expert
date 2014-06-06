@@ -63,6 +63,7 @@
 		<!-- Delete some direcotry trees -->
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
+		<delete dir="${lib.dir}" />
 		<delete dir="${test.report.dir}" />
 		<delete dir="${generated.test.source.dir}" />
 		<delete dir="${instrumented.output.dir}" />
@@ -181,7 +182,7 @@
 		</findbugs>
 	</target>
 
-	<target name="ci" depends="findbugs, emma-report, zip" />
+	<target name="ci" depends="findbugs, emma-instrument, emma-report, zip" />
 
 	<target name="buildinfo">
 		<tstamp>
