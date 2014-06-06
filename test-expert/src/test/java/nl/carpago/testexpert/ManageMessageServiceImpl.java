@@ -68,12 +68,12 @@ public final class ManageMessageServiceImpl implements ManageMessageService {
 		return result;
 	}
 
-	public PersonDAO getPersoonDao() {
+	public PersonDAO getPeoplePersonDao() {
 		return personDao;
 	}
 
-	public void setPersoonDao(PersonDAO persoonDao) {
-		this.personDao = persoonDao;
+	public void setPeoplePersonDao(PersonDAO personDao) {
+		this.personDao = personDao;
 	}
 
 	@CreateUnittest(out = "message")

@@ -109,9 +109,9 @@ public class TestExpertTest extends AbstractTestExpert {
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 
-		c = Persoon.class;
+		c = PeoplePerson.class;
 
-		expected = "new Persoon(17, new String())";
+		expected = "new PeoplePerson(17, new String())";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 
@@ -826,11 +826,11 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"lijst\", this.lijst);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersonDAO.class);";
+		anExpectedLine = "this.personDao = EasyMock.createMock(PersonDAO.class);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPersoonDaoWithoutSetter\", this.onceUsedPersoonDaoWithoutSetter);";
+		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPeoplePersonDaoWithoutSetter\", this.onceUsedPeoplePersonDaoWithoutSetter);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "this.tstClassInner.setPersoonDao(this.persoonDao);";
+		anExpectedLine = "this.tstClassInner.setPeoplePersonDao(this.personDao);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
 	}
 
@@ -1008,14 +1008,14 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getSofi(number)).andReturn((String) this.cloneMe(string));"));
-				method = TstClassInner.class.getMethod("getPersoon", new Class<?>[] { int.class });
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getSofi(number)).andReturn((String) this.cloneMe(string));"));
+				method = TstClassInner.class.getMethod("getPeoplePerson", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPersoon(number)).andReturn((Persoon) this.cloneMe(eenAnderPersoon));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPeoplePerson(number)).andReturn((PeoplePerson) this.cloneMe(eenAnderPeoplePerson));"));
 
 				method = TstClassInner.class.getMethod("testWithMoreThanOneArgument", new Class<?>[] { int.class, Person.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
 
 				method = TstClassInner.class.getMethod("testWithCallToSelf", new Class<?>[] { int.class });
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
@@ -1056,7 +1056,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
 				Assert.assertTrue(expectAndReplays.contains("Person localPerson = new Person(new String(), 17);"));
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPersonWithoutHelp(number, localPerson)).andReturn(new Person(new String(), 17));"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1088,7 +1088,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method);
-				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(persoonDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
+				Assert.assertTrue(expectAndReplays.contains("EasyMock.expect(personDao.getPerson(number, person)).andReturn((Person) this.cloneMe(anotherPerson));"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1123,7 +1123,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 				String[] expectedLines = new String[6];
 				expectedLines[0] = "new Expectations() {";
-				expectedLines[1] = "persoonDao.getSofi(number);";
+				expectedLines[1] = "personDao.getSofi(number);";
 				expectedLines[2] = "forEachInvocation = new Object() {";
 				expectedLines[3] = "@SuppressWarnings(\"unused\")";
 				expectedLines[4] = "String validate(int number){";
@@ -1170,7 +1170,7 @@ public class TestExpertTest extends AbstractTestExpert {
 
 				String[] expectedLines = new String[2];
 				expectedLines[0] = "int aNumber = 17;";
-				expectedLines[1] = "EasyMock.expect(persoonDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
+				expectedLines[1] = "EasyMock.expect(personDao.getPersonWithQuestionmarksAnnotation(aNumber)).andReturn(4);";
 
 				for (String anExpectedLine : expectedLines) {
 					Assert.assertTrue("Line:" + anExpectedLine + " not found!", expectAndReplays.contains(anExpectedLine));
@@ -1206,7 +1206,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method).trim();
-				String expected = "persoonDao.voidmethod(number);";
+				String expected = "personDao.voidmethod(number);";
 				Assert.assertEquals(expected, expectAndReplays);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1243,7 +1243,7 @@ public class TestExpertTest extends AbstractTestExpert {
 			String expectAndReplays;
 			try {
 				expectAndReplays = t.generateExpectForCollaboratorsOfMethod(method).trim();
-				String expected = "EasyMock.expect(persoonDao.inc(number)).andReturn(number);";
+				String expected = "EasyMock.expect(personDao.inc(number)).andReturn(number);";
 				Assert.assertEquals(expected, expectAndReplays);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

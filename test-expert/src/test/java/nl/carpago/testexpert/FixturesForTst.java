@@ -71,8 +71,8 @@ import org.springframework.context.annotation.Configuration;
 		}
 		
 		@Bean
-		public Persoon eenAnderPersoon() {
-			return new Persoon(44, "John Doe");
+		public PeoplePerson eenAnderPeoplePerson() {
+			return new PeoplePerson(44, "John Doe");
 		}
 		
 		@Bean

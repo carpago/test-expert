@@ -154,7 +154,7 @@ public class MainVoorTstDoeleinden {
 	
 	public static void probeerReflectionArray()
 	{
-		Persoon[] array = new Persoon[1];
+		PeoplePerson[] array = new PeoplePerson[1];
 		
 		if(array.getClass().isArray())
 		{

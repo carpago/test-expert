@@ -9,9 +9,9 @@ public class PersonDAO {
 		return Integer.toString(number);
 	}
 	
-	@Expect(in="number", out="eenAnderPersoon")
-	public Persoon getPersoon(int aNumber) {
-		return new Persoon(44, "John Doe");
+	@Expect(in="number", out="eenAnderPeoplePerson")
+	public PeoplePerson getPeoplePerson(int aNumber) {
+		return new PeoplePerson(44, "John Doe");
 	}
 	
 	@Expect(in={"number", "person"}, out="anotherPerson")

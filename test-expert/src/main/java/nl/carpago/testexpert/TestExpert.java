@@ -492,8 +492,8 @@ public abstract class TestExpert extends TestCase {
 						try {
 							method = Class.forName(collab).getMethod(invokee, parametersVoorInvokee);
 						} catch (Exception e) {
-							//x hier verder: als ik nu OnderhoudenPersoonService draai met array.clone(); dan doet hij het niet. Want de array kent geen clone 
-							// maar ook een rare var collab: collab is namelijknu: _5B_Lnl.carpago.testexpert.Persoon_3B_ :- vaag ...
+							//x hier verder: als ik nu OnderhoudenPeoplePersonService draai met array.clone(); dan doet hij het niet. Want de array kent geen clone 
+							// maar ook een rare var collab: collab is namelijknu: _5B_Lnl.carpago.testexpert.PeoplePerson_3B_ :- vaag ...
 							logger.error(e);
 							throw new TestExpertException(e);
 						} 
