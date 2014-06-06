@@ -830,7 +830,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPeoplePersonDaoWithoutSetter\", this.onceUsedPeoplePersonDaoWithoutSetter);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "this.tstClassInner.setPeoplePersonDao(this.personDao);";
+		anExpectedLine = "this.tstClassInner.setPersonDao(this.personDao);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
 	}
 

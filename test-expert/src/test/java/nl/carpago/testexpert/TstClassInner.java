@@ -237,7 +237,7 @@ public class TstClassInner {
 	}
 
 	
-	public void setPeoplePersonDao(PersonDAO personDao) {
+	public void setPersonDao(PersonDAO personDao) {
 		this.personDao = personDao;
 	}
 }
