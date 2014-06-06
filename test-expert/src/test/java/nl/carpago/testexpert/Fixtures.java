@@ -115,7 +115,7 @@ public class Fixtures {
 	
 	@Bean
 	public ManageMessageService onderhoudenMeldingServiceImpl() {
-		OnderhoudenMeldingServiceImpl meldingService = new OnderhoudenMeldingServiceImpl();
+		ManageMessageServiceImpl meldingService = new ManageMessageServiceImpl();
 		meldingService.setMeldingDao(this.meldingDao());
 		
 		return meldingService;
@@ -130,7 +130,7 @@ public class Fixtures {
 	public Method methode() {
 		Method method = null;
 		try {
-			method = OnderhoudenMeldingServiceImpl.class.getMethod("geefMelding", AccidentalPerson.class, String.class);
+			method = ManageMessageServiceImpl.class.getMethod("geefMelding", AccidentalPerson.class, String.class);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

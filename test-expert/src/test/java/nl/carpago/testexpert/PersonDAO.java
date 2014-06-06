@@ -2,7 +2,7 @@ package nl.carpago.testexpert;
 
 import nl.carpago.testexpert.annotation.Expect;
 
-public class PersoonDAO {
+public class PersonDAO {
 	
 	@Expect(in="number", out="string")
 	public String getSofi(int number) {

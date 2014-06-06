@@ -17,13 +17,13 @@ public class TstClassInner {
 	private int leeftijd;
 	@SuppressWarnings("unused")
 	private String variableWithSetterForTest;
-	private PersoonDAO persoonDao;
+	private PersonDAO persoonDao;
 	private TstClassInner tstClassInner;
 	
 	@SuppressWarnings("unused")
-	private PersoonDAO unusedPersoonDao;
+	private PersonDAO unusedPersoonDao;
 	
-	private PersoonDAO onceUsedPersoonDaoWithoutSetter;
+	private PersonDAO onceUsedPersoonDaoWithoutSetter;
 	
 	@CreateUnittest
 	public void test1() {
@@ -237,7 +237,7 @@ public class TstClassInner {
 	}
 
 	
-	public void setPersoonDao(PersoonDAO persoonDao) {
+	public void setPersoonDao(PersonDAO persoonDao) {
 		this.persoonDao = persoonDao;
 	}
 }

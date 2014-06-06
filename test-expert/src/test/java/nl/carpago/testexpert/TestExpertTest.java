@@ -71,7 +71,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testIsLiteral() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		assertTrue(this.testExpert.isLiteral("melding()"));
 
@@ -101,11 +101,11 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGenerateConstructorForClass() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
-		Class<?> c = OnderhoudenMeldingServiceImpl.class;
+		Class<?> c = ManageMessageServiceImpl.class;
 
-		String expected = "new OnderhoudenMeldingServiceImpl()";
+		String expected = "new ManageMessageServiceImpl()";
 
 		assertEquals(expected, this.testExpert.generateConstructorForClass(c));
 
@@ -176,7 +176,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGenerateSomethingForInterface() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Class<?> c = List.class;
 
@@ -196,7 +196,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethodWithInterface() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method m = null;
 		try {
@@ -221,7 +221,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethodWithConcreteClass() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method m = null;
 		try {
@@ -245,7 +245,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	public void testGetParameterNamesForMethodWithInterfaceWithStringAsParameters() {
 
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method m = null;
 		try {
@@ -268,7 +268,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetPrimitiveType() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		assertEquals(byte.class, this.testExpert.getPrimitiveType("byte"));
 		assertEquals(short.class, this.testExpert.getPrimitiveType("short"));
@@ -292,7 +292,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterNamesForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterNamesForMethod(method)));
@@ -318,7 +318,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterTypesForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method method = null;
 		Assert.assertTrue(Arrays.equals(new String[] {}, this.testExpert.getParameterTypesForMethod(method)));
@@ -348,7 +348,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGetParameterTypeAndNameForMethod() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		Method method = null;
 		try {
@@ -370,7 +370,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testFindAllJavaFilesForFolder() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		try {
 			List<String> files = this.testExpert.findAllJavaFiles("./src/test/java");
@@ -417,7 +417,7 @@ public class TestExpertTest extends AbstractTestExpert {
 	@Test
 	public void testGenerateAnnotationsForSpringTest() {
 		this.testExpert = new TestExpertImplForUnittestingPurposes();
-		testExpert.init(OnderhoudenMeldingServiceImpl.class);
+		testExpert.init(ManageMessageServiceImpl.class);
 
 		testExpert.generateAnnotationsForSpringTest();
 		List<String> annotations = testExpert.getAnnotionsBeforeTestClass();
@@ -826,7 +826,7 @@ public class TestExpertTest extends AbstractTestExpert {
 		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"lijst\", this.lijst);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
-		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersoonDAO.class);";
+		anExpectedLine = "this.persoonDao = EasyMock.createMock(PersonDAO.class);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
 		anExpectedLine = "setFieldThroughReflection(tstClassInner, \"onceUsedPersoonDaoWithoutSetter\", this.onceUsedPersoonDaoWithoutSetter);";
 		Assert.assertTrue(setup.contains(anExpectedLine));
